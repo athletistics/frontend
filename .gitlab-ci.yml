@@ -1,5 +1,6 @@
 stages:
   - build
+  - deploy
 
 build:
   stage: build
@@ -11,3 +12,15 @@ build:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker build -t registry.forge.hefr.ch/tb-athletistics/frontend --network host .
     - docker push registry.forge.hefr.ch/tb-athletistics/frontend
+
+deploy:
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: [ "" ]
+  stage: deploy
+  script:
+    - kubectl config set-cluster local --server="https://rancher.kube.isc.heia-fr.ch/k8s/clusters/local"
+    - kubectl config set-credentials local --token="$KUBE_TOKEN"
+    - kubectl config set-context local --user=local --cluster=local
+    - kubectl config use-context local
+    - kubectl -n athletistics rollout restart deploy backend
