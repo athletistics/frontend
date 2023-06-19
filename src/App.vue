@@ -1,18 +1,43 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="min-h-screen flex flex-col justify-between">
+    <Nav></Nav>
+    <div class="container mx-auto grow p-4 xl:max-w-7xl">
+      <router-view></router-view>
+    </div>
+    <footer class="container mx-auto mt-4 max-w-7xl">
+      <div class="w-100 p-7 border-t-2 text-center">
+        <p>© 2023 - Nicolas Baeriswyl</p>
+        <p>Made with ☕️ by <a href="https://baeriswyl.dev" target="_blank">baeriswyl.dev</a></p>
+        <p class="uppercase text-sm mt-4 !text-gray-300 font-bold">Version 0.0.0 (early access)</p>
+      </div>
+    </footer>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
+
+<script>
+import {defineComponent} from "vue";
+import Nav from './components/Nav.vue'
+import Const from './plugins/Constants.ts'
+import store from './store'
+import axios from "axios";
+export default defineComponent({
+  components: {Nav},
+  mounted() {
+    axios.request({
+      url: "/verify?secondsAgo=100",
+      method: 'get',
+      baseURL: Const.TOTP_API_URL,
+      headers: {
+        'Authorization': 'Bearer ' + store.state.token
+      }
+    }).then(() => {
+      store.commit("set2FaValidated", true)
+    }).catch(() => {
+      store.commit("set2FaValidated", false)
+    })
+  }
+})
+</script>
 
 <style scoped>
 .logo {
