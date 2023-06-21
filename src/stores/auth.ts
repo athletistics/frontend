@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import {acceptHMRUpdate, defineStore} from 'pinia'
 import axios, {AxiosResponse} from "axios";
 import Const from "../plugins/Constants.ts";
 import {useMyUserStore} from "./user.ts";
@@ -58,3 +58,7 @@ export const useAuthStore = defineStore('auth', {
   },
   persist: true
 })
+
+if(import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
+}
