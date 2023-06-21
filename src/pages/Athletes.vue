@@ -25,6 +25,7 @@
 
       <div>
         <label>Gender</label>
+        <!-- todo: replace with data from server -->
         <select v-model="newAthlete.genderId" required>
           <option :value="1" selected>Unspecified</option>
           <option :value="2" selected>Female</option>
@@ -35,6 +36,7 @@
 
       <div>
         <label>Preferred Language</label>
+        <!-- todo: replace with data from server -->
         <select v-model="newAthlete.languageId" required>
           <option :value="1" selected>English</option>
           <option :value="2" selected>German</option>
@@ -102,7 +104,6 @@ export default defineComponent({
       })
     },
     createUser() {
-      console.log(moment(this.newAthlete.birthdate).format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS))
       this.newAthlete.birthdate = moment(this.newAthlete.birthdate).format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS) + "Z"
       this.newAthlete.placeId = 1
       this.newAthlete.nationalityId = 1

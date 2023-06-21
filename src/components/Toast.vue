@@ -66,7 +66,7 @@ export default defineComponent({
 }
 
 .toast .title {
-  font-weight: 800;
+  font-weight: 700;
   font-size: 1.4em;
   font-family: "ArgentumNovus", Roboto, Avenir, Helvetica, Arial, sans-serif;
 }
