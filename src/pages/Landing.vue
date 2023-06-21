@@ -1,15 +1,15 @@
 <template>
 
   <div class="shadow-2xl rounded-md max-w-md p-5 mx-auto grid gap-5 mt-10 text-center">
-    <h1 v-if="state===stateDefault">Hi!</h1>
-    <h1 v-else>Welcome back!</h1>
-    <p>Good to see you</p>
+    <h1 v-if="state===stateDefault">{{ $t('page.landing.title')}}</h1>
+    <h1 v-else>{{$t('page.landing.titleWelcomeBack')}}</h1>
+    <p>{{$t('page.landing.message')}}</p>
     <hr>
     <form class="space-y-4 with-label">
-      <p v-if="state===stateExpired">Your session has expired, please log in again.</p>
+      <p v-if="state===stateExpired">{{$t('page.landing.messageExpired')}}</p>
       <div>
-        <button v-if="state!==stateOK" type="button" class="bg-primary text-white" v-on:click="login">Login</button>
-        <button v-else type="button" class="bg-primary text-white" v-on:click="$router.push('/home')">Home</button>
+        <button v-if="state!==stateOK" type="button" class="bg-primary text-white" v-on:click="login">{{$t('page.landing.btnLogin')}}</button>
+        <button v-else type="button" class="bg-primary text-white" v-on:click="$router.push('/home')">{{$t('page.landing.btnHome')}}</button>
       </div>
     </form>
   </div>

@@ -6,6 +6,21 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import './style.css'
 import './assets/fonts/ArgentumNovus/ArgentumNovus.css'
 
+// i18n
+import {createI18n} from 'vue-i18n'
+import enUS from './locales/en-US.json'
+import deCH from './locales/de-CH.json'
+
+type MessageSchema = typeof enUS
+
+const i18n = createI18n<[MessageSchema], 'en-US' | 'de-CH'>({
+    locale: 'en-US',
+    messages: {
+        'en-US': enUS,
+        'de-CH': deCH
+    }
+})
+
 // font awesome
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
@@ -23,7 +38,8 @@ const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
 createApp(App)
-  .component('font-awesome-icon', FontAwesomeIcon)
-  .use(pinia)
-  .use(router)
-  .mount('#app')
+    .component('font-awesome-icon', FontAwesomeIcon)
+    .use(pinia)
+    .use(router)
+    .use(i18n)
+    .mount('#app')

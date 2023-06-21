@@ -1,0 +1,17 @@
+{
+  "page": {
+    "landing": {
+      "title": "Hi!",
+      "titleWelcomeBack": "Welcome back!",
+      "messageExpired": "Your session has expired, please log in again.",
+      "message": "Good to see you",
+      "btnLogin": "Login",
+      "btnHome": "Home"
+    }
+  },
+  "data": {
+    "discipline": {},
+    "gender": {},
+    "language": {}
+  }
+}
