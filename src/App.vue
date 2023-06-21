@@ -12,6 +12,7 @@
       </div>
     </footer>
   </div>
+  <Toasts/>
 </template>
 
 <script lang="ts">
@@ -20,8 +21,9 @@ import Nav from './components/Nav.vue'
 import {mapStores} from "pinia";
 import {useMyUserStore} from "./stores/user.ts";
 import {useAuthStore} from "./stores/auth.ts";
+import Toasts from "./components/Toasts.vue";
 export default defineComponent({
-  components: {Nav},
+  components: {Toasts, Nav},
   setup() {
     const authStore = useAuthStore()
     const userStore = useMyUserStore()
