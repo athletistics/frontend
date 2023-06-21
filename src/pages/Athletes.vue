@@ -59,8 +59,6 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import Club from "../types/Club.ts";
-import Team from "../types/Team.ts";
 import axios from "axios";
 import Const from "../plugins/Constants.ts"
 import {mapGetters} from "vuex";
@@ -116,7 +114,7 @@ export default defineComponent({
           'Authorization': 'Bearer ' + this.token
         },
         data: this.newAthlete
-      }).then(response => {
+      }).then(() => {
         this.loadAthletes()
         this.setVisibility(false)
       })

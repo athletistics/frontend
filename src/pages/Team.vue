@@ -8,12 +8,10 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import Club from "../types/Club.ts";
 import Team from "../types/Team.ts";
 import axios from "axios";
 import Const from "../plugins/Constants.ts"
 import {mapGetters} from "vuex";
-import Modal from "../components/Modal.vue";
 import User from "../types/User.ts";
 
 export default defineComponent({

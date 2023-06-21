@@ -69,7 +69,7 @@ export default defineComponent({
           'Authorization': 'Bearer ' + this.token
         },
         data: this.newTeam
-      }).then(response => {
+      }).then(() => {
         this.loadTeams()
         this.setTeamPopupVisibility(false)
       })

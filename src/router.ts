@@ -40,7 +40,7 @@ function isRouteProtected(route: RouteLocationNormalized) {
     return true
 }
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
     if (isRouteProtected(to) && !store.getters.getToken) {
         return "/"
     }

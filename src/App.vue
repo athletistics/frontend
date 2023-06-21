@@ -14,7 +14,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import {defineComponent} from "vue";
 import Nav from './components/Nav.vue'
 import Const from './plugins/Constants.ts'

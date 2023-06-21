@@ -17,7 +17,6 @@
 
 <script lang="ts">
 import axios from "axios";
-import store from "./../store/index"
 import Const from './../plugins/Constants'
 import {defineComponent} from "vue";
 import authConfig from "../plugins/AuthConfig.ts";
@@ -67,9 +66,9 @@ export default defineComponent({
       headers: {
         'Authorization': 'Bearer ' + this.token
       }
-    }).then(response => {
+    }).then(() => {
       this.state = stateOK
-    }).catch(response => {
+    }).catch(() => {
       this.state = stateExpired
     })
   }

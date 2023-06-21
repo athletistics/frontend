@@ -61,7 +61,7 @@ import {defineComponent} from "vue";
 import axios from "axios";
 import store from "../store";
 import {mapGetters} from "vuex";
-import Constants from "../plugins/Constants.ts";
+import Const from "../plugins/Constants.ts";
 
 export default defineComponent({
   name: "Elevate",
@@ -76,8 +76,8 @@ export default defineComponent({
     }
   },
   computed: {
-    Constants() {
-      return Constants
+    Constants(): any {
+      return Const
     },
     shouldCreate() {
       return !store.state.has2Fa
@@ -91,7 +91,7 @@ export default defineComponent({
       axios.request({
         url: "/",
         method: 'post',
-        baseURL: this.Constants.TOTP_API_URL,
+        baseURL: Const.TOTP_API_URL,
         headers: {
           'Authorization': 'Bearer ' + this.token
         },
@@ -99,7 +99,7 @@ export default defineComponent({
           code: this.code,
           deviceName: this.deviceName
         }
-      }).then(response => {
+      }).then(() => {
         store.commit("set2FaValidated", true)
         store.commit("setHas2Fa", true)
         this.$router.push('/home')
@@ -111,14 +111,14 @@ export default defineComponent({
       axios.request({
         url: "/verify",
         method: 'post',
-        baseURL: this.Constants.TOTP_API_URL,
+        baseURL: Const.TOTP_API_URL,
         headers: {
           'Authorization': 'Bearer ' + this.token
         },
         data: {
           code: this.code,
         }
-      }).then(response => {
+      }).then(() => {
         store.commit("set2FaValidated", true)
         this.$router.push('/home')
       }).catch(error => {
@@ -130,7 +130,7 @@ export default defineComponent({
     axios.request({
       url: "/",
       method: 'get',
-      baseURL: this.Constants.TOTP_API_URL,
+      baseURL: Const.TOTP_API_URL,
       headers: {
         'Authorization': 'Bearer ' + this.token
       }
@@ -138,7 +138,7 @@ export default defineComponent({
       console.log(response)
       this.secret = response.data.secret
       this.qrCode = response.data.qrCode
-    }).catch(response => {
+    }).catch(() => {
       this.ready = false
     })
   }
