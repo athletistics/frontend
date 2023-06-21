@@ -1,5 +1,7 @@
 export default interface Discipline {
     id: number,
-    name: string,
-    format: string
+    i18nName?: string,
+    customName?: string,
+    isOfficial: boolean,
+    isDescending?: boolean
 }

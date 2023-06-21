@@ -34,13 +34,16 @@ import Const from "../plugins/Constants.ts"
 import User from "../types/User.ts";
 import {useAuthStore} from "../stores/auth.ts";
 import Modal from "../components/Modal.vue";
+import {useToastStore} from "../stores/toast.ts";
+import Toast from "../components/Toast.vue";
 
 export default defineComponent({
   components: {Modal},
   setup() {
     const authStore = useAuthStore()
+    const toastStore = useToastStore()
 
-    return {authStore}
+    return {authStore, toastStore}
   },
   data() {
     return {
@@ -77,7 +80,16 @@ export default defineComponent({
       }).then(() => {
         this.getParticipants()
         this.usersToAdd = []
-      }).catch(() => console.log('error adding participants'))
+        this.toastStore.addToast({title:"Success", color: "bg-primary"})
+      }).catch(error => {
+        this.toastStore.addToast({
+          title: "Unable to fulfill request",
+          code: error.response.data.error,
+          message: error.response.data.message,
+          color: "bg-error",
+        })
+        console.log('error adding participants')
+      })
     },
     removeFromTeam(){
       axios.request({
