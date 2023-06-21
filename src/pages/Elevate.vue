@@ -59,11 +59,14 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import axios from "axios";
-import store from "../store";
-import {mapGetters} from "vuex";
 import Const from "../plugins/Constants.ts";
+import {useAuthStore} from "../stores/auth.ts";
 
 export default defineComponent({
+  setup() {
+    const authStore = useAuthStore()
+    return {authStore}
+  },
   name: "Elevate",
   data() {
     return {
@@ -80,11 +83,8 @@ export default defineComponent({
       return Const
     },
     shouldCreate() {
-      return !store.state.has2Fa
+      return !this.authStore.has2Fa
     },
-    ...mapGetters({
-      token: "getToken"
-    })
   },
   methods: {
     confirm() {
@@ -93,15 +93,15 @@ export default defineComponent({
         method: 'post',
         baseURL: Const.TOTP_API_URL,
         headers: {
-          'Authorization': 'Bearer ' + this.token
+          'Authorization': 'Bearer ' + this.authStore.token
         },
         data: {
           code: this.code,
           deviceName: this.deviceName
         }
       }).then(() => {
-        store.commit("set2FaValidated", true)
-        store.commit("setHas2Fa", true)
+        this.authStore.set2FaValidated(true)
+        this.authStore.setHas2Fa(true)
         this.$router.push('/home')
       }).catch(error => {
         this.warning = error.response.data.message
@@ -113,13 +113,13 @@ export default defineComponent({
         method: 'post',
         baseURL: Const.TOTP_API_URL,
         headers: {
-          'Authorization': 'Bearer ' + this.token
+          'Authorization': 'Bearer ' + this.authStore.token
         },
         data: {
           code: this.code,
         }
       }).then(() => {
-        store.commit("set2FaValidated", true)
+        this.authStore.set2FaValidated(true)
         this.$router.push('/home')
       }).catch(error => {
         this.warning = error.response.data.message
@@ -132,7 +132,7 @@ export default defineComponent({
       method: 'get',
       baseURL: Const.TOTP_API_URL,
       headers: {
-        'Authorization': 'Bearer ' + this.token
+        'Authorization': 'Bearer ' + this.authStore.token
       }
     }).then(response => {
       console.log(response)

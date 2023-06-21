@@ -8,22 +8,22 @@
 import {defineComponent} from "vue";
 import axios from "axios";
 import Const from "../plugins/Constants.ts";
-import {mapGetters} from "vuex";
+import {useAuthStore} from "../stores/auth.ts";
 
 export default defineComponent({
   name: "Me",
+  setup() {
+    const authStore = useAuthStore()
+
+    return {authStore}
+  },
   data() {
     return {
       data: {}
     }
   },
-  computed: {
-    ...mapGetters({
-      token: 'getToken'
-    })
-  },
   mounted() {
-    if (!this.token) {
+    if (!this.authStore.token) {
       this.$router.push('/')
     }
 
@@ -32,7 +32,7 @@ export default defineComponent({
       method: 'get',
       baseURL: Const.API_URL,
       headers: {
-        'Authorization': 'Bearer ' + this.token
+        'Authorization': 'Bearer ' + this.authStore.token
       }
     }).then(response => {
       this.data = response.data

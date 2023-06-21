@@ -3,7 +3,7 @@
 
   <hr>
 
-  <p v-for="p in participants">{{ p.lastName}} {{p.firstName}}</p>
+  <p v-for="p in participants">{{ p.lastName }} {{ p.firstName }}</p>
 </template>
 
 <script lang="ts">
@@ -11,10 +11,15 @@ import {defineComponent} from "vue";
 import Team from "../types/Team.ts";
 import axios from "axios";
 import Const from "../plugins/Constants.ts"
-import {mapGetters} from "vuex";
 import User from "../types/User.ts";
+import {useAuthStore} from "../stores/auth.ts";
 
 export default defineComponent({
+  setup() {
+    const authStore = useAuthStore()
+
+    return {authStore}
+  },
   data() {
     return {
       team: {} as Team,
@@ -22,23 +27,18 @@ export default defineComponent({
     }
   },
   methods: {
-    getParticipants(){
+    getParticipants() {
       axios.request({
         url: "/teams/" + this.$route.params.id + "/participants",
         method: 'get',
         baseURL: Const.API_URL,
         headers: {
-          'Authorization': 'Bearer ' + this.token
+          'Authorization': 'Bearer ' + this.authStore.token
         }
       }).then(response => {
         this.participants = response.data
       })
     }
-  },
-  computed: {
-    ...mapGetters({
-      token: "getToken"
-    })
   },
   mounted() {
     axios.request({
@@ -46,7 +46,7 @@ export default defineComponent({
       method: 'get',
       baseURL: Const.API_URL,
       headers: {
-        'Authorization': 'Bearer ' + this.token
+        'Authorization': 'Bearer ' + this.authStore.token
       }
     }).then(response => {
       this.team = response.data

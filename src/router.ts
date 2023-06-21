@@ -1,5 +1,4 @@
 import {createRouter, createWebHistory, RouteLocationNormalized} from 'vue-router'
-import store from './store/index'
 
 import Home from "./pages/Home.vue"
 import Elevate from "./pages/Elevate.vue"
@@ -11,6 +10,7 @@ import Athletes from "./pages/Athletes.vue"
 
 import {OPEN_ROUTES} from "./plugins/Constants";
 import Me from "./pages/Me.vue";
+import {useAuthStore} from "./stores/auth.ts";
 
 const routes = [
     {path: '/', name: 'index', component: Landing},
@@ -41,7 +41,9 @@ function isRouteProtected(route: RouteLocationNormalized) {
 }
 
 router.beforeEach((to) => {
-    if (isRouteProtected(to) && !store.getters.getToken) {
+    const authStore = useAuthStore()
+
+    if (isRouteProtected(to) && !authStore.token) {
         return "/"
     }
 })

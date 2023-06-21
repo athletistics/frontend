@@ -21,7 +21,7 @@ import Const from './../plugins/Constants'
 import {defineComponent} from "vue";
 import authConfig from "../plugins/AuthConfig.ts";
 import {OidcClient} from "oidc-client-ts";
-import {mapGetters} from "vuex";
+import {useAuthStore} from "../stores/auth.ts";
 
 const stateDefault = 0
 const stateLoading = 1
@@ -36,25 +36,22 @@ export default defineComponent({
     }
   },
   setup() {
+    const authStore = useAuthStore()
+
     return {
-      stateDefault, stateLoading, stateOK, stateExpired
+      authStore, stateDefault, stateLoading, stateOK, stateExpired
     }
   },
   methods: {
     login: function () {
       let client = new OidcClient(authConfig)
       client.createSigninRequest({state: {bar: 15}}).then(function (req) {
-        window.location = req.url;
+        window.location.href = req.url;
       })
     }
   },
-  computed: {
-    ...mapGetters({
-      token: 'getToken'
-    }),
-  },
   mounted() {
-    if (!this.token) {
+    if (!this.authStore.token) {
       return
     }
     this.state = stateLoading
@@ -64,7 +61,7 @@ export default defineComponent({
       method: 'get',
       baseURL: Const.API_URL,
       headers: {
-        'Authorization': 'Bearer ' + this.token
+        'Authorization': 'Bearer ' + this.authStore.token
       }
     }).then(() => {
       this.state = stateOK

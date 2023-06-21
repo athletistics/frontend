@@ -1,25 +1,31 @@
 import {OPEN_ROUTES} from './Constants'
 import {RouteRecordName} from "vue-router";
 
-import store from '../store'
 import moment from "moment";
 import axios from "axios";
 import Const from "./Constants.ts";
+import Router from '../router.ts';
+import {useMyUserStore} from "../stores/user.ts";
+import {useAuthStore} from "../stores/auth.ts";
 
 export function checkLoginState() {
+    const userStore = useMyUserStore()
+    const authStore = useAuthStore()
+
     axios.request({
         url: "/me/auth",
         method: 'get',
         baseURL: Const.API_URL,
         headers: {
-            'Authorization': 'Bearer ' + store.state.token
+            'Authorization': 'Bearer ' + authStore.token
         }
     }).then(() => {
         // all good, continue
     }).catch(() => {
         // we are logged out!
-        store.state.resetUserData()
-        this.$router.push('/')
+        userStore.$reset()
+        authStore.$reset()
+        Router.push('/')
     })
 }
 

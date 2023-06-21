@@ -6,38 +6,35 @@
 import {defineComponent} from "vue";
 import {OidcClient} from "oidc-client-ts";
 import authConfig from "../plugins/AuthConfig.ts";
-import store from "../store";
-import axios from "axios";
 import Const from "../plugins/Constants.ts";
+import {useAuthStore} from "../stores/auth.ts";
+import {useMyUserStore} from "../stores/user.ts";
 
 export default defineComponent({
+  setup() {
+    const userStore = useMyUserStore();
+    const authStore = useAuthStore();
+
+    return {userStore, authStore}
+  },
   mounted() {
     let client = new OidcClient(authConfig)
     const router = this.$router
-    client.processSigninResponse(window.location.href).then(function (response) {
-      store.commit("setToken", response.access_token)
 
-      axios.request({
-        url: "/me/auth",
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + response.access_token
-        }
-      }).then(response => {
-        store.commit("setUser", response.data)
-        store.commit("setUserData", response.data)
+    client.processSigninResponse(window.location.href).then ((response) => {
+      this.authStore.token = response.access_token
 
-        if(store.state.roles.indexOf(Const.ROLE_COACH) !== -1 || store.state.roles.indexOf(Const.ROLE_HEAD_COACH) !== -1){
-          console.log("helo")
-          if(!store.state.has2Fa){
-          console.log("heloo")
+      this.authStore.updateFromServer(() => {
+        if(this.userStore.hasRole(Const.ROLE_COACH) || this.userStore.hasRole(Const.ROLE_HEAD_COACH)){
+          if(!this.authStore.has2Fa){
             router.push('/elevate')
             return
           }
         }
         router.push('/home')
       })
+
+      this.userStore.updateFromServer()
 
       router.push('/home')
     }).catch(function (err) {

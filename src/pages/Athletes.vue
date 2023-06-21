@@ -61,13 +61,18 @@
 import {defineComponent} from "vue";
 import axios from "axios";
 import Const from "../plugins/Constants.ts"
-import {mapGetters} from "vuex";
 import Modal from "../components/Modal.vue";
 import User from "../types/User.ts";
 import moment from "moment";
+import {useAuthStore} from "../stores/auth.ts";
 
 export default defineComponent({
   components: {Modal},
+  setup() {
+    const authStore = useAuthStore()
+
+    return {authStore}
+  },
   data() {
     return {
       athletes: [] as User[],
@@ -76,11 +81,6 @@ export default defineComponent({
   },
   mounted() {
     this.loadAthletes()
-  },
-  computed: {
-    ...mapGetters({
-      token: "getToken"
-    })
   },
   methods: {
     setVisibility(visible: boolean) {
@@ -94,7 +94,7 @@ export default defineComponent({
         method: 'get',
         baseURL: Const.API_URL,
         headers: {
-          'Authorization': 'Bearer ' + this.token
+          'Authorization': 'Bearer ' + this.authStore.token
         },
         data: this.newAthlete
       }).then(response => {
@@ -111,7 +111,7 @@ export default defineComponent({
         method: 'post',
         baseURL: Const.API_URL,
         headers: {
-          'Authorization': 'Bearer ' + this.token
+          'Authorization': 'Bearer ' + this.authStore.token
         },
         data: this.newAthlete
       }).then(() => {

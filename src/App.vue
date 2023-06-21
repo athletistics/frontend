@@ -17,41 +17,24 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import Nav from './components/Nav.vue'
-import Const from './plugins/Constants.ts'
-import store from './store'
-import axios from "axios";
-import {mapMutations} from "vuex";
+import {mapStores} from "pinia";
+import {useMyUserStore} from "./stores/user.ts";
+import {useAuthStore} from "./stores/auth.ts";
 export default defineComponent({
   components: {Nav},
-  mounted() {
-    axios.request({
-      url: "/verify?secondsAgo=1000",
-      method: 'get',
-      baseURL: Const.TOTP_API_URL,
-      headers: {
-        'Authorization': 'Bearer ' + store.state.token
-      }
-    }).then(() => {
-      store.commit("set2FaValidated", true)
-    }).catch(() => {
-      store.commit("set2FaValidated", false)
-    })
+  setup() {
+    const authStore = useAuthStore()
+    const userStore = useMyUserStore()
 
-    axios.request({
-      url: "/me",
-      method: 'get',
-      baseURL: Const.API_URL,
-      headers: {
-        'Authorization': 'Bearer ' + store.state.token
-      }
-    }).then(response => {
-      this.setUser(response.data)
-    })
+    return {authStore, userStore}
   },
-  methods: {
-    ...mapMutations({
-      setUser: "setUser"
-    })
+  mounted() {
+    if (this.authStore.token == "") return
+    this.authStore.updateFromServer()
+    this.userStore.updateFromServer()
+  },
+  computed: {
+    ...mapStores(useMyUserStore, useAuthStore)
   }
 })
 </script>

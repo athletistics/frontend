@@ -10,7 +10,7 @@
         <font-awesome-icon icon="fa-bars" size="2x" class="main-transition w-9" :class="hamClasses"/>
       </div>
     </div>
-    <ul v-on:click="closeNav()" v-if="token && $route.name !== 'index'" :class="navClasses" class="flex flex-1 bg-white md:flex-row flex-col
+    <ul v-on:click="closeNav()" v-if="authStore.token && $route.name !== 'index'" :class="navClasses" class="flex flex-1 bg-white md:flex-row flex-col
           max-md:w-full max-md:text-center max-md:absolute max-md:top-full max-md:shadow-lg main-transition">
       <li>
         <router-link class="router-link" to="/home">Home</router-link>
@@ -44,11 +44,18 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import {mapGetters} from "vuex";
 import Const from "../plugins/Constants.ts";
+import {useAuthStore} from "../stores/auth.ts";
+import {useMyUserStore} from "../stores/user.ts";
 
 export default defineComponent({
   name: "Nav",
+  setup() {
+    const authStore = useAuthStore()
+    const userStore = useMyUserStore()
+
+    return {authStore, userStore}
+  },
   data() {
     return {
       navVisibility: false as boolean
@@ -56,7 +63,8 @@ export default defineComponent({
   },
   methods: {
     logout() {
-      this.$store.commit('resetUserData')
+      this.authStore.$reset()
+      this.userStore.$reset()
       this.$router.push('/')
     },
     toggleNav() {
@@ -68,7 +76,7 @@ export default defineComponent({
   },
   computed: {
     elevateVisible(){
-      return !this.is2FaOk && (this.hasRole(Const.ROLE_COACH) || this.hasRole(Const.ROLE_HEAD_COACH))
+      return !this.authStore.is2FaOk && (this.userStore.hasRole(Const.ROLE_COACH) || this.userStore.hasRole(Const.ROLE_HEAD_COACH))
     },
     clubVisible(){
       return this.isElevatedCoach
@@ -77,20 +85,14 @@ export default defineComponent({
       return this.isElevatedCoach
     },
     eventsVisible(){
-      return this.isElevatedCoach || this.hasRole(Const.ROLE_ATHLETE)
+      return this.isElevatedCoach || this.userStore.hasRole(Const.ROLE_ATHLETE)
     },
     resultsVisible(){
-      return this.isElevatedCoach || this.hasRole(Const.ROLE_ATHLETE)
+      return this.isElevatedCoach || this.userStore.hasRole(Const.ROLE_ATHLETE)
     },
     isElevatedCoach(){
-      return this.is2FaOk && (this.hasRole(Const.ROLE_COACH) || this.hasRole(Const.ROLE_HEAD_COACH))
+      return this.authStore.is2FaOk && (this.userStore.hasRole(Const.ROLE_COACH) || this.userStore.hasRole(Const.ROLE_HEAD_COACH))
     },
-    ...mapGetters({
-      user: 'getUser',
-      token: 'getToken',
-      hasRole: 'hasRole',
-      is2FaOk: "is2FaOk"
-    }),
     navClasses(): string {
       if (this.navVisibility) return 'max-md:visible'
       return 'max-md:invisible max-md:opacity-0'

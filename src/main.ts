@@ -1,4 +1,8 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
+
+import {createPinia} from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+
 import './style.css'
 import './assets/fonts/ArgentumNovus/ArgentumNovus.css'
 
@@ -14,10 +18,12 @@ library.add(faBars, faXmark, faArrowRightFromBracket, faLockOpen)
 
 import App from './App.vue'
 import router from './router'
-import store from './store/index'
+
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
 
 createApp(App)
-    .component('font-awesome-icon', FontAwesomeIcon)
-    .use(store)
-    .use(router)
-    .mount('#app')
+  .component('font-awesome-icon', FontAwesomeIcon)
+  .use(pinia)
+  .use(router)
+  .mount('#app')

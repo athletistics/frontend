@@ -5,7 +5,9 @@
   <hr>
   <h1>Teams</h1>
   <button class="bg-primary text-white" v-on:click="setTeamPopupVisibility(true)">+</button>
-  <p v-for="t in teams"><router-link :to="'/team/' + t.id">{{ t.name }}</router-link></p>
+  <p v-for="t in teams">
+    <router-link :to="'/team/' + t.id">{{ t.name }}</router-link>
+  </p>
 
   <Modal ref="modal">
     <h3>Create team</h3>
@@ -28,11 +30,18 @@ import Club from "../types/Club.ts";
 import Team from "../types/Team.ts";
 import axios from "axios";
 import Const from "../plugins/Constants.ts"
-import {mapGetters} from "vuex";
 import Modal from "../components/Modal.vue";
+import {useAuthStore} from "../stores/auth.ts";
+import {useMyUserStore} from "../stores/user.ts";
 
 export default defineComponent({
   components: {Modal},
+  setup() {
+    const authStore = useAuthStore()
+    const userStore = useMyUserStore()
+
+    return {authStore, userStore}
+  },
   data() {
     return {
       club: {} as Club,
@@ -42,11 +51,11 @@ export default defineComponent({
   },
   mounted() {
     axios.request({
-      url: "/club/" + this.user.clubId,
+      url: "/club/" + this.userStore.user.clubId,
       method: 'get',
       baseURL: Const.API_URL,
       headers: {
-        'Authorization': 'Bearer ' + this.token
+        'Authorization': 'Bearer ' + this.authStore.token
       }
     }).then(response => {
       this.club = response.data
@@ -62,11 +71,11 @@ export default defineComponent({
     },
     createTeam() {
       axios.request({
-        url: "/club/" + this.user.clubId + "/teams",
+        url: "/club/" + this.userStore.user.clubId + "/teams",
         method: 'post',
         baseURL: Const.API_URL,
         headers: {
-          'Authorization': 'Bearer ' + this.token
+          'Authorization': 'Bearer ' + this.authStore.token
         },
         data: this.newTeam
       }).then(() => {
@@ -76,22 +85,16 @@ export default defineComponent({
     },
     loadTeams() {
       axios.request({
-        url: "/club/" + this.user.clubId + "/teams",
+        url: "/club/" + this.userStore.user.clubId + "/teams",
         method: 'get',
         baseURL: Const.API_URL,
         headers: {
-          'Authorization': 'Bearer ' + this.token
+          'Authorization': 'Bearer ' + this.authStore.token
         }
       }).then(response => {
         this.teams = response.data
       })
     }
-  },
-  computed: {
-    ...mapGetters({
-      token: "getToken",
-      user: "getUser"
-    })
   }
 })
 </script>
