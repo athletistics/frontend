@@ -5,6 +5,9 @@ import Home from "./pages/Home.vue"
 import Elevate from "./pages/Elevate.vue"
 import Landing from "./pages/Landing.vue"
 import Callback from "./pages/Callback.vue"
+import Club from "./pages/Club.vue"
+import Team from "./pages/Team.vue"
+import Athletes from "./pages/Athletes.vue"
 
 import {OPEN_ROUTES} from "./plugins/Constants";
 import Me from "./pages/Me.vue";
@@ -14,7 +17,10 @@ const routes = [
     {path: '/me', name: 'me', component: Me},
     {path: '/home', name: 'home', component: Home},
     {path: '/elevate', name: 'elevate', component: Elevate},
+    {path: '/club', name: 'club', component: Club},
     {path: '/callback', name: 'callback', component: Callback},
+    {path: '/team/:id', name: 'team', component: Team},
+    {path: '/athletes', name: 'athletes', component: Athletes},
 
     {path: '/:catchAll(.*)', redirect: '/'}
 ]
@@ -24,10 +30,10 @@ const router = createRouter({
     routes: routes
 })
 
-function isRouteProtected(route: RouteLocationNormalized){
+function isRouteProtected(route: RouteLocationNormalized) {
     for (let i = 0; i < OPEN_ROUTES.length; i++) {
         // @ts-ignore
-        if (OPEN_ROUTES[i] == route?.name){
+        if (OPEN_ROUTES[i] == route?.name) {
             return false
         }
     }

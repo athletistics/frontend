@@ -20,11 +20,12 @@ import Nav from './components/Nav.vue'
 import Const from './plugins/Constants.ts'
 import store from './store'
 import axios from "axios";
+import {mapMutations} from "vuex";
 export default defineComponent({
   components: {Nav},
   mounted() {
     axios.request({
-      url: "/verify?secondsAgo=100",
+      url: "/verify?secondsAgo=1000",
       method: 'get',
       baseURL: Const.TOTP_API_URL,
       headers: {
@@ -34,6 +35,22 @@ export default defineComponent({
       store.commit("set2FaValidated", true)
     }).catch(() => {
       store.commit("set2FaValidated", false)
+    })
+
+    axios.request({
+      url: "/me",
+      method: 'get',
+      baseURL: Const.API_URL,
+      headers: {
+        'Authorization': 'Bearer ' + store.state.token
+      }
+    }).then(response => {
+      this.setUser(response.data)
+    })
+  },
+  methods: {
+    ...mapMutations({
+      setUser: "setUser"
     })
   }
 })

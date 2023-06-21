@@ -25,6 +25,7 @@ export default defineComponent({
           'Authorization': 'Bearer ' + response.access_token
         }
       }).then(response => {
+        store.commit("setUser", response.data)
         store.commit("setUserData", response.data)
 
         if(store.state.roles.indexOf(Const.ROLE_COACH) !== -1 || store.state.roles.indexOf(Const.ROLE_HEAD_COACH) !== -1){
