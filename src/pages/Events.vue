@@ -24,14 +24,24 @@
       <input v-model="newEvent.webDate" type="date" required>
     </div>
 
-    <label>Event type</label>
-    <!-- todo: replace with data from server -->
-    <select v-model="newEvent.eventTypeId" required>
-      <option :value="1" selected>SwissAthletics</option>
-      <option :value="2" selected>UBS Kids Cup</option>
-      <option :value="3" selected>Custom</option>
-      <option :value="4" selected>Training</option>
-    </select>
+    <div>
+      <label>Event type</label>
+      <!-- todo: replace with data from server -->
+      <select v-model="newEvent.eventTypeId" required>
+        <option :value="1" selected>SwissAthletics</option>
+        <option :value="2" selected>UBS Kids Cup</option>
+        <option :value="3" selected>Custom</option>
+        <option :value="4" selected>Training</option>
+      </select>
+    </div>
+
+    <div>
+      <label>{{ $t('glob.event.locality') }}</label>
+      <select v-model="newEvent.isOutdoor" required>
+        <option :value="true">{{ $t('glob.event.outdoor') }}</option>
+        <option :value="false">{{ $t('glob.event.indoor') }}</option>
+      </select>
+    </div>
 
     <div class="inline-flex">
       <input id="homologated" :value="1" type="checkbox" v-model="homologated">
@@ -53,7 +63,7 @@ import axios from "axios";
 import Const from "../plugins/Constants.ts";
 import {useToastStore} from "../stores/toast.ts";
 import {useAuthStore} from "../stores/auth.ts";
-import Modal from "../components/Modal.vue";
+import Modal from "../components/modals/Modal.vue";
 import moment from "moment";
 
 export default defineComponent({
@@ -79,6 +89,7 @@ export default defineComponent({
     setModalVisibility(visible: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
       this.newEvent = {} as Event
+      this.newEvent.isOutdoor = true
     },
     createEvent() {
       this.newEvent.isHomologated = this.homologated.length > 0
@@ -97,7 +108,7 @@ export default defineComponent({
         this.setModalVisibility(false)
       }).catch(error => this.toastStore.addToastFromAxiosError(error))
     },
-    loadEvents(){
+    loadEvents() {
       axios.request({
         url: "/events",
         method: 'get',

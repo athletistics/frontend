@@ -59,7 +59,7 @@ import Club from "../types/Club.ts";
 import Team from "../types/Team.ts";
 import axios from "axios";
 import Const from "../plugins/Constants.ts"
-import Modal from "../components/Modal.vue";
+import Modal from "../components/modals/Modal.vue";
 import {useAuthStore} from "../stores/auth.ts";
 import {useMyUserStore} from "../stores/user.ts";
 import {useDataStore} from "../stores/data.ts";
