@@ -10,7 +10,7 @@ build:
       alias: docker
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t registry.forge.hefr.ch/tb-athletistics/frontend --network host .
+    - docker build -t registry.forge.hefr.ch/tb-athletistics/frontend --network host --build-arg INFISICAL_TOKEN=$INFISICAL_TOKEN --build-arg INFISICAL_API_URL=$INFISICAL_API_URL .
     - docker push registry.forge.hefr.ch/tb-athletistics/frontend
 
 deploy:

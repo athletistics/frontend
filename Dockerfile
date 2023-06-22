@@ -3,6 +3,16 @@
 # Stage 1: Build the Vite Vue.js app
 FROM node:20.3.0 as builder
 
+ARG INFISICAL_TOKEN
+ARG INFISICAL_API_URL
+ENV INFISICAL_TOKEN=$INFISICAL_TOKEN
+ENV INFISICAL_API_URL=$INFISICAL_API_URL
+
+# Install infisical package
+RUN apt-get update && apt-get install -y bash curl && curl -1sLf \
+'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | bash \
+&& apt-get update && apt-get install -y infisical
+
 WORKDIR /app
 
 # Copy the package.json and yarn.lock files
@@ -15,7 +25,7 @@ RUN npm ci
 COPY . .
 
 # Build the app
-RUN npm run build
+RUN infisical run -- npm run build
 
 # Stage 2: Run Nginx with the built app
 FROM nginx:alpine
