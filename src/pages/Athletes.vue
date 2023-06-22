@@ -1,10 +1,10 @@
 <template>
-  <h1>Athletes</h1>
-  <button class="bg-primary text-white" v-on:click="setVisibility(true)">+</button>
+  <h1>{{$t('page.athletes.title')}}</h1>
+  <button v-on:click="setVisibility(true)" class="btn btn-block btn-primary">{{$t('page.athletes.btn.create')}}</button>
 
   <hr>
 
-  <p v-for="a in athletes">{{ a.lastName }} {{ a.firstName }}</p>
+  <UserList :state="athletesState" :users="athletes"/>
 
   <Modal ref="modal">
     <form class="grid sm:grid-cols-2 gap-4 with-label mt-4">
@@ -20,7 +20,7 @@
 
       <div>
         <label>Birthdate</label>
-        <input type="date" v-model="newAthlete.birthdate" required>
+        <input type="date" v-model="newAthlete.birthDate" required>
       </div>
 
       <div>
@@ -65,19 +65,24 @@ import axios from "axios";
 import Const from "../plugins/Constants.ts"
 import Modal from "../components/modals/Modal.vue";
 import User from "../types/User.ts";
-import moment from "moment";
+import moment from "moment/moment";
 import {useAuthStore} from "../stores/auth.ts";
+import UserList from "../components/user/UserList.vue";
+import {LoadingStates} from "../types/LoadingStates.ts";
+import {useToastStore} from "../stores/toast.ts";
 
 export default defineComponent({
-  components: {Modal},
+  components: {UserList, Modal},
   setup() {
     const authStore = useAuthStore()
+    const toastStore = useToastStore()
 
-    return {authStore}
+    return {authStore, toastStore}
   },
   data() {
     return {
       athletes: [] as User[],
+      athletesState: {} as LoadingStates,
       newAthlete: {} as User,
     }
   },
@@ -91,6 +96,7 @@ export default defineComponent({
       if (!visible) this.newAthlete = {} as User
     },
     loadAthletes() {
+      this.athletesState = LoadingStates.Loading
       axios.request({
         url: "/users",
         method: 'get',
@@ -101,6 +107,10 @@ export default defineComponent({
         data: this.newAthlete
       }).then(response => {
         this.athletes = response.data
+        this.athletesState = response.data ? LoadingStates.Loaded : LoadingStates.Empty
+      }).catch(error => {
+        this.toastStore.addToastFromAxiosError(error)
+        this.athletesState = LoadingStates.Error
       })
     },
     createUser() {

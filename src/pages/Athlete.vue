@@ -1,25 +1,25 @@
 <template>
-  <h1>{{ $t('page.me.title.account') }}</h1>
+  <h1>{{ $t(`page.${pref}.title.account`) }}</h1>
 
   <p>{{ data }}</p>
 
   <hr>
 
-  <h1>{{ $t('page.me.title.bestResults') }}</h1>
+  <h1>{{ $t(`page.${pref}.title.bestResults`) }}</h1>
   <div class="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
     <ResultCard v-for="b in bests" :result="b" :with-users="false"></ResultCard>
   </div>
 
   <hr>
 
-  <h1>{{ $t('page.me.title.results') }}</h1>
+  <h1>{{ $t(`page.${pref}.title.results`) }}</h1>
   <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">
-    {{ $t('page.me.btn.createTrainingResult') }}
+    {{ $t(`page.${pref}.btn.createTrainingResult`) }}
   </button>
   <ResultList :results="results" :show-user="false" :state="resultsState"></ResultList>
 
 
-  <ModalResult ref="modal"></ModalResult>
+  <ModalResult ref="modal" :is-personal="isMe"></ModalResult>
 
 </template>
 
@@ -36,7 +36,7 @@ import ResultList from "../components/results/ResultList.vue";
 import {LoadingStates} from "../types/LoadingStates.ts";
 
 export default defineComponent({
-  name: "Me",
+  name: "Athlete",
   components: {ResultList, ModalResult, ResultCard},
   setup() {
     const authStore = useAuthStore()
@@ -53,14 +53,27 @@ export default defineComponent({
       resultsState: {} as LoadingStates
     }
   },
+  computed: {
+    pref() {
+      return this.$route.params.id ? 'user' : 'me'
+    },
+    isMe() {
+      return !this.$route.params.id
+    },
+    userId() {
+      return this.$route.params.id
+    }
+  },
   methods: {
     setModalVisibility(visible: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
     },
     getResults() {
+      const url = this.isMe ? "/me/results" : `/results?userId=${this.userId}`
+
       this.resultsState = LoadingStates.Loading
       axios.request({
-        url: "/me/results",
+        url,
         method: 'get',
         baseURL: Const.API_URL,
         headers: {
@@ -75,8 +88,10 @@ export default defineComponent({
       })
     },
     getBests() {
+      const url = this.isMe ? "/me/results/best" : `/results/best?userId=${this.userId}`
+
       axios.request({
-        url: "/me/results/best",
+        url,
         method: 'get',
         baseURL: Const.API_URL,
         headers: {
@@ -84,6 +99,20 @@ export default defineComponent({
         }
       }).then(response => {
         this.bests = response.data
+      }).catch(response => this.toastStore.addToastFromAxiosError(response))
+    },
+    getUser() {
+      const url = this.isMe ? "/me" : `/users/${this.userId}`
+
+      axios.request({
+        url: "/me",
+        method: 'get',
+        baseURL: Const.API_URL,
+        headers: {
+          'Authorization': 'Bearer ' + this.authStore.token
+        }
+      }).then(response => {
+        this.data = response.data
       }).catch(response => this.toastStore.addToastFromAxiosError(response))
     }
   },
@@ -94,17 +123,7 @@ export default defineComponent({
 
     this.getBests()
     this.getResults()
-
-    axios.request({
-      url: "/me",
-      method: 'get',
-      baseURL: Const.API_URL,
-      headers: {
-        'Authorization': 'Bearer ' + this.authStore.token
-      }
-    }).then(response => {
-      this.data = response.data
-    }).catch(response => this.toastStore.addToastFromAxiosError(response))
+    this.getUser()
   }
 })
 </script>

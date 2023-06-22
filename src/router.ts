@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory, RouteLocationNormalized} from 'vue-router'
 
-import Me from "./pages/Me.vue";
+import Athlete from "./pages/Athlete.vue";
 import Club from "./pages/Club.vue"
 import Home from "./pages/Home.vue"
 import Team from "./pages/Team.vue"
@@ -17,7 +17,10 @@ import {useAuthStore} from "./stores/auth.ts";
 const routes = [
     {path: '/', name: 'index', component: Landing},
 
-    {path: '/me', name: 'me', component: Me},
+    {path: '/me', name: 'me', component: Athlete},
+    {path: '/athletes', name: 'athletes', component: Athletes},
+    {path: '/athletes/:id', name: 'athlete', component: Athlete},
+
     {path: '/club', name: 'club', component: Club},
     {path: '/home', name: 'home', component: Home},
     {path: '/events', name: 'events', component: Events},
@@ -26,7 +29,6 @@ const routes = [
 
     {path: '/elevate', name: 'elevate', component: Elevate},
     {path: '/results', name: 'results', component: Results},
-    {path: '/athletes', name: 'athletes', component: Athletes},
     {path: '/callback', name: 'callback', component: Callback},
 
     {path: '/:catchAll(.*)', redirect: '/'}
