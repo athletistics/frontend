@@ -3,12 +3,12 @@
     <table class="min-w-full">
       <thead class="border-b">
       <tr>
-        <th v-if="showUser" scope="col" class="table-head">{{$t('glob.user.name')}}Athlet</th>
-        <th v-if="showDisciplines" scope="col" class="table-head">{{$t('glob.discipline.name')}}</th>
-        <th scope="col" class="table-head">{{$t('glob.date')}}</th>
-        <th scope="col" class="table-head">{{$t('glob.event.name')}}</th>
-        <th scope="col" class="table-head">{{$t('glob.event.place')}}</th>
-        <th scope="col" class="table-head">{{$t('glob.result.name')}}</th>
+        <th v-if="showUser" scope="col" class="table-head">{{ $t('glob.user.name') }}Athlet</th>
+        <th v-if="showDisciplines" scope="col" class="table-head">{{ $t('glob.discipline.name') }}</th>
+        <th scope="col" class="table-head">{{ $t('glob.date') }}</th>
+        <th scope="col" class="table-head">{{ $t('glob.event.name') }}</th>
+        <th scope="col" class="table-head">{{ $t('glob.event.place') }}</th>
+        <th scope="col" class="table-head">{{ $t('glob.result.name') }}</th>
       </tr>
       </thead>
       <tbody v-if="state===LoadingStates.Loaded">
@@ -23,16 +23,8 @@
         <td class="table-cell">{{ getFormattedValue(result) }}</td>
       </tr>
       </tbody>
-      <tbody v-else-if="state === LoadingStates.Empty">
-      <tr class="table-row">
-        <td colspan="4" class="table-cell">{{$t('glob.result.noResults')}}</td>
-      </tr>
-      </tbody>
-      <tbody v-else-if="state === LoadingStates.Loading">
-      <tr class="table-row">
-        <td colspan="4" class="table-cell">{{$t('glob.loading')}}</td>
-      </tr>
-      </tbody>
+
+      <ListStates :state="state"/>
     </table>
   </div>
 </template>
@@ -42,9 +34,11 @@ import {defineComponent, PropType} from 'vue'
 import {LoadingStates} from "../../types/LoadingStates.ts";
 import {formatResult} from "../../plugins/Helper.ts";
 import {useDataStore} from "../../stores/data.ts";
+import ListStates from "../list/ListStates.vue";
 
 export default defineComponent({
   name: "ResultList",
+  components: {ListStates},
   setup() {
     const dataStore = useDataStore()
     return {dataStore}
