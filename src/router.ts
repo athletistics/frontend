@@ -9,20 +9,25 @@ import Elevate from "./pages/Elevate.vue"
 import Landing from "./pages/Landing.vue"
 import Callback from "./pages/Callback.vue"
 import Athletes from "./pages/Athletes.vue"
+import Results from "./pages/Results.vue"
 
 import {OPEN_ROUTES} from "./plugins/Constants";
 import {useAuthStore} from "./stores/auth.ts";
 
 const routes = [
     {path: '/', name: 'index', component: Landing},
+
     {path: '/me', name: 'me', component: Me},
-    {path: '/home', name: 'home', component: Home},
-    {path: '/elevate', name: 'elevate', component: Elevate},
     {path: '/club', name: 'club', component: Club},
-    {path: '/callback', name: 'callback', component: Callback},
-    {path: '/team/:id', name: 'team', component: Team},
-    {path: '/athletes', name: 'athletes', component: Athletes},
+    {path: '/home', name: 'home', component: Home},
     {path: '/events', name: 'events', component: Events},
+
+    {path: '/team/:id', name: 'team', component: Team},
+
+    {path: '/elevate', name: 'elevate', component: Elevate},
+    {path: '/results', name: 'results', component: Results},
+    {path: '/athletes', name: 'athletes', component: Athletes},
+    {path: '/callback', name: 'callback', component: Callback},
 
     {path: '/:catchAll(.*)', redirect: '/'}
 ]

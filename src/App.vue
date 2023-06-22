@@ -22,18 +22,21 @@ import {mapStores} from "pinia";
 import {useMyUserStore} from "./stores/user.ts";
 import {useAuthStore} from "./stores/auth.ts";
 import Toasts from "./components/Toasts.vue";
+import {useDataStore} from "./stores/data.ts";
 export default defineComponent({
   components: {Toasts, Nav},
   setup() {
     const authStore = useAuthStore()
     const userStore = useMyUserStore()
+    const dataStore = useDataStore()
 
-    return {authStore, userStore}
+    return {authStore, userStore, dataStore}
   },
   mounted() {
     if (this.authStore.token == "") return
     this.authStore.updateFromServer()
     this.userStore.updateFromServer()
+    this.dataStore.updateAll()
   },
   computed: {
     ...mapStores(useMyUserStore, useAuthStore)

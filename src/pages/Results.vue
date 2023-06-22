@@ -1,10 +1,64 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
-  <h1>Results</h1>
+  <h1>{{$t('glob.results.name')}}</h1>
+  <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">{{$t('page.results.btn.create')}}</button>
+
+  <ResultList :results="results" :state="resultsState"></ResultList>
+
+  <ModalResult ref="modal" :is-personal="false" @created="loadResults"></ModalResult>
 </template>
+
+<script lang="ts">
+import {defineComponent} from "vue";
+import {useAuthStore} from "../stores/auth.ts";
+import {useToastStore} from "../stores/toast.ts";
+import ModalResult from "../components/modals/ModalResult.vue";
+import axios from "axios";
+import Const from "../plugins/Constants.ts";
+import ResultList from "../components/results/ResultList.vue";
+import {LoadingStates} from "../types/LoadingStates.ts";
+
+export default defineComponent({
+  name: "Events",
+  components: {ResultList, ModalResult},
+  setup() {
+    const authStore = useAuthStore()
+    const toastStore = useToastStore()
+
+    return {authStore, toastStore}
+  },
+  data() {
+    return {
+      results: [] as Result.Data[],
+      resultsState: {} as LoadingStates
+    }
+  },
+  methods: {
+    setModalVisibility(visible: boolean) {
+      (this.$refs.modal as any).setVisibility(visible)
+    },
+    loadResults() {
+      this.resultsState = LoadingStates.Loading
+      axios.request({
+        url: "/results",
+        method: 'get',
+        baseURL: Const.API_URL,
+        headers: {
+          'Authorization': 'Bearer ' + this.authStore.token
+        }
+      }).then(response => {
+        this.results = response.data
+        this.resultsState = response.data ? LoadingStates.Loaded : LoadingStates.Empty
+      }).catch(response => {
+        this.resultsState = LoadingStates.Error
+        this.toastStore.addToastFromAxiosError(response)
+      })
+    }
+  },
+  mounted() {
+    this.loadResults()
+  }
+})
+</script>
 
 <style scoped>
 

@@ -1,5 +1,6 @@
 export enum LoadingStates {
     Loading,
     Loaded,
-    Empty
+    Empty,
+    Error
 }

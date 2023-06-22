@@ -1,5 +1,5 @@
 export default interface Discipline {
-    id: number,
+    id: string,
     i18nName?: string,
     customName?: string,
     isOfficial: boolean,

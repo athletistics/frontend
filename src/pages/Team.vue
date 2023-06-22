@@ -33,7 +33,7 @@ import axios from "axios";
 import Const from "../plugins/Constants.ts"
 import User from "../types/User.ts";
 import {useAuthStore} from "../stores/auth.ts";
-import Modal from "../components/Modal.vue";
+import Modal from "../components/modals/Modal.vue";
 import {useToastStore} from "../stores/toast.ts";
 import Toast from "../components/Toast.vue";
 
