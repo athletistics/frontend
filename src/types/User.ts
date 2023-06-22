@@ -4,7 +4,7 @@ export default interface User {
     lastName: string,
     genderId: number,
     languageId: number,
-    birthdate: string,
+    birthDate: Date,
     clubId: string,
     primaryMail: string,
     placeId: number,
