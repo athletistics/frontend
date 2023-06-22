@@ -26,14 +26,14 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import axios from "axios";
-import Const from "../plugins/Constants.ts";
-import {useAuthStore} from "../stores/auth.ts";
-import {useToastStore} from "../stores/toast.ts";
-import {useDataStore} from "../stores/data.ts";
+import Const from "../plugins/Constants";
+import {useAuthStore} from "../stores/auth";
+import {useToastStore} from "../stores/toast";
+import {useDataStore} from "../stores/data";
 import ModalResult from "../components/modals/ModalResult.vue";
 import ResultCard from "../components/results/ResultCard.vue";
 import ResultList from "../components/results/ResultList.vue";
-import {LoadingStates} from "../types/LoadingStates.ts";
+import {LoadingStates} from "../types/LoadingStates";
 
 export default defineComponent({
   name: "Athlete",

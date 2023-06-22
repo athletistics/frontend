@@ -19,9 +19,9 @@
 import axios from "axios";
 import Const from './../plugins/Constants'
 import {defineComponent} from "vue";
-import authConfig from "../plugins/AuthConfig.ts";
+import authConfig from "../plugins/AuthConfig";
 import {OidcClient} from "oidc-client-ts";
-import {useAuthStore} from "../stores/auth.ts";
+import {useAuthStore} from "../stores/auth";
 
 const stateDefault = 0
 const stateLoading = 1

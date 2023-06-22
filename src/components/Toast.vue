@@ -1,7 +1,7 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import Toast from '../types/Toast.ts'
-import {useToastStore} from "../stores/toast.ts";
+import Toast from '../types/Toast'
+import {useToastStore} from "../stores/toast";
 
 export default defineComponent({
   name: "Toast",

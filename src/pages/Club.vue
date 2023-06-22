@@ -55,16 +55,16 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import Club from "../types/Club.ts";
-import Team from "../types/Team.ts";
+import Club from "../types/Club";
+import Team from "../types/Team";
 import axios from "axios";
-import Const from "../plugins/Constants.ts"
+import Const from "../plugins/Constants"
 import Modal from "../components/modals/Modal.vue";
-import {useAuthStore} from "../stores/auth.ts";
-import {useMyUserStore} from "../stores/user.ts";
-import {useDataStore} from "../stores/data.ts";
-import Discipline from "../types/Discipline.ts";
-import {useToastStore} from "../stores/toast.ts";
+import {useAuthStore} from "../stores/auth";
+import {useMyUserStore} from "../stores/user";
+import {useDataStore} from "../stores/data";
+import Discipline from "../types/Discipline";
+import {useToastStore} from "../stores/toast";
 
 export default defineComponent({
   components: {Modal},

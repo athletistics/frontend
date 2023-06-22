@@ -5,10 +5,10 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import {OidcClient} from "oidc-client-ts";
-import authConfig from "../plugins/AuthConfig.ts";
-import Const from "../plugins/Constants.ts";
-import {useAuthStore} from "../stores/auth.ts";
-import {useMyUserStore} from "../stores/user.ts";
+import authConfig from "../plugins/AuthConfig";
+import Const from "../plugins/Constants";
+import {useAuthStore} from "../stores/auth";
+import {useMyUserStore} from "../stores/user";
 
 export default defineComponent({
   setup() {

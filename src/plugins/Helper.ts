@@ -3,11 +3,11 @@ import {RouteRecordName} from "vue-router";
 
 import moment, {duration} from "moment/moment";
 import axios from "axios";
-import Const from "./Constants.ts";
-import Router from '../router.ts';
-import {useMyUserStore} from "../stores/user.ts";
-import {useAuthStore} from "../stores/auth.ts";
-import {useDataStore} from "../stores/data.ts";
+import Const from "./Constants";
+import Router from '../router';
+import {useMyUserStore} from "../stores/user";
+import {useAuthStore} from "../stores/auth";
+import {useDataStore} from "../stores/data";
 
 export function checkLoginState() {
   const userStore = useMyUserStore()

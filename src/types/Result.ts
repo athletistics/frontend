@@ -1,11 +1,11 @@
-declare module Result {
+declare namespace Result {
   interface RequestBody {
     id?: number,
     value: number,
     rank?: number
     wind?: number,
     disciplineId: string,
-    userId: string,
+    userId?: string,
     eventId: string,
     categoryId?: number
   }

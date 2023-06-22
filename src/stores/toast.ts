@@ -1,5 +1,5 @@
 import {acceptHMRUpdate, defineStore} from 'pinia'
-import Toast from "../types/Toast.ts";
+import Toast from "../types/Toast";
 import {AxiosError} from "axios";
 
 interface State {

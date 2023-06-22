@@ -21,8 +21,8 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import User from "../../types/User.ts";
-import {LoadingStates} from "../../types/LoadingStates.ts";
+import User from "../../types/User";
+import {LoadingStates} from "../../types/LoadingStates";
 import ListStates from "../list/ListStates.vue";
 
 export default defineComponent({

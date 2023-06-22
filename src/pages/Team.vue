@@ -28,14 +28,13 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import Team from "../types/Team.ts";
+import Team from "../types/Team";
 import axios from "axios";
-import Const from "../plugins/Constants.ts"
-import User from "../types/User.ts";
-import {useAuthStore} from "../stores/auth.ts";
+import Const from "../plugins/Constants"
+import User from "../types/User";
+import {useAuthStore} from "../stores/auth";
 import Modal from "../components/modals/Modal.vue";
-import {useToastStore} from "../stores/toast.ts";
-import Toast from "../components/Toast.vue";
+import {useToastStore} from "../stores/toast";
 
 export default defineComponent({
   components: {Modal},

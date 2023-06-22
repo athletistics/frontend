@@ -1,5 +1,5 @@
 <template>
-  <h1>{{$t('glob.results.name')}}</h1>
+  <h1>{{$t('glob.results.title')}}</h1>
   <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">{{$t('page.results.btn.create')}}</button>
 
   <ResultList :results="results" :state="resultsState"></ResultList>
@@ -9,13 +9,13 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import {useAuthStore} from "../stores/auth.ts";
-import {useToastStore} from "../stores/toast.ts";
+import {useAuthStore} from "../stores/auth";
+import {useToastStore} from "../stores/toast";
 import ModalResult from "../components/modals/ModalResult.vue";
 import axios from "axios";
-import Const from "../plugins/Constants.ts";
+import Const from "../plugins/Constants";
 import ResultList from "../components/results/ResultList.vue";
-import {LoadingStates} from "../types/LoadingStates.ts";
+import {LoadingStates} from "../types/LoadingStates";
 
 export default defineComponent({
   name: "Events",

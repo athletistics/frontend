@@ -57,12 +57,12 @@
 </template>
 
 <script lang="ts">
-import Event from "../types/Event.ts"
+import Event from "../types/Event"
 import {defineComponent} from "vue";
 import axios from "axios";
-import Const from "../plugins/Constants.ts";
-import {useToastStore} from "../stores/toast.ts";
-import {useAuthStore} from "../stores/auth.ts";
+import Const from "../plugins/Constants";
+import {useToastStore} from "../stores/toast";
+import {useAuthStore} from "../stores/auth";
 import Modal from "../components/modals/Modal.vue";
 import moment from "moment";
 

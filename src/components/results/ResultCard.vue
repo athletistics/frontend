@@ -17,8 +17,8 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import {formatResult} from "../../plugins/Helper.ts";
-import {useDataStore} from "../../stores/data.ts";
+import {formatResult} from "../../plugins/Helper";
+import {useDataStore} from "../../stores/data";
 
 export default defineComponent({
   name: "Card",
@@ -28,7 +28,7 @@ export default defineComponent({
   },
   props: {
     result: {type: Object as PropType<Result.Data>, required: true},
-    withUsers: {type: Array as PropType<boolean>, default: true}
+    withUsers: {type: Object as PropType<boolean>, default: true}
   },
   computed: {
     formattedValue(): string {

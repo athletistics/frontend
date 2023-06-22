@@ -13,8 +13,9 @@ import deCH from './locales/de-CH.json'
 
 type MessageSchema = typeof enUS
 
-const i18n = createI18n<[MessageSchema], 'en-US' | 'de-CH'>({
+const i18n = createI18n<MessageSchema, 'en-US' | 'de-CH'>({
     locale: 'en-US',
+    fallbackLocale: 'en-US',
     messages: {
         'en-US': enUS,
         'de-CH': deCH
@@ -40,6 +41,6 @@ pinia.use(piniaPluginPersistedstate)
 createApp(App)
     .component('font-awesome-icon', FontAwesomeIcon)
     .use(pinia)
-    .use(router)
     .use(i18n)
+    .use(router)
     .mount('#app')

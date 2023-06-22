@@ -4,7 +4,7 @@ import ListEmpty from "./ListEmpty.vue";
 import ListLoading from "./ListLoading.vue";
 import ListError from "./ListError.vue";
 import {PropType} from "vue/dist/vue";
-import {LoadingStates} from "../../types/LoadingStates.ts";
+import {LoadingStates} from "../../types/LoadingStates";
 
 export default defineComponent({
   name: "ListStates",

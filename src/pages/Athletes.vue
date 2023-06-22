@@ -62,14 +62,14 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import axios from "axios";
-import Const from "../plugins/Constants.ts"
+import Const from "../plugins/Constants"
 import Modal from "../components/modals/Modal.vue";
-import User from "../types/User.ts";
+import User from "../types/User";
 import moment from "moment/moment";
-import {useAuthStore} from "../stores/auth.ts";
+import {useAuthStore} from "../stores/auth";
 import UserList from "../components/user/UserList.vue";
-import {LoadingStates} from "../types/LoadingStates.ts";
-import {useToastStore} from "../stores/toast.ts";
+import {LoadingStates} from "../types/LoadingStates";
+import {useToastStore} from "../stores/toast";
 
 export default defineComponent({
   components: {UserList, Modal},
@@ -114,7 +114,7 @@ export default defineComponent({
       })
     },
     createUser() {
-      this.newAthlete.birthdate = moment(this.newAthlete.birthdate).format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS) + "Z"
+      // this.newAthlete.birthDate = moment(this.newAthlete.birthDate).format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS) + "Z"
       this.newAthlete.placeId = 1
       this.newAthlete.nationalityId = 1
       axios.request({

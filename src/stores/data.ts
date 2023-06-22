@@ -1,9 +1,9 @@
 import {acceptHMRUpdate, defineStore} from 'pinia'
-import Discipline from "../types/Discipline.ts";
+import Discipline from "../types/Discipline";
 import axios from "axios";
-import Const from "../plugins/Constants.ts";
-import {useAuthStore} from "./auth.ts";
-import User from "../types/User.ts";
+import Const from "../plugins/Constants";
+import {useAuthStore} from "./auth";
+import User from "../types/User";
 
 interface State {
   disciplines: Discipline[]

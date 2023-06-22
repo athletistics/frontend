@@ -1,8 +1,8 @@
 import {acceptHMRUpdate, defineStore} from 'pinia'
 import axios, {AxiosResponse} from "axios";
-import Const from "../plugins/Constants.ts";
-import {useMyUserStore} from "./user.ts";
-import Router from "../router.ts";
+import Const from "../plugins/Constants";
+import {useMyUserStore} from "./user";
+import Router from "../router";
 
 interface State {
   token: string

@@ -19,10 +19,10 @@
 import {defineComponent} from "vue";
 import Nav from './components/Nav.vue'
 import {mapStores} from "pinia";
-import {useMyUserStore} from "./stores/user.ts";
-import {useAuthStore} from "./stores/auth.ts";
+import {useMyUserStore} from "./stores/user";
+import {useAuthStore} from "./stores/auth";
 import Toasts from "./components/Toasts.vue";
-import {useDataStore} from "./stores/data.ts";
+import {useDataStore} from "./stores/data";
 export default defineComponent({
   components: {Toasts, Nav},
   setup() {

@@ -1,6 +1,6 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import {LoadingStates} from "../../types/LoadingStates.ts";
+import {LoadingStates} from "../../types/LoadingStates";
 
 export default defineComponent({
   name: "ListEmpty",

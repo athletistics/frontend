@@ -51,12 +51,12 @@
 import {defineComponent, PropType} from 'vue'
 import Modal from "./Modal.vue";
 import axios from "axios";
-import Const from "../../plugins/Constants.ts";
-import {useAuthStore} from "../../stores/auth.ts";
-import {useDataStore} from "../../stores/data.ts";
-import {useToastStore} from "../../stores/toast.ts";
-import Event from "../../types/Event.ts";
-import User from "../../types/User.ts";
+import Const from "../../plugins/Constants";
+import {useAuthStore} from "../../stores/auth";
+import {useDataStore} from "../../stores/data";
+import {useToastStore} from "../../stores/toast";
+import Event from "../../types/Event";
+import User from "../../types/User";
 
 export default defineComponent({
   name: "ModalResult",

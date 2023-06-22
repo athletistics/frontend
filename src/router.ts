@@ -12,7 +12,7 @@ import Athletes from "./pages/Athletes.vue"
 import Results from "./pages/Results.vue"
 
 import {OPEN_ROUTES} from "./plugins/Constants";
-import {useAuthStore} from "./stores/auth.ts";
+import {useAuthStore} from "./stores/auth";
 
 const routes = [
     {path: '/', name: 'index', component: Landing},

@@ -31,9 +31,9 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import {LoadingStates} from "../../types/LoadingStates.ts";
-import {formatResult} from "../../plugins/Helper.ts";
-import {useDataStore} from "../../stores/data.ts";
+import {LoadingStates} from "../../types/LoadingStates";
+import {formatResult} from "../../plugins/Helper";
+import {useDataStore} from "../../stores/data";
 import ListStates from "../list/ListStates.vue";
 
 export default defineComponent({
