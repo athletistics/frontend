@@ -10,7 +10,7 @@
       <tbody :state="state">
       <tr v-for="u in users" class="table-row cursor-pointer" v-on:click="toUser(u.id)">
         <td class="table-cell">{{ u.lastName }} {{ u.firstName }}</td>
-        <td class="table-cell">{{ $d(u.birthDate) }}</td>
+        <td class="table-cell">{{ $d(birthDateAsDate(u.birthDate)) }}</td>
       </tr>
       </tbody>
 
@@ -33,6 +33,12 @@ export default defineComponent({
     state: {type: Object as PropType<LoadingStates>, required: true},
   },
   methods: {
+    birthDateAsDate(d: Date | string) {
+      if (d instanceof Date) {
+        return d
+      }
+      return new Date(d)
+    },
     toUser(id: string) {
       this.$router.push("/athletes/" + id)
     }

@@ -114,7 +114,7 @@ export default defineComponent({
       })
     },
     createUser() {
-      // this.newAthlete.birthDate = moment(this.newAthlete.birthDate).format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS) + "Z"
+      this.newAthlete.birthDate = moment(this.newAthlete.birthDate).format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS) + "Z"
       this.newAthlete.placeId = 1
       this.newAthlete.nationalityId = 1
       axios.request({
