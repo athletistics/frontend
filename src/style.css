@@ -91,7 +91,7 @@ form.with-label label {
     @apply block text-left text-sm
 }
 
-form.with-label input, form.with-label select {
+form.with-label input:not([type=checkbox]), form.with-label select {
     @apply block p-2 rounded-md bg-slate-100 w-full
 }
 

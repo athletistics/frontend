@@ -24,4 +24,17 @@ declare namespace Result {
     wind?: string, // wind is stored as decimal, API sends a string
     rank?: string
   }
+
+  interface Static {
+    id: number,
+    value: string,
+    categoryId: string,
+    disciplineId: string,
+    resultStaticTypeId: number
+  }
+
+  interface StaticType {
+    id: number,
+    i18nType: string
+  }
 }

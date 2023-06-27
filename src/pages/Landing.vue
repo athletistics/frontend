@@ -18,7 +18,7 @@
 <script lang="ts">
 import axios from "axios";
 import Const from './../plugins/Constants'
-import {defineComponent} from "vue";
+import {defineComponent, PropType} from "vue";
 import authConfig from "../plugins/AuthConfig";
 import {OidcClient} from "oidc-client-ts";
 import {useAuthStore} from "../stores/auth";

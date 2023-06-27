@@ -12,6 +12,10 @@
 
   <hr>
 
+  <ResultEvolution/>
+
+  <hr>
+
   <h1>{{ $t(`page.${pref}.title.results`) }}</h1>
   <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">
     {{ $t(`page.${pref}.btn.createTrainingResult`) }}
@@ -34,10 +38,11 @@ import ModalResult from "../components/modals/ModalResult.vue";
 import ResultCard from "../components/results/ResultCard.vue";
 import ResultList from "../components/results/ResultList.vue";
 import {LoadingStates} from "../types/LoadingStates";
+import ResultEvolution from "../components/results/ResultEvolution.vue";
 
 export default defineComponent({
   name: "Athlete",
-  components: {ResultList, ModalResult, ResultCard},
+  components: {ResultEvolution, ResultList, ModalResult, ResultCard},
   setup() {
     const authStore = useAuthStore()
     const dataStore = useDataStore()
