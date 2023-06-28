@@ -9,22 +9,22 @@
   <Modal ref="modal">
     <form class="grid sm:grid-cols-2 gap-4 with-label mt-4">
       <div>
-        <label>Frst name</label>
+        <label>{{$t('glob.user.firstName')}}</label>
         <input v-model="newAthlete.firstName" required>
       </div>
 
       <div>
-        <label>Last name</label>
+        <label>{{$t('glob.user.lastName')}}</label>
         <input v-model="newAthlete.lastName" required>
       </div>
 
       <div>
-        <label>Birthdate</label>
+        <label>{{$t('glob.user.birthdate')}}</label>
         <input type="date" v-model="newAthlete.birthDate" required>
       </div>
 
       <div>
-        <label>Gender</label>
+        <label>{{$t('glob.user.gender')}}</label>
         <!-- todo: replace with data from server -->
         <select v-model="newAthlete.genderId" required>
           <option :value="1" selected>Unspecified</option>
@@ -35,7 +35,7 @@
       </div>
 
       <div>
-        <label>Preferred Language</label>
+        <label>{{$t('glob.user.prefLang')}}</label>
         <!-- todo: replace with data from server -->
         <select v-model="newAthlete.languageId" required>
           <option :value="1" selected>English</option>
@@ -45,13 +45,13 @@
       </div>
 
       <div>
-        <label>E-Mail</label>
+        <label>{{$t('glob.user.email')}}</label>
         <input v-model="newAthlete.primaryMail">
       </div>
 
       <div class="grid sm:grid-cols-2 gap-4">
-        <button type="button" v-on:click="createUser()" class="btn btn-block btn-primary">Create</button>
-        <button v-on:click="setVisibility(false)" class="btn btn-block">Cancel</button>
+        <button type="button" v-on:click="createUser()" class="btn btn-block btn-primary">{{$t('glob.btn.create')}}</button>
+        <button v-on:click="setVisibility(false)" class="btn btn-block">{{$t('glob.btn.cancel')}}</button>
       </div>
 
     </form>
@@ -82,7 +82,7 @@ export default defineComponent({
   data() {
     return {
       athletes: [] as User[],
-      athletesState: {} as LoadingStates,
+      athletesState: NaN as LoadingStates,
       newAthlete: {} as User,
     }
   },

@@ -13,28 +13,28 @@
     <ul v-on:click="closeNav()" v-if="authStore.token && $route.name !== 'index'" :class="navClasses" class="flex flex-1 bg-white md:flex-row flex-col
           max-md:w-full max-md:text-center max-md:absolute max-md:top-full max-md:shadow-lg main-transition">
       <li>
-        <router-link class="router-link" to="/home">Home</router-link>
+        <router-link class="router-link" to="/home">{{$t('page.home.title')}}</router-link>
       </li>
       <li v-if="clubVisible">
-        <router-link class="router-link" to="/club">Club</router-link>
+        <router-link class="router-link" to="/club">{{$t('page.club.title.club')}}</router-link>
       </li>
       <li v-if="athletesVisible">
-        <router-link class="router-link" to="/athletes">Athletes</router-link>
+        <router-link class="router-link" to="/athletes">{{$t('page.athletes.title')}}</router-link>
       </li>
       <li v-if="eventsVisible">
-        <router-link class="router-link" to="/events">Events</router-link>
+        <router-link class="router-link" to="/events">{{$t('page.event.title')}}</router-link>
       </li>
       <li v-if="resultsVisible">
-        <router-link class="router-link" to="/results">Results</router-link>
+        <router-link class="router-link" to="/results">{{$t('page.results.title')}}</router-link>
       </li>
       <li class="flex-1"></li>
       <li class="md:hidden"><hr></li>
       <li v-if="elevateVisible">
-        <router-link class="router-link" to="/elevate"><span class="md:hidden">Elevate</span><font-awesome-icon class="ml-2" icon="fa-solid fa-lock-open"/></router-link>
+        <router-link class="router-link" to="/elevate"><span class="md:hidden">{{$t('page.elevate.title.nav')}}</span><font-awesome-icon class="ml-2" icon="fa-solid fa-lock-open"/></router-link>
       </li>
-      <li><router-link to="/me" class="router-link w-full">My Account</router-link></li>
+      <li><router-link to="/me" class="router-link w-full">{{$t('page.me.title.account')}}</router-link></li>
       <li>
-        <a href="#" class="router-link w-full" v-on:click="logout()"><span class="md:hidden">Logout</span>
+        <a href="#" class="router-link w-full" v-on:click="logout()"><span class="md:hidden">{{$t('comp.nav.logout')}}</span>
           <font-awesome-icon class="ml-2" icon="fa-solid fa-arrow-right-from-bracket"/>
         </a>
       </li>

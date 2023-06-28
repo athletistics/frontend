@@ -1,5 +1,5 @@
 <template>
-  <h1>{{$t('glob.results.title')}}</h1>
+  <h1>{{$t('page.results.title')}}</h1>
   <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">{{$t('page.results.btn.create')}}</button>
 
   <ResultList :results="results" :state="resultsState"></ResultList>

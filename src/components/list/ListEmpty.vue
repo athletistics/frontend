@@ -18,7 +18,7 @@ export default defineComponent({
 <template>
   <tbody v-if="state === LoadingStates.Empty">
   <tr class="table-row">
-    <td colspan="4" class="table-cell">{{ $t('glob.list.empty') }}</td>
+    <td colspan="4" class="table-cell">{{ $t('comp.list.empty') }}</td>
   </tr>
   </tbody>
 </template>

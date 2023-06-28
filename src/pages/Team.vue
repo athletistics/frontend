@@ -1,6 +1,6 @@
 <template>
   <h1>{{ team.name }}</h1>
-  <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">Add participants</button>
+  <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">{{ $t('page.team.addPart') }}</button>
   <hr>
 
   <div v-for="p in participants">
@@ -8,19 +8,21 @@
     <label :for="p.id">{{ p.lastName }} {{ p.firstName }}</label>
   </div>
   <hr>
-  <button type="button" v-on:click="removeFromTeam()" class="btn btn-block btn-error">Remove selected Users from team</button>
+  <button type="button" v-on:click="removeFromTeam()" class="btn btn-block btn-error">{{ $t('page.team.removePart') }}
+  </button>
 
   <Modal ref="modal">
-    <h3>Create team</h3>
+    <h3>{{ $t('page.team.addPartTitle') }}</h3>
     <hr>
-      <div v-for="u in filteredUsers"  class="inline-flex">
-        <input :id="u.id" :value="u.id" type="checkbox" v-model="usersToAdd">
-        <label :for="u.id">{{u.lastName}} {{u.firstName}}</label>
-      </div>
+    <div v-for="u in filteredUsers" class="flex hover:bg-main cursor-pointer">
+      <input class="mr-2 cursor-pointer" :id="u.id" :value="u.id" type="checkbox" v-model="usersToAdd">
+      <label class="flex-grow py-3 cursor-pointer" :for="u.id">{{ u.lastName }} {{ u.firstName }}</label>
+    </div>
     <hr>
     <div class="grid sm:grid-cols-2 gap-4">
-      <button type="button" v-on:click="addToTeam()" class="btn btn-block btn-primary">Add</button>
-      <button type="button" v-on:click="setModalVisibility(false)" class="btn btn-block">Cancel</button>
+      <button type="button" v-on:click="addToTeam()" class="btn btn-block btn-primary">{{ $t('glob.btn.add') }}</button>
+      <button type="button" v-on:click="setModalVisibility(false)" class="btn btn-block">{{ $t('glob.btn.cancel') }}
+      </button>
     </div>
   </Modal>
 
@@ -54,7 +56,7 @@ export default defineComponent({
     }
   },
   computed: {
-    filteredUsers() {
+    filteredUsers(): User[] {
       const users = []
       for (let i = 0; i < this.users.length; i++) {
         if (this.participants.some(p => p.id === this.users[i].id)) continue
@@ -79,7 +81,7 @@ export default defineComponent({
       }).then(() => {
         this.getParticipants()
         this.usersToAdd = []
-        this.toastStore.addToast({title:"Success", color: "bg-primary"})
+        this.toastStore.addToast({title: "Success", color: "bg-primary"})
       }).catch(error => {
         this.toastStore.addToast({
           title: "Unable to fulfill request",
@@ -90,7 +92,7 @@ export default defineComponent({
         console.log('error adding participants')
       })
     },
-    removeFromTeam(){
+    removeFromTeam() {
       axios.request({
         url: "/teams/" + this.$route.params.id + "/participants",
         method: 'delete',

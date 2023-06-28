@@ -2,43 +2,42 @@
 
   <div v-if="ready">
   <div class="shadow-2xl rounded-md max-w-md p-5 mx-auto grid gap-5 mt-10 text-center" v-if="!shouldCreate">
-    <h1>Elevate privileges</h1>
-    <p>Get full access to your Athletistics account by verifying your 2FA.</p>
+    <h1>{{$t('page.elevate.title.elevate')}}</h1>
+    <p>{{$t('page.elevate.desc.elevate')}}</p>
     <hr>
     <form class="space-y-4 with-label">
       <div>
-        <label>2FA Authentication code</label>
+        <label>{{$t('page.elevate.code')}}</label>
         <input type="text" v-model="code"/>
       </div>
       <div>
         <div v-if="warning" class="text-rose-600">{{ warning }}</div>
         <button type="button" class="bg-primary text-white" v-on:click="verify"
-                :disabled="code.length !== Constants.TOTP_CODE_LENGTH">Verify</button>
+                :disabled="code.length !== Constants.TOTP_CODE_LENGTH">{{$t('glob.btn.verify')}}</button>
       </div>
     </form>
   </div>
 
   <div class="shadow-2xl rounded-md max-w-md p-5 mx-auto grid gap-5 mt-10 text-center" v-if="shouldCreate">
-    <h1>Setup 2FA</h1>
-    <p>Setup a second factor, allowing you to get full access to your account. Use your authenticator app to scan the QR
-      code, or to manually add the secret.</p>
+    <h1>{{$t('page.elevate.title.setup')}}</h1>
+    <p>{{$t('page.elevate.desc.setup')}}</p>
     <hr>
     <img class="mx-auto" :src="qrCode">
     <form class="space-y-4 with-label">
       <div>
-        <label>Secret</label>
+        <label>{{$t('page.elevate.secret')}}</label>
         <input type="text" v-model="secret" disabled/>
       </div>
     </form>
     <hr>
     <form class="space-y-4 with-label">
-      <p>Once added to your authenticator app, enter a generated code down below.</p>
+      <p>{{$t('page.elevate.desc.verify')}}</p>
       <div>
-        <label>Device name</label>
+        <label>{{$t('page.elevate.device')}}</label>
         <input type="text" v-model="deviceName"/>
       </div>
       <div>
-        <label>2FA Verification code</label>
+        <label>{{$t('page.elevate.code')}}</label>
         <input type="text" v-model="code"/>
       </div>
       <div>
@@ -51,7 +50,7 @@
   </div>
   <div v-else>
     <div class="shadow-2xl rounded-md max-w-md p-5 mx-auto grid gap-5 mt-10 text-center">
-      <h2>Privilege elevation is currently not available</h2>
+      <h2>{{$t('page.elevate.title.unavailable')}}</h2>
     </div>
   </div>
 </template>

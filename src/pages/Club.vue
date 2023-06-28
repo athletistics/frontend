@@ -1,54 +1,54 @@
 <template>
-  <h1>Club</h1>
+  <h1>{{$t('page.club.title.club')}}</h1>
   <p>{{ club }}</p>
 
   <hr>
-  <h1>Teams</h1>
+  <h1>{{$t('page.club.title.teams')}}</h1>
   <button class="btn btn-primary" v-on:click="setTeamPopupVisibility(true)">+</button>
   <p v-for="t in teams">
     <router-link :to="'/team/' + t.id">{{ t.name }}</router-link>
   </p>
 
   <hr>
-  <h1>Disciplines</h1>
+  <h1>{{$t('page.club.title.disciplines')}}</h1>
   <button class="btn btn-primary" v-on:click="setDisciplinePopupVisibility(true)">+</button>
   <p v-for="d in dataStore.disciplines">
     {{d.i18nName ?? d.customName}} <span v-if="!d.isOfficial">(custom)</span>
   </p>
 
   <Modal ref="modal">
-    <h3>Create team</h3>
+    <h3>{{$t('page.club.title.createTeam')}}</h3>
     <hr>
     <div>
-      <label>Team name</label>
+      <label>{{$t('page.club.teamName')}}</label>
       <input v-model="newTeam.name">
     </div>
     <hr>
     <div>
-      <button class="btn btn-primary btn-block !mt-0" @click="createTeam()" type="button">Save</button>
-      <button class="btn btn-block" @click="setTeamPopupVisibility(false)" type="button">Cancel</button>
+      <button class="btn btn-primary btn-block !mt-0" @click="createTeam()" type="button">{{$t('glob.btn.save')}}</button>
+      <button class="btn btn-block" @click="setTeamPopupVisibility(false)" type="button">{{$t('glob.btn.cancel')}}</button>
     </div>
   </Modal>
 
   <Modal ref="modalDiscipline">
-    <h3>Create custom discipline</h3>
+    <h3>{{$t('page.club.title.createDiscipline')}}</h3>
     <hr>
     <div>
-      <label>Discipline name</label>
+      <label>{{$t('page.club.disciplineName')}}</label>
       <input v-model="newDiscipline.customName">
     </div>
 
     <div>
-      <label>Type</label>
+      <label>{{$t('page.club.disciplineType')}}</label>
       <select v-model="newDiscipline.isDescending" required>
-        <option :value="true" selected>Higher is better (meters)</option>
-        <option :value="false" selected>Lower is better (seconds)</option>
+        <option :value="true" selected>{{$t('page.club.disciplineTypeAsc')}}</option>
+        <option :value="false" selected>{{$t('page.club.disciplineTypeDesc')}}</option>
       </select>
     </div>
     <hr>
     <div>
-      <button class="btn btn-primary btn-block !mt-0" @click="createDiscipline()" type="button">Save</button>
-      <button class="btn btn-block" @click="setDisciplinePopupVisibility(false)" type="button">Cancel</button>
+      <button class="btn btn-primary btn-block !mt-0" @click="createDiscipline()" type="button">{{$t('glob.btn.save')}}</button>
+      <button class="btn btn-block" @click="setDisciplinePopupVisibility(false)" type="button">{{$t('glob.btn.cancel')}}</button>
     </div>
   </Modal>
 </template>

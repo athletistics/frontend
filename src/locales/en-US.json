@@ -1,5 +1,28 @@
 {
   "page": {
+    "home": {
+      "title": "Home"
+    },
+    "athletes": {
+      "title": "Athletes",
+      "btn": {
+        "create": "Create athlete"
+      }
+    },
+    "club": {
+      "title": {
+        "club": "Club",
+        "teams": "Teams",
+        "createTeam": "Create team",
+        "disciplines": "Disciplines",
+        "createDiscipline": "Create custom discipline"
+      },
+      "teamName": "Team name",
+      "disciplineName": "Discipline name",
+      "disciplineType": "Type",
+      "disciplineTypeAsc": "Higher is better (meters)",
+      "disciplineTypeDesc": "Lower is better (seconds)"
+    },
     "landing": {
       "title": "Hi!",
       "titleWelcomeBack": "Welcome back!",
@@ -7,6 +30,119 @@
       "message": "Good to see you",
       "btnLogin": "Login",
       "btnHome": "Home"
+    },
+    "me": {
+      "title": {
+        "account": "My account",
+        "bestResults": "My personal bests",
+        "results": "My results"
+      },
+      "btn": {
+        "createTrainingResult": "Enter new training result"
+      }
+    },
+    "user": {
+      "title": {
+        "account": "Account",
+        "bestResults": "Personal bests",
+        "results": "Results"
+      },
+      "btn": {
+        "createTrainingResult": "Enter new training result"
+      }
+    },
+    "elevate": {
+      "title": {
+        "nav": "Elevate",
+        "elevate": "Elevate privileges",
+        "setup": "Setup 2FA",
+        "unavailable": "Privilege elevation is currently not available"
+      },
+      "desc": {
+        "elevate": "Get full access to your Athletistics account by verifying your 2FA.",
+        "setup": "Setup a second factor, allowing you to get full access to your account. Use your authenticator app to scan the QR code, or to manually add the secret.",
+        "verify": "Once added to your authenticator app, enter a generated code down below."
+      },
+      "code": "2FA Verification code",
+      "device": "Device name",
+      "secret": "Secret"
+    },
+    "event": {
+      "title": "Events",
+      "createTitle": "Create event",
+      "createBtn": "Create event"
+    },
+    "results": {
+      "title": "Results",
+      "btn": {
+        "create": "Create new result"
+      }
+    },
+    "team": {
+      "addPart": "Add participants",
+      "addPartTitle": "Select participants to add",
+      "removePart": "Remove selected Users from team"
+    }
+  },
+  "comp": {
+    "nav": {
+      "logout": "Logout"
+    },
+    "evolution": {
+      "title": "Performance evolution",
+      "reference": "Reference value",
+      "compare": "Compare with..."
+    },
+    "result": {
+      "createTraining": "Create training result"
+    },
+    "list": {
+      "loading": "Data is loading",
+      "error": "Error loading data",
+      "empty": "No data"
+    }
+  },
+  "glob": {
+    "btn": {
+      "save": "Save",
+      "verify": "Verify",
+      "confirm": "Confirm",
+      "create": "Create",
+      "add": "Add",
+      "cancel": "Cancel"
+    },
+    "event": {
+      "outdoor": "Outdoor",
+      "indoor": "Indoor",
+      "place": "Place",
+      "locality": "Locality",
+      "name": "Event",
+      "date": "Date",
+      "type": "Event type",
+      "homologated": "Is homologated"
+    },
+    "result": {
+      "name": "Result",
+      "value": "Value",
+      "wind": "Wind",
+      "rank": "Rank"
+    },
+    "discipline": {
+      "name": "Discipline"
+    },
+    "user": {
+      "name": "Athlete",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "birthdate": "Birthdate",
+      "gender": "Gender",
+      "prefLang": "Preferred language",
+      "email": "Email"
+    },
+    "date": "Date",
+    "gender": {
+      "M": "Men",
+      "W": "Women"
     }
   },
   "data": {

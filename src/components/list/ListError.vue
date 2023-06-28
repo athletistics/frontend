@@ -18,7 +18,7 @@ export default defineComponent({
 <template>
   <tbody v-if="state === LoadingStates.Error">
   <tr class="table-row">
-    <td colspan="4" class="table-cell">{{$t('glob.list.error')}}</td>
+    <td colspan="4" class="table-cell">{{$t('comp.list.error')}}</td>
   </tr>
   </tbody>
 </template>

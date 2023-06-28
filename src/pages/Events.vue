@@ -1,31 +1,31 @@
 <template>
-  <h1>Events</h1>
-  <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">Create Event</button>
+  <h1>{{$t('page.event.title')}}</h1>
+  <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">{{$t('page.event.createBtn')}}</button>
   <hr>
 
   <p v-for="e in events">{{ e }}</p>
 
   <Modal ref="modal">
-    <h3>Create event</h3>
+    <h3>{{$t('page.event.createTitle')}}</h3>
     <hr>
 
     <div>
-      <label>Event name</label>
+      <label>{{$t('glob.event.name')}}</label>
       <input v-model="newEvent.name" required>
     </div>
 
     <div>
-      <label>Place</label>
+      <label>{{$t('glob.event.place')}}</label>
       <input v-model="newEvent.place" required>
     </div>
 
     <div>
-      <label>Date</label>
+      <label>{{$t('glob.event.date')}}</label>
       <input v-model="newEvent.webDate" type="date" required>
     </div>
 
     <div>
-      <label>Event type</label>
+      <label>{{$t('glob.event.type')}}</label>
       <!-- todo: replace with data from server -->
       <select v-model="newEvent.eventTypeId" required>
         <option :value="1" selected>SwissAthletics</option>
@@ -45,13 +45,13 @@
 
     <div class="inline-flex">
       <input id="homologated" :value="1" type="checkbox" v-model="homologated">
-      <label for="homologated">Is homologated</label>
+      <label for="homologated">{{$t('glob.event.homologated')}}</label>
     </div>
 
     <hr>
     <div class="grid sm:grid-cols-2 gap-4">
-      <button type="button" v-on:click="createEvent()" class="btn btn-block btn-primary">Add</button>
-      <button type="button" v-on:click="setModalVisibility(false)" class="btn btn-block">Cancel</button>
+      <button type="button" v-on:click="createEvent()" class="btn btn-block btn-primary">{{$t('glob.btn.add')}}</button>
+      <button type="button" v-on:click="setModalVisibility(false)" class="btn btn-block">{{$t('glob.btn.cancel')}}</button>
     </div>
   </Modal>
 </template>

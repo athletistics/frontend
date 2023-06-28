@@ -7,7 +7,7 @@
         <th scope="col" class="table-head">{{ $t('glob.user.birthdate') }}</th>
       </tr>
       </thead>
-      <tbody :state="state">
+      <tbody>
       <tr v-for="u in users" class="table-row cursor-pointer" v-on:click="toUser(u.id)">
         <td class="table-cell">{{ u.lastName }} {{ u.firstName }}</td>
         <td class="table-cell">{{ $d(birthDateAsDate(u.birthDate)) }}</td>
@@ -30,7 +30,7 @@ export default defineComponent({
   components: {ListStates},
   props: {
     users: {type: Array as PropType<User[]>, required: true},
-    state: {type: Object as PropType<LoadingStates>, required: true},
+    state: {type: Number as PropType<LoadingStates>, required: true},
   },
   methods: {
     birthDateAsDate(d: Date | string) {

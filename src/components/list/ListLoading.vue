@@ -18,7 +18,7 @@ export default defineComponent({
 <template>
   <tbody v-if="state===LoadingStates.Loading">
   <tr class="table-row">
-    <td colspan="4" class="table-cell">{{ $t('glob.list.loading') }}</td>
+    <td colspan="4" class="table-cell">{{ $t('comp.list.loading') }}</td>
   </tr>
   </tbody>
 </template>

@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <h1>Home</h1>
+  <h1>{{$t('page.home.title')}}</h1>
 </template>
 
 <style scoped>
