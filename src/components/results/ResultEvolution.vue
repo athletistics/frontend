@@ -15,8 +15,8 @@
         <div class="flex">
           <input type="checkbox" class="w-6" v-model="showReference">
           <select v-model="category">
-            <option v-for="c in filteredCategories" :value="c.id">{{ c.name }}{{
-                $t('glob.gender.' + c.gender)
+            <option v-for="c in filteredCategories" :value="c.id">{{ c.name }} {{
+                c.gender ? $t('glob.gender.' + c.gender) : ""
               }}
             </option>
           </select>
@@ -37,10 +37,14 @@
   <Modal ref="modal">
     <h3>{{ $t('comp.evolution.compare') }}</h3>
     <hr>
-    <div v-for="u in dataStore.users" class="inline-flex">
-      <input :id="u.id" :value="u.id" type="checkbox" v-model="usersToAdd">
-      <label :for="u.id">{{ u.lastName }} {{ u.firstName }}</label>
+
+    <div>
+      <div v-for="u in dataStore.users" class="flex hover:bg-main cursor-pointer">
+        <input :id="u.id" :value="u.id" type="checkbox" v-model="usersToAdd" class="mr-2 cursor-pointer">
+        <label :for="u.id" class="flex-grow py-3 cursor-pointer">{{ u.lastName }} {{ u.firstName }}</label>
+      </div>
     </div>
+
     <hr>
     <div class="grid sm:grid-cols-2 gap-4">
       <button type="button" v-on:click="compare()" class="btn btn-block btn-primary">Add</button>
@@ -150,7 +154,7 @@ export default defineComponent({
             // record min and max date
             if (minX === 0 || minX > new Date(d.date).getTime()) minX = new Date(d.date).getTime()
             if (maxX === 0 || maxX < new Date(d.date).getTime()) maxX = new Date(d.date).getTime()
-            console.log(new Date(d.date).getTime())
+
             xyData.push({
               x: new Date(d.date).getTime(),
               y: d.value
@@ -179,8 +183,6 @@ export default defineComponent({
           })
         }
       }
-
-      console.log(datasets)
 
       return {
         labels: [],
