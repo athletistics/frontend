@@ -3,6 +3,7 @@
   <p>{{ club }}</p>
 
   <hr>
+
   <h1>{{$t('page.club.title.teams')}}</h1>
   <button class="btn btn-primary" v-on:click="setTeamPopupVisibility(true)">+</button>
   <p v-for="t in teams">

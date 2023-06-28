@@ -2,7 +2,6 @@ import {acceptHMRUpdate, defineStore} from 'pinia'
 import axios, {AxiosResponse} from "axios";
 import Const from "../plugins/Constants";
 import {useMyUserStore} from "./user";
-import Router from "../router";
 
 interface State {
   token: string
@@ -20,10 +19,7 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     updateFromServer(callback?: (response: AxiosResponse<any, any>) => void) {
-      if (this.token == ""){
-        Router.push('/')
-        return
-      }
+      if (this.token == "") return
 
       const userStore = useMyUserStore()
       return axios.request({
@@ -43,7 +39,6 @@ export const useAuthStore = defineStore('auth', {
       }).catch(() => {
         this.$reset()
         userStore.$reset()
-        Router.push('/')
       })
     },
     set2FaValidated(val: boolean) {
