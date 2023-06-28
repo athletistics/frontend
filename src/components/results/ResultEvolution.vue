@@ -57,12 +57,14 @@ import {
   Tooltip,
   Legend,
   BarElement,
+  TimeScale,
   CategoryScale,
   LinearScale,
   LineController,
   LineElement,
   PointElement,
 } from 'chart.js'
+import 'chartjs-adapter-moment';
 
 import {defineComponent} from 'vue'
 import {useAuthStore} from "../../stores/auth";
@@ -76,7 +78,7 @@ import Modal from "../modals/Modal.vue";
 import {namedColor, transparentize} from "../../plugins/ChartUtils";
 import Category from "../../types/Category";
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineController, LineElement, PointElement)
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineController, LineElement, PointElement, TimeScale)
 export default defineComponent({
   name: "ResultEvolution",
   components: {Modal, Line},
@@ -127,7 +129,7 @@ export default defineComponent({
 
       // convert to array, and select first entry
       const r = Array.from(results)
-      this.discipline = r[0].id
+      if (r.length) this.discipline = r[0].id
       return r
     },
     chartData() {
@@ -148,9 +150,9 @@ export default defineComponent({
             // record min and max date
             if (minX === 0 || minX > new Date(d.date).getTime()) minX = new Date(d.date).getTime()
             if (maxX === 0 || maxX < new Date(d.date).getTime()) maxX = new Date(d.date).getTime()
-
+            console.log(new Date(d.date).getTime())
             xyData.push({
-              x: d.date,
+              x: new Date(d.date).getTime(),
               y: d.value
             })
           }
@@ -178,6 +180,8 @@ export default defineComponent({
         }
       }
 
+      console.log(datasets)
+
       return {
         labels: [],
         datasets
@@ -185,7 +189,12 @@ export default defineComponent({
     },
     chartOptions() {
       return {
-        responsive: true
+        responsive: true,
+        scales: {
+          x: {
+            type: 'time'
+          }
+        }
       }
     },
   },

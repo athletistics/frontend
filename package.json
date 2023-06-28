@@ -16,6 +16,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.3",
     "axios": "^1.4.0",
     "chart.js": "^4.3.0",
+    "chartjs-adapter-moment": "^1.0.1",
     "moment": "^2.29.4",
     "oidc-client-ts": "^2.2.4",
     "pinia": "^2.1.4",
