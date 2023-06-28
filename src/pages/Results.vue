@@ -29,7 +29,7 @@ export default defineComponent({
   data() {
     return {
       results: [] as Result.Data[],
-      resultsState: {} as LoadingStates
+      resultsState: NaN as LoadingStates
     }
   },
   methods: {

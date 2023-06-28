@@ -55,7 +55,7 @@ export default defineComponent({
       data: {},
       bests: [] as Result.Data[],
       results: [] as Result.Data[],
-      resultsState: {} as LoadingStates
+      resultsState: NaN as LoadingStates
     }
   },
   computed: {

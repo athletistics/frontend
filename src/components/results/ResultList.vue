@@ -47,7 +47,7 @@ export default defineComponent({
     results: {type: Array as PropType<Result.Data[]>, required: true},
     showDisciplines: {type: Boolean, default: true},
     showUser: {type: Boolean, default: true},
-    state: {type: Object as PropType<LoadingStates>, default: LoadingStates.Loaded, required: false}
+    state: {type: Number as PropType<LoadingStates>, default: LoadingStates.Loaded, required: false}
   },
   computed: {
     LoadingStates() {

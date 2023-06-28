@@ -1,6 +1,6 @@
 <template>
   <Modal ref="modal">
-    <h3>{{ $t('result.createTraining') }}</h3>
+    <h3>{{ $t('comp.result.createTraining') }}</h3>
     <hr>
 
     <div>
@@ -64,7 +64,7 @@ export default defineComponent({
   props: {
     result: {type: Object as PropType<Result.Data | undefined>, default: undefined},
     user: {type: Object as PropType<User | undefined>, default: undefined},
-    isPersonal: {type: Object as PropType<boolean>, default: true}
+    isPersonal: {type: Boolean, default: true}
   },
   setup() {
     const authStore = useAuthStore()

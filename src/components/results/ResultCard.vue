@@ -28,7 +28,7 @@ export default defineComponent({
   },
   props: {
     result: {type: Object as PropType<Result.Data>, required: true},
-    withUsers: {type: Object as PropType<boolean>, default: true}
+    withUsers: {type: Boolean, default: true}
   },
   computed: {
     formattedValue(): string {

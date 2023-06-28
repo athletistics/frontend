@@ -10,7 +10,7 @@ export default defineComponent({
     }
   },
   props: {
-    state: {type: Object as PropType<LoadingStates>, required: true}
+    state: {type: Number as PropType<LoadingStates>, required: true}
   }
 })
 </script>
