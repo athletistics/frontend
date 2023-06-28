@@ -1,9 +1,8 @@
 <script lang="ts">
-import {defineComponent} from 'vue'
+import {defineComponent, PropType} from 'vue'
 import ListEmpty from "./ListEmpty.vue";
 import ListLoading from "./ListLoading.vue";
 import ListError from "./ListError.vue";
-import {PropType} from "vue/dist/vue";
 import {LoadingStates} from "../../types/LoadingStates";
 
 export default defineComponent({
