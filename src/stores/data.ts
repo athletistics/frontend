@@ -5,8 +5,10 @@ import Const from "../plugins/Constants";
 import {useAuthStore} from "./auth";
 import User from "../types/User";
 import Category from "../types/Category";
+import EventType from "../types/EventType";
 
 interface State {
+  eventTypes: EventType[]
   disciplines: Discipline[]
   disciplineMap: Map<string, Discipline>
   disciplineMapIsReady: boolean
@@ -19,6 +21,7 @@ interface State {
 
 export const useDataStore = defineStore('data', {
   state: (): State => ({
+    eventTypes: [] as EventType[],
     disciplines: [] as Discipline[],
     disciplineMap: new Map<string, Discipline>(),
     disciplineMapIsReady: false,
@@ -29,6 +32,11 @@ export const useDataStore = defineStore('data', {
     users: [] as User[]
   }),
   getters: {
+    getEventTypeById(state) {
+      return (id: number): EventType | undefined => {
+        return state.eventTypes.find(e => e.id === id)
+      }
+    },
     getDisciplineById(state) {
       return (id: string): Discipline | undefined => {
         if (!state.disciplineMap?.size) return {id, isOfficial: false}
@@ -71,6 +79,7 @@ export const useDataStore = defineStore('data', {
       this.updateUsers()
       this.updateStaticResults()
       this.updateCategories()
+      this.updateEventTypes()
     },
     updateDisciplines() {
       const authStore = useAuthStore()
@@ -136,6 +145,20 @@ export const useDataStore = defineStore('data', {
         this.staticResults = response.data.results
         this.staticResultTypes = response.data.types
       }).catch(() => console.log('error reading static results'))
+    },
+    updateEventTypes() {
+      const authStore = useAuthStore()
+
+      axios.request({
+        url: "/data/eventTypes?filter=false",
+        method: 'get',
+        baseURL: Const.API_URL,
+        headers: {
+          'Authorization': 'Bearer ' + authStore.token
+        },
+      }).then(response => {
+        this.eventTypes = response.data
+      }).catch(() => console.log('error reading event types'))
     }
   },
   persist: true

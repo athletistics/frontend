@@ -10,17 +10,16 @@ export default defineComponent({
     }
   },
   props: {
-    state: {type: Number as PropType<LoadingStates>, required: true}
+    state: {type: Number as PropType<LoadingStates>, required: true},
+    cols: {type: Number as PropType<number>, required: true}
   }
 })
 </script>
 
 <template>
-  <tbody v-if="state===LoadingStates.Loading">
-  <tr class="table-row">
-    <td colspan="4" class="table-cell">{{ $t('comp.list.loading') }}</td>
+  <tr v-if="state===LoadingStates.Loading" v-for="i in 4" class="table-row animate-pulse">
+    <td v-for="i in cols" class="table-cell"><div class="h-3 my-1 bg-slate-200 rounded"></div></td>
   </tr>
-  </tbody>
 </template>
 
 <style scoped>

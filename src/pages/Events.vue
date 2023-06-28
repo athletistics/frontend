@@ -1,9 +1,15 @@
 <template>
-  <h1>{{$t('page.event.title')}}</h1>
-  <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">{{$t('page.event.createBtn')}}</button>
-  <hr>
+  <TitleWithBtnPlus @click="setModalVisibility(true)">{{$t('page.event.title')}}</TitleWithBtnPlus>
 
-  <p v-for="e in events">{{ e }}</p>
+  <SimpleTable :headers="headers" :i18n="true" :state="state">
+    <SimpleTableRow v-for="e in events">
+      <SimpleTableCell>{{e.name}}</SimpleTableCell>
+      <SimpleTableCell>{{e.place}}</SimpleTableCell>
+      <SimpleTableCell>{{$d(new Date(e.date))}}</SimpleTableCell>
+      <SimpleTableCell>{{$t('data.' +dataStore.getEventTypeById(e.eventTypeId).i18nName)}}</SimpleTableCell>
+      <SimpleTableCell>{{ e.isOutdoor ? $t('glob.event.outdoor') : $t('glob.event.indoor')}}</SimpleTableCell>
+    </SimpleTableRow>
+  </SimpleTable>
 
   <Modal ref="modal">
     <h3>{{$t('page.event.createTitle')}}</h3>
@@ -26,12 +32,8 @@
 
     <div>
       <label>{{$t('glob.event.type')}}</label>
-      <!-- todo: replace with data from server -->
       <select v-model="newEvent.eventTypeId" required>
-        <option :value="1" selected>SwissAthletics</option>
-        <option :value="2" selected>UBS Kids Cup</option>
-        <option :value="3" selected>Custom</option>
-        <option :value="4" selected>Training</option>
+        <option v-for="e in dataStore.eventTypes" :value="e.id">{{$t('data.' + e.i18nName)}}</option>
       </select>
     </div>
 
@@ -65,21 +67,30 @@ import {useToastStore} from "../stores/toast";
 import {useAuthStore} from "../stores/auth";
 import Modal from "../components/modals/Modal.vue";
 import moment from "moment";
+import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
+import SimpleTable from "../components/list/SimpleTable.vue";
+import SimpleTableRow from "../components/list/SimpleTableRow.vue";
+import SimpleTableCell from "../components/list/SimpleTableCell.vue";
+import {useDataStore} from "../stores/data";
+import {LoadingStates} from "../types/LoadingStates";
 
 export default defineComponent({
   name: "Events",
-  components: {Modal},
+  components: {SimpleTableCell, SimpleTableRow, SimpleTable, TitleWithBtnPlus, Modal},
   setup() {
     const authStore = useAuthStore()
     const toastStore = useToastStore()
+    const dataStore = useDataStore()
 
-    return {authStore, toastStore}
+    return {authStore, toastStore, dataStore}
   },
   data() {
     return {
+      headers: ['glob.event.name', 'glob.event.place', 'glob.event.date', 'glob.event.type', ''] as string[],
       events: [] as Event[],
       newEvent: {} as Event,
-      homologated: [] as number[]
+      homologated: [] as number[],
+      state: NaN as LoadingStates
     }
   },
   mounted() {
@@ -109,6 +120,7 @@ export default defineComponent({
       }).catch(error => this.toastStore.addToastFromAxiosError(error))
     },
     loadEvents() {
+      this.state = LoadingStates.Loading
       axios.request({
         url: "/events",
         method: 'get',
@@ -117,8 +129,12 @@ export default defineComponent({
           'Authorization': 'Bearer ' + this.authStore.token
         }
       }).then(response => {
+        this.state = response.data.length ? LoadingStates.Loaded : LoadingStates.Empty
         this.events = response.data
-      }).catch(error => this.toastStore.addToastFromAxiosError(error))
+      }).catch(error => {
+        this.state = LoadingStates.Error
+        this.toastStore.addToastFromAxiosError(error)
+      })
     }
   }
 })

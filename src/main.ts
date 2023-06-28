@@ -26,11 +26,12 @@ const i18n = createI18n<MessageSchema, 'en-US' | 'de-CH'>({
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {faBars} from "@fortawesome/free-solid-svg-icons/faBars"
+import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus"
 import {faXmark} from "@fortawesome/free-solid-svg-icons/faXmark"
 import {faLockOpen} from "@fortawesome/free-solid-svg-icons/faLockOpen"
 import {faArrowRightFromBracket} from "@fortawesome/free-solid-svg-icons/faArrowRightFromBracket"
 
-library.add(faBars, faXmark, faArrowRightFromBracket, faLockOpen)
+library.add(faBars, faXmark, faArrowRightFromBracket, faLockOpen, faPlus)
 
 import App from './App.vue'
 import router from './router'

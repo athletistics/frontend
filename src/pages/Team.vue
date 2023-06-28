@@ -3,11 +3,13 @@
   <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">{{ $t('page.team.addPart') }}</button>
   <hr>
 
-  <div v-for="p in participants">
-    <input :id="p.id" :value="p.id" type="checkbox" v-model="usersToRemove">
-    <label :for="p.id">{{ p.lastName }} {{ p.firstName }}</label>
-  </div>
-  <hr>
+  <SimpleList :state="state">
+    <SimpleListEntry v-for="p in participants">
+      <input class="mr-2" :id="p.id" :value="p.id" type="checkbox" v-model="usersToRemove">
+      <label class="w-full" :for="p.id">{{ p.lastName }} {{ p.firstName }}</label>
+    </SimpleListEntry>
+  </SimpleList>
+
   <button type="button" v-on:click="removeFromTeam()" class="btn btn-block btn-error">{{ $t('page.team.removePart') }}
   </button>
 
@@ -37,9 +39,12 @@ import User from "../types/User";
 import {useAuthStore} from "../stores/auth";
 import Modal from "../components/modals/Modal.vue";
 import {useToastStore} from "../stores/toast";
+import SimpleList from "../components/list/SimpleList.vue";
+import SimpleListEntry from "../components/list/SimpleListEntry.vue";
+import {LoadingStates} from "../types/LoadingStates";
 
 export default defineComponent({
-  components: {Modal},
+  components: {SimpleListEntry, Modal, SimpleList},
   setup() {
     const authStore = useAuthStore()
     const toastStore = useToastStore()
@@ -51,6 +56,7 @@ export default defineComponent({
       team: {} as Team,
       users: [] as User[],
       participants: [] as User[],
+      state: NaN as LoadingStates,
       usersToAdd: [] as string[],
       usersToRemove: [] as string[]
     }
@@ -119,6 +125,8 @@ export default defineComponent({
       })
     },
     getParticipants() {
+      this.state = LoadingStates.Loading
+
       axios.request({
         url: "/teams/" + this.$route.params.id + "/participants",
         method: 'get',
@@ -127,7 +135,10 @@ export default defineComponent({
           'Authorization': 'Bearer ' + this.authStore.token
         }
       }).then(response => {
+        this.state = response.data.length ? LoadingStates.Loaded : LoadingStates.Empty
         this.participants = response.data
+      }).catch(() => {
+        this.state = LoadingStates.Error
       })
     }
   },

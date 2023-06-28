@@ -1,6 +1,18 @@
 <template>
   <h1>{{ $t(`page.${pref}.title.account`) }}</h1>
 
+  <div class="p-4 white-rounded grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <LabeledText label="glob.user.firstName" :text="data.firstName"/>
+    <LabeledText label="glob.user.lastName" :text="data.lastName"/>
+    <LabeledText label="glob.user.birthdate" :text="new Date(data.birthDate).toString()"/>
+    <LabeledText label="glob.user.address" :text="undefined"/>
+    <LabeledText label="glob.user.place" :text="undefined"/>
+    <LabeledText label="glob.user.country" :text="undefined"/>
+    <LabeledText label="glob.user.primaryMail" :text="undefined"/>
+    <LabeledText label="glob.user.primaryPhone" :text="undefined"/>
+    <LabeledText label="glob.user.nationality" :text="undefined"/>
+  </div>
+
   <p>{{ data }}</p>
 
   <hr>
@@ -36,13 +48,15 @@ import {useToastStore} from "../stores/toast";
 import {useDataStore} from "../stores/data";
 import ModalResult from "../components/modals/ModalResult.vue";
 import ResultCard from "../components/results/ResultCard.vue";
-import ResultList from "../components/results/ResultList.vue";
+import ResultList from "../components/results/ResultTable.vue";
 import {LoadingStates} from "../types/LoadingStates";
 import ResultEvolution from "../components/results/ResultEvolution.vue";
+import User from "../types/User";
+import LabeledText from "../components/LabeledText.vue";
 
 export default defineComponent({
   name: "Athlete",
-  components: {ResultEvolution, ResultList, ModalResult, ResultCard},
+  components: {LabeledText, ResultEvolution, ResultList, ModalResult, ResultCard},
   setup() {
     const authStore = useAuthStore()
     const dataStore = useDataStore()
@@ -52,7 +66,7 @@ export default defineComponent({
   },
   data() {
     return {
-      data: {},
+      data: {} as User,
       bests: [] as Result.Data[],
       results: [] as Result.Data[],
       resultsState: NaN as LoadingStates
@@ -110,7 +124,7 @@ export default defineComponent({
       const url = this.isMe ? "/me" : `/users/${this.userId}`
 
       axios.request({
-        url: "/me",
+        url,
         method: 'get',
         baseURL: Const.API_URL,
         headers: {
@@ -123,7 +137,7 @@ export default defineComponent({
   },
   mounted() {
     if (!this.authStore.token) {
-      this.$router.push('/')
+      // this.$router.push('/')
     }
 
     this.getBests()

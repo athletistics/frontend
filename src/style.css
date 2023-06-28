@@ -43,6 +43,11 @@ h3 {
     @apply md:text-3xl leading-tight pb-1 pt-3 font-medium font-argentum;
 }
 
+h4 {
+    @apply text-lg;
+    @apply md:text-xl leading-tight pb-1 pt-3 font-normal font-argentum;
+}
+
 .bg-main {
     @apply bg-white
 }
@@ -69,6 +74,10 @@ nav {
 
 .btn {
     @apply border-2 main-transition rounded-md hover:bg-gray-200 p-3 mt-5;
+}
+
+.btn-plus {
+    @apply border-2 main-transition hover:bg-gray-200 md:w-12 md:h-12 w-10 h-10 text-primary;
 }
 
 .btn-block {
@@ -145,4 +154,8 @@ form.with-label button {
 
 #account:hover #account-buttons {
     @apply visible opacity-100 main-transition
+}
+
+.white-rounded{
+    @apply bg-white shadow-lg rounded-xl
 }

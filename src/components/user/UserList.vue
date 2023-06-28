@@ -1,33 +1,24 @@
 <template>
-  <div class="overflow-x-scroll">
-    <table class="min-w-full">
-      <thead class="border-b">
-      <tr>
-        <th scope="col" class="table-head">{{ $t('glob.user.name') }}</th>
-        <th scope="col" class="table-head">{{ $t('glob.user.birthdate') }}</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="u in users" class="table-row cursor-pointer" v-on:click="toUser(u.id)">
-        <td class="table-cell">{{ u.lastName }} {{ u.firstName }}</td>
-        <td class="table-cell">{{ $d(birthDateAsDate(u.birthDate)) }}</td>
-      </tr>
-      </tbody>
-
-      <ListStates :state="state"/>
-    </table>
-  </div>
+  <SimpleTable :headers="['glob.user.name', 'glob.user.birthdate']" :i18n="true" :state="state">
+    <SimpleTableRow v-for="u in users" :clickable="true" @click="toUser(u.id)">
+      <SimpleTableCell class="table-cell">{{ u.lastName }} {{ u.firstName }}</SimpleTableCell>
+      <SimpleTableCell class="table-cell">{{ $d(birthDateAsDate(u.birthDate)) }}</SimpleTableCell>
+    </SimpleTableRow>
+  </SimpleTable>
 </template>
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
 import User from "../../types/User";
 import {LoadingStates} from "../../types/LoadingStates";
-import ListStates from "../list/ListStates.vue";
+import ListStates from "../list/TableStates.vue";
+import SimpleTable from "../list/SimpleTable.vue";
+import SimpleTableRow from "../list/SimpleTableRow.vue";
+import SimpleTableCell from "../list/SimpleTableCell.vue";
 
 export default defineComponent({
   name: "UserList",
-  components: {ListStates},
+  components: {SimpleTableCell, SimpleTableRow, SimpleTable, ListStates},
   props: {
     users: {type: Array as PropType<User[]>, required: true},
     state: {type: Number as PropType<LoadingStates>, required: true},

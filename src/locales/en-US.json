@@ -148,6 +148,17 @@
   "data": {
     "discipline": {},
     "gender": {},
-    "language": {}
+    "language": {},
+    "eventType":{
+      "competition": {
+        "swissAthletics": "Swiss-Athletics",
+        "ubsKidsCup": "UBS Kids Cup",
+        "custom": "Custom"
+      },
+      "training": "Training"
+    },
+    "sport": {
+      "athletics": "Athletics"
+    }
   }
 }

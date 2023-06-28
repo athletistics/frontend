@@ -1,8 +1,5 @@
 <template>
-  <h1>{{$t('page.athletes.title')}}</h1>
-  <button v-on:click="setVisibility(true)" class="btn btn-block btn-primary">{{$t('page.athletes.btn.create')}}</button>
-
-  <hr>
+  <TitleWithBtnPlus @click="setVisibility(true)">{{$t('page.athletes.title')}}</TitleWithBtnPlus>
 
   <UserList :state="athletesState" :users="athletes"/>
 
@@ -70,9 +67,10 @@ import {useAuthStore} from "../stores/auth";
 import UserList from "../components/user/UserList.vue";
 import {LoadingStates} from "../types/LoadingStates";
 import {useToastStore} from "../stores/toast";
+import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
 
 export default defineComponent({
-  components: {UserList, Modal},
+  components: {TitleWithBtnPlus, UserList, Modal},
   setup() {
     const authStore = useAuthStore()
     const toastStore = useToastStore()

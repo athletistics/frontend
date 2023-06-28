@@ -10,17 +10,16 @@ export default defineComponent({
     }
   },
   props: {
-    state: {type: Number as PropType<LoadingStates>, required: true}
+    state: {type: Number as PropType<LoadingStates>, required: true},
+    cols: {type: Number as PropType<number>, required: true}
   }
 })
 </script>
 
 <template>
-  <tbody v-if="state === LoadingStates.Empty">
-  <tr class="table-row">
-    <td colspan="4" class="table-cell">{{ $t('comp.list.empty') }}</td>
+  <tr v-if="state === LoadingStates.Empty" class="table-row">
+    <td :colspan="cols" class="table-cell">{{ $t('comp.list.empty') }}</td>
   </tr>
-  </tbody>
 </template>
 
 <style scoped>

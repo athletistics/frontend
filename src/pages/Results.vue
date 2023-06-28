@@ -1,8 +1,7 @@
 <template>
-  <h1>{{$t('page.results.title')}}</h1>
-  <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">{{$t('page.results.btn.create')}}</button>
+  <TitleWithBtnPlus @click="setModalVisibility(true)">{{$t('page.results.btn.create')}}</TitleWithBtnPlus>
 
-  <ResultList :results="results" :state="resultsState"></ResultList>
+  <ResultTable :results="results" :state="resultsState"></ResultTable>
 
   <ModalResult ref="modal" :is-personal="false" @created="loadResults"></ModalResult>
 </template>
@@ -14,12 +13,13 @@ import {useToastStore} from "../stores/toast";
 import ModalResult from "../components/modals/ModalResult.vue";
 import axios from "axios";
 import Const from "../plugins/Constants";
-import ResultList from "../components/results/ResultList.vue";
+import ResultTable from "../components/results/ResultTable.vue";
 import {LoadingStates} from "../types/LoadingStates";
+import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
 
 export default defineComponent({
   name: "Events",
-  components: {ResultList, ModalResult},
+  components: {TitleWithBtnPlus, ResultTable, ModalResult},
   setup() {
     const authStore = useAuthStore()
     const toastStore = useToastStore()
