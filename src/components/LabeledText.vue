@@ -4,7 +4,7 @@ import {LoadingStates} from "../types/LoadingStates";
 
 export default defineComponent({
   props: {
-    text: {type: String as PropType<string | undefined>, required: true},
+    text: {type: String as PropType<string>, required: false},
     label: {type: String as PropType<string>, required: true},
     state: {type: Number as PropType<LoadingStates>, required: false, default: LoadingStates.Loaded}
   },

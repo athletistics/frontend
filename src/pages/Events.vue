@@ -1,8 +1,8 @@
 <template>
   <TitleWithBtnPlus :btn-visible="canManageEvents()" @btn-click="setModalVisibility(true)">{{$t('page.event.title')}}</TitleWithBtnPlus>
 
-  <SimpleTable :headers="headers" :i18n="true" :state="state">
-    <SimpleTableRow v-for="e in events">
+  <SimpleTable :headers="headers" :i18n="true" :state="state.state">
+    <SimpleTableRow v-for="e in dataStore.events" :clickable="true" @click="toEvent(e.id)">
       <SimpleTableCell>{{e.name}}</SimpleTableCell>
       <SimpleTableCell>{{e.place}}</SimpleTableCell>
       <SimpleTableCell>{{$d(new Date(e.date))}}</SimpleTableCell>
@@ -74,6 +74,7 @@ import SimpleTableCell from "../components/list/SimpleTableCell.vue";
 import {useDataStore} from "../stores/data";
 import {LoadingStates} from "../types/LoadingStates";
 import {canManageEvents} from "../plugins/AccessControl";
+import LoadingState from "../types/LoadingState";
 
 export default defineComponent({
   name: "Events",
@@ -91,11 +92,8 @@ export default defineComponent({
       events: [] as Event[],
       newEvent: {} as Event,
       homologated: [] as number[],
-      state: NaN as LoadingStates
+      state: {state: NaN} as LoadingState
     }
-  },
-  mounted() {
-    this.loadEvents()
   },
   methods: {
     canManageEvents,
@@ -103,6 +101,9 @@ export default defineComponent({
       (this.$refs.modal as any).setVisibility(visible)
       this.newEvent = {} as Event
       this.newEvent.isOutdoor = true
+    },
+    toEvent(id: string){
+      this.$router.push("/events/" + id)
     },
     createEvent() {
       this.newEvent.isHomologated = this.homologated.length > 0
@@ -118,26 +119,10 @@ export default defineComponent({
         data: this.newEvent
       }).then(() => {
         this.toastStore.addSuccessToast()
+        this.dataStore.updateEvents(this.state)
         this.setModalVisibility(false)
       }).catch(error => this.toastStore.addToastFromAxiosError(error))
     },
-    loadEvents() {
-      this.state = LoadingStates.Loading
-      axios.request({
-        url: "/events",
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        }
-      }).then(response => {
-        this.state = response.data.length ? LoadingStates.Loaded : LoadingStates.Empty
-        this.events = response.data
-      }).catch(error => {
-        this.state = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(error)
-      })
-    }
   }
 })
 

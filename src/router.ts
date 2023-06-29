@@ -4,6 +4,7 @@ import Athlete from "./pages/Athlete.vue";
 import Club from "./pages/Club.vue"
 import Home from "./pages/Home.vue"
 import Team from "./pages/Team.vue"
+import Event from "./pages/Event.vue";
 import Events from "./pages/Events.vue";
 import Elevate from "./pages/Elevate.vue"
 import Landing from "./pages/Landing.vue"
@@ -24,6 +25,7 @@ const routes = [
     {path: '/club', name: 'club', component: Club},
     {path: '/home', name: 'home', component: Home},
     {path: '/events', name: 'events', component: Events},
+    {path: '/events/:id', name: 'event', component: Event},
 
     {path: '/team/:id', name: 'team', component: Team},
 

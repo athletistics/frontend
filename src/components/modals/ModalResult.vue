@@ -1,6 +1,8 @@
 <template>
   <Modal ref="modal">
-    <h3>{{ $t('comp.result.createTraining') }}</h3>
+    <h3 v-if="isPersonal">{{ $t('comp.result.createTraining') }}</h3>
+    <h3 v-else>{{ $t('comp.result.create') }}</h3>
+
     <hr>
 
     <div>
@@ -18,10 +20,10 @@
       <input v-model="newResult.rank" required>
     </div>
 
-    <div v-if="!user">
+    <div v-if="!isPersonal">
       <label>{{ $t('glob.user.name') }}</label>
-      <select v-model="newResult.userId">
-        <option v-for="u in dataStore.users" :value="u.id">{{ u.lastName }} {{ u.firstName}}</option>
+      <select v-model="newResult.userId" :disabled="!!user">
+        <option v-for="u in dataStore.users" :value="u.id">{{ u.lastName }} {{ u.firstName }}</option>
       </select>
     </div>
 
@@ -34,7 +36,7 @@
 
     <div>
       <label>{{ $t('glob.event.name') }}</label>
-      <select v-model="newResult.eventId">
+      <select v-model="newResult.eventId" :disabled="!!event">
         <option v-for="e in filteredEvents" :value="e.id">{{ e.name }}, {{ e.place }} ({{ e.date }})</option>
       </select>
     </div>
@@ -64,6 +66,7 @@ export default defineComponent({
   props: {
     result: {type: Object as PropType<Result.Data | undefined>, default: undefined},
     user: {type: Object as PropType<User | undefined>, default: undefined},
+    event: {type: Object as PropType<Event | undefined>, default: undefined},
     isPersonal: {type: Boolean, default: true}
   },
   setup() {
@@ -89,14 +92,15 @@ export default defineComponent({
     setVisibility(visible: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
       this.newResult = {} as Result.RequestBody
+
+      if (this.user) this.newResult.userId = this.user.id
+      if (this.event) this.newResult.eventId = this.event.id
     },
     createResult() {
       const url = this.isPersonal ? "/me/results" : "/results"
 
       if (this.isPersonal) {
-        delete(this.newResult.userId)
-      } else if (this.user){
-        this.newResult.userId = this.user.id
+        delete (this.newResult.userId)
       }
 
       axios.request({

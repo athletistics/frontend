@@ -95,7 +95,8 @@
       "compare": "Compare with..."
     },
     "result": {
-      "createTraining": "Create training result"
+      "createTraining": "Create training result",
+      "create": "Create result"
     },
     "list": {
       "loading": "Data is loading",
@@ -115,12 +116,15 @@
     "event": {
       "outdoor": "Outdoor",
       "indoor": "Indoor",
+      "season": "Season",
       "place": "Place",
       "locality": "Locality",
       "name": "Event",
       "date": "Date",
       "type": "Event type",
-      "homologated": "Is homologated"
+      "homologation": "Homologation",
+      "homologated": "Is homologated",
+      "notHmologated": "Not homologated"
     },
     "result": {
       "name": "Result",
@@ -152,7 +156,9 @@
     "gender": {
       "M": "Men",
       "W": "Women"
-    }
+    },
+    "time": "Time",
+    "distance": "Distance"
   },
   "data": {
     "discipline": {},
