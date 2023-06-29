@@ -11,15 +11,17 @@
       </div>
 
       <div>
-        <label>{{ $t('comp.evolution.reference') }}</label>
-        <div class="flex">
-          <input type="checkbox" class="w-6" v-model="showReference">
-          <select v-model="category">
-            <option v-for="c in filteredCategories" :value="c.id">{{ c.name }} {{
-                c.gender ? $t('glob.gender.' + c.gender) : ""
-              }}
-            </option>
-          </select>
+        <div v-if="filteredCategories?.length">
+          <label>{{ $t('comp.evolution.reference') }}</label>
+          <div class="flex">
+            <input type="checkbox" class="w-6 mr-2" v-model="showReference">
+            <select v-model="category">
+              <option v-for="c in filteredCategories" :value="c.id">{{ c.name }} {{
+                  c.gender ? $t('glob.gender.' + c.gender) : ""
+                }}
+              </option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -83,6 +85,7 @@ import Modal from "../modals/Modal.vue";
 import {namedColor, transparentize} from "../../plugins/ChartUtils";
 import Category from "../../types/Category";
 import {canManageResults} from "../../plugins/AccessControl";
+import {formatResult} from "../../plugins/Helper";
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineController, LineElement, PointElement, TimeScale)
 export default defineComponent({
@@ -103,7 +106,7 @@ export default defineComponent({
       discipline: "" as string,
       category: "" as string,
       showReference: false as boolean,
-      dataMap: {} as Map<string, Result.Data[]>,
+      dataMap: new Map<string, Result.Data[]>() as Map<string, Result.Data[]>,
       usersToAdd: [] as string[]
     }
   },
@@ -197,7 +200,33 @@ export default defineComponent({
         responsive: true,
         scales: {
           x: {
-            type: 'time'
+            type: 'time',
+            time: {
+              unit: 'day'
+            }
+          },
+          y: {
+            ticks: {
+              callback: (value, index, ticks) => {
+                return formatResult(value.toString(), this.discipline)
+              }
+            },
+            title: {
+              display: true,
+              text: this.dataStore.getDisciplineById(this.discipline)?.isDescending ? this.$t('glob.distance') : this.$t('glob.time')
+            }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              title: (context) => {
+                return this.$d(new Date(context[0].parsed.x))
+              },
+              label: (context) => {
+                return context.dataset.label + ": " + formatResult(context.parsed.y.toString(), this.discipline)
+              }
+            }
           }
         }
       }
@@ -217,11 +246,9 @@ export default defineComponent({
 
       this.setModalVisibility(false)
     },
-    addResultSet(userId?: string) {
-      const url = userId ? `/results?userId=${userId}` : "/me/results"
-
+    addResultSet(userId: string) {
       axios.request({
-        url,
+        url: `/results?userId=${userId}`,
         method: 'get',
         baseURL: Const.API_URL,
         headers: {
@@ -236,11 +263,11 @@ export default defineComponent({
       }).catch(response => {
         this.toastStore.addToastFromAxiosError(response)
       })
+    },
+    resetData() {
+      this.dataMap = new Map<string,  Result.Data[]>()
     }
   },
-  mounted() {
-    this.addResultSet()
-  }
 })
 </script>
 
