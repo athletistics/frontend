@@ -45,13 +45,12 @@ export function formatResult(value: string, disciplineId: string): string {
   const dataStore = useDataStore()
 
   // return value
-  if (!dataStore.disciplineMapIsReady) return value
-  const discipline = dataStore.disciplineMap.get(disciplineId)
+  if (!dataStore.maps.disciplines?.size) return value
+  const discipline = dataStore.maps.disciplines.get(disciplineId)
 
   if (!discipline) return value
   const numValue = Number.parseFloat(value)
 
-  // const d = moment.utc(duration(value).as('second'))
   const d = moment.utc(duration(value, 'seconds').as('millisecond'))
 
   switch (true) {

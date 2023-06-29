@@ -32,7 +32,7 @@ export default defineComponent({
   },
   computed: {
     formattedValue(): string {
-      this.dataStore.disciplineMapIsReady
+      this.dataStore.maps.disciplines?.size
       return formatResult(this.result.value, this.result.disciplineId)
     }
   }

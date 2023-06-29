@@ -5,34 +5,46 @@ import Const from "../plugins/Constants";
 import {useAuthStore} from "./auth";
 import User from "../types/User";
 import Category from "../types/Category";
+import Event from "../types/Event";
 import EventType from "../types/EventType";
 import Language from "../types/Language";
+import LoadingState from "../types/LoadingState";
+import {LoadingStates} from "../types/LoadingStates";
+import Indexable from "../types/Indexable";
 
 interface State {
   eventTypes: EventType[]
   disciplines: Discipline[]
-  disciplineMap: Map<string, Discipline>
-  disciplineMapIsReady: boolean
   categories: Category[]
-  categoryMap: Map<string, Category>,
   staticResults: Result.Static[]
   staticResultTypes: Result.StaticType[],
   languages: Language[],
+  events: Event[],
   users: User[]
+  maps: StateMaps
+}
+
+interface StateMaps {
+  events: Map<string, Event>,
+  categories: Map<string, Category>,
+  disciplines: Map<string, Discipline>
 }
 
 export const useDataStore = defineStore('data', {
   state: (): State => ({
     eventTypes: [] as EventType[],
     disciplines: [] as Discipline[],
-    disciplineMap: new Map<string, Discipline>(),
-    disciplineMapIsReady: false,
     categories: [] as Category[],
-    categoryMap: new Map<string, Category>(),
     staticResults: [] as Result.Static[],
     staticResultTypes: [] as Result.StaticType[],
     languages: [] as Language[],
-    users: [] as User[]
+    events: [] as Event[],
+    users: [] as User[],
+    maps: {
+      events: new Map<string, Event>(),
+      categories: new Map<string, Category>(),
+      disciplines: new Map<string, Discipline>()
+    }
   }),
   getters: {
     getEventTypeById(state) {
@@ -40,18 +52,24 @@ export const useDataStore = defineStore('data', {
         return state.eventTypes.find(e => e.id === id)
       }
     },
+    getEventById(state) {
+      return (id: string): Event | undefined => {
+        if (!state.maps.events?.size) return undefined
+        return state.maps.events.get(id)
+      }
+    },
     getDisciplineById(state) {
       return (id: string): Discipline | undefined => {
-        if (!state.disciplineMap?.size) return {id, isOfficial: false}
+        if (!state.maps.disciplines?.size) return {id, isOfficial: false}
 
-        return state.disciplineMap.get(id)
+        return state.maps.disciplines.get(id)
       }
     },
     getCategoryById(state) {
       return (id: string): Category | undefined => {
-        if (!state.categoryMap?.size) return {id, name: "", gender: ""}
+        if (!state.maps.categories?.size) return {id, name: "", gender: ""}
 
-        return state.categoryMap.get(id)
+        return state.maps.categories.get(id)
       }
     },
     getReferenceValue(state) {
@@ -87,111 +105,79 @@ export const useDataStore = defineStore('data', {
   actions: {
     updateAll() {
       this.updateUsers()
+      this.updateEvents()
       this.updateLanguages()
       this.updateEventTypes()
       this.updateCategories()
       this.updateDisciplines()
       this.updateStaticResults()
     },
-    updateDisciplines() {
-      const authStore = useAuthStore()
-      if (!authStore.token) return
-      this.disciplineMapIsReady = false
-
-      axios.request({
-        url: "/disciplines",
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + authStore.token
-        },
-      }).then(response => {
-        this.disciplines = response.data
-
-        this.disciplineMap = new Map<string, Discipline>()
-        this.disciplines.forEach(d => this.disciplineMap.set(d.id, d))
-        this.disciplineMapIsReady = true
-      }).catch(() => console.log('error reading disciplines'))
+    updateDisciplines(s?: LoadingState) {
+      this.updateData<Discipline>('/disciplines', 'disciplines', 'disciplines', s)
     },
-    updateUsers() {
-      const authStore = useAuthStore()
-      if (!authStore.token) return
-      if (!authStore.is2FaOk) return;
-
-      axios.request({
-        url: "/users",
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + authStore.token
-        },
-      }).then(response => {
-        this.users = response.data
-      }).catch(() => console.log('error reading disciplines'))
+    updateEvents(s?: LoadingState) {
+      this.updateData<Event>('/events', 'events', 'events', s)
     },
-    updateCategories() {
-      const authStore = useAuthStore()
-      if (!authStore.token) return
-
-      axios.request({
-        url: "/data/categories?sport=1",
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + authStore.token
-        },
-      }).then(response => {
-        this.categories = response.data
-
-        this.categoryMap = new Map<string, Category>()
-        this.categories.forEach(c => this.categoryMap.set(c.id, c))
-      }).catch(() => console.log('error reading categories'))
+    updateUsers(s?: LoadingState) {
+      this.updateData<User>('/users', 'users', undefined, s)
     },
-    updateStaticResults() {
-      const authStore = useAuthStore()
-      if (!authStore.token) return
-
-      axios.request({
-        url: "/results/static?sport=1",
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + authStore.token
-        },
-      }).then(response => {
+    updateCategories(s?: LoadingState) {
+      this.updateData<Category>('/data/categories?sport=1', 'categories', 'categories', s)
+    },
+    updateStaticResults(s?: LoadingState) {
+      this.updateData('/results/static?sport=1', undefined, undefined, s)?.then(response => {
         this.staticResults = response.data.results
         this.staticResultTypes = response.data.types
-      }).catch(() => console.log('error reading static results'))
+      })
     },
-    updateEventTypes() {
+    updateEventTypes(s?: LoadingState) {
+      this.updateData<EventType>('/data/eventTypes?filter=false', 'eventTypes', undefined, s)
+    },
+    updateLanguages(s?: LoadingState) {
+      this.updateData<Language>('/data/languages', 'languages', undefined, s)
+    },
+    updateData<dataType extends Indexable>(url: string, targetProperty?: keyof State, targetMapProperty?: keyof StateMaps, stateObj?: LoadingState, requires2fa: boolean = false) {
       const authStore = useAuthStore()
       if (!authStore.token) return
+      if (requires2fa && !authStore.is2FaOk) return;
 
-      axios.request({
-        url: "/data/eventTypes?filter=false",
+      // set the state to loading
+      if (stateObj) stateObj.state = LoadingStates.Loading
+
+      // create a request, and store the response promise
+      const req = axios.request({
+        url,
         method: 'get',
         baseURL: Const.API_URL,
         headers: {
           'Authorization': 'Bearer ' + authStore.token
         },
-      }).then(response => {
-        this.eventTypes = response.data
-      }).catch(() => console.log('error reading event types'))
-    },
-    updateLanguages() {
-      const authStore = useAuthStore()
-      if (!authStore.token) return
+      })
 
-      axios.request({
-        url: "/data/languages",
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + authStore.token
-        },
-      }).then(response => {
-        this.languages = response.data
-      }).catch(() => console.log('error reading languages'))
+      // process the response success and error
+      req.then(response => {
+        // set the state to loaded or empty, based on the number of returned results
+        if (stateObj) stateObj.state = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
+
+        // don't store data in this callback function, of no targetProperty is set
+        if (!targetProperty) return;
+
+        // store the data as an array
+        this[targetProperty] = response.data
+
+        if (targetMapProperty) {
+          (this.maps[targetMapProperty] as unknown as Map<string | number, dataType>) = new Map<string | number, dataType>();
+          (this[targetProperty] as dataType[]).forEach(v => {
+            (this.maps[targetMapProperty] as unknown as Map<string | number, dataType>).set(v.id, v)
+          })
+        }
+      }).catch(() => {
+        if(stateObj) stateObj.state = LoadingStates.Error
+        console.log('error reading path ' + url)
+      })
+
+      // return the response promise, allowing the caller to add additional callbacks
+      return req
     }
   },
   persist: true

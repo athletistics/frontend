@@ -21,7 +21,7 @@
     }}
   </TitleWithBtnPlus>
 
-  <SimpleList>
+  <SimpleList :state="disciplineStateObj.state">
     <SimpleListEntry v-for="d in dataStore.disciplines.filter(d => !d.isOfficial)">{{ d.customName }}
     </SimpleListEntry>
   </SimpleList>
@@ -87,6 +87,7 @@ import SimpleListEntry from "../components/list/SimpleListEntry.vue";
 import SimpleList from "../components/list/SimpleList.vue";
 import {LoadingStates} from "../types/LoadingStates";
 import {canManageDiscipline, canManageTeam} from "../plugins/AccessControl";
+import LoadingState from "../types/LoadingState";
 
 export default defineComponent({
   components: {SimpleList, SimpleListEntry, TitleWithBtnPlus, BtnPlus, Modal},
@@ -103,6 +104,7 @@ export default defineComponent({
       club: {} as Club,
       teams: [] as Team[],
       teamsState: NaN as LoadingStates,
+      disciplineStateObj: {state: NaN} as LoadingState,
       newTeam: {} as Team,
       newDiscipline: {} as Discipline
     }
@@ -119,7 +121,6 @@ export default defineComponent({
       this.club = response.data
     })
 
-    this.dataStore.updateDisciplines()
     this.loadTeams()
   },
   methods: {
@@ -144,7 +145,7 @@ export default defineComponent({
         },
         data: this.newDiscipline
       }).then(() => {
-        this.dataStore.updateDisciplines()
+        this.dataStore.updateDisciplines(this.disciplineStateObj)
         this.setDisciplinePopupVisibility(false)
         this.toastStore.addSuccessToast()
       }).catch(error => this.toastStore.addToastFromAxiosError(error))

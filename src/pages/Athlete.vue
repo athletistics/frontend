@@ -1,5 +1,6 @@
 <template>
-  <h1>{{ $t(`page.${pref}.title.account`) }}</h1>
+  <h1 v-if="resultsState!==LoadingStates.Loaded || pref ==  'me'">{{ $t(`page.${pref}.title.account`) }}</h1>
+  <h1 v-else>{{ data.firstName }} {{ data.lastName }}</h1>
 
   <div class="p-4 white-rounded grid gap-4 md:grid-cols-2 lg:grid-cols-3">
     <LabeledText :state="dataState" label="glob.user.firstName" :text="data.firstName"/>
@@ -8,7 +9,7 @@
                  :text="data.birthDate ? $d(new Date(data.birthDate)) : undefined"/>
     <LabeledText :state="dataState" label="glob.user.prefLang"
                  :text="dataStore.getLanguageById(data.languageId)?.short"/>
-    <LabeledText :state="dataState" label="glob.user.gender" :text="$t('data.gender['+(data.genderId-1)+']')"/>
+    <LabeledText :state="dataState" label="glob.user.gender" :text="data.genderId ? $t('data.gender['+(data.genderId-1)+']') : undefined"/>
     <LabeledText :state="dataState" label="glob.user.oasi" :text="data.oasi"/>
     <LabeledText :state="dataState" label="glob.user.address" :text="data.address"/>
     <LabeledText :state="dataState" label="glob.user.place" :text="`${data.place?.postCode} ${data.place?.place}`"/>
@@ -19,48 +20,50 @@
     <LabeledText :state="dataState" label="glob.user.nationality" :text="data.nationality?.name"/>
   </div>
 
-  <hr>
+  <div class="my-5">&nbsp;</div>
 
   <h1>{{ $t(`page.${pref}.title.bestResults`) }}</h1>
   <div class="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
     <ResultCard v-for="b in bests" :result="b" :with-users="false"></ResultCard>
   </div>
 
-  <hr>
+  <div class="my-5">&nbsp;</div>
 
-  <ResultEvolution/>
+  <ResultEvolution ref="evolutionChart"/>
 
-  <hr>
+  <div class="my-5">&nbsp;</div>
 
-  <h1>{{ $t(`page.${pref}.title.results`) }}</h1>
-  <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">
-    {{ $t(`page.${pref}.btn.createTrainingResult`) }}
-  </button>
+  <TitleWithBtnPlus @btn-click="setModalVisibility(true)" :btn-visible="canManageResults() || !$route.params.id">
+    {{ $t(`page.${pref}.title.results`) }}
+  </TitleWithBtnPlus>
+
   <ResultList :results="results" :show-user="false" :state="resultsState"></ResultList>
 
-
-  <ModalResult ref="modal" :is-personal="isMe"></ModalResult>
+  <ModalResult ref="modal" :is-personal="isMe" :user="data"></ModalResult>
 
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
 import axios from "axios";
+import User from "../types/User";
 import Const from "../plugins/Constants";
 import {useAuthStore} from "../stores/auth";
-import {useToastStore} from "../stores/toast";
 import {useDataStore} from "../stores/data";
-import ModalResult from "../components/modals/ModalResult.vue";
-import ResultCard from "../components/results/ResultCard.vue";
-import ResultList from "../components/results/ResultTable.vue";
+import {useToastStore} from "../stores/toast";
 import {LoadingStates} from "../types/LoadingStates";
-import ResultEvolution from "../components/results/ResultEvolution.vue";
-import User from "../types/User";
+
 import LabeledText from "../components/LabeledText.vue";
+import ResultCard from "../components/results/ResultCard.vue";
+import ModalResult from "../components/modals/ModalResult.vue";
+import ResultList from "../components/results/ResultTable.vue";
+import ResultEvolution from "../components/results/ResultEvolution.vue";
+import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
+import {canManageResults} from "../plugins/AccessControl";
 
 export default defineComponent({
   name: "Athlete",
-  components: {LabeledText, ResultEvolution, ResultList, ModalResult, ResultCard},
+  components: {TitleWithBtnPlus, LabeledText, ResultEvolution, ResultList, ModalResult, ResultCard},
   setup() {
     const authStore = useAuthStore()
     const dataStore = useDataStore()
@@ -78,6 +81,9 @@ export default defineComponent({
     }
   },
   computed: {
+    LoadingStates() {
+      return LoadingStates
+    },
     pref() {
       return this.$route.params.id ? 'user' : 'me'
     },
@@ -89,6 +95,7 @@ export default defineComponent({
     }
   },
   methods: {
+    canManageResults,
     setModalVisibility(visible: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
     },
@@ -105,6 +112,13 @@ export default defineComponent({
         }
       }).then(response => {
         this.results = response.data
+
+        // load data into evolution chart, whith user's name as a label
+        const name = response.data[0]?.userLastName + " " + response.data[0]?.userFirstName
+        const chart = this.$refs.evolutionChart as typeof ResultEvolution
+
+        chart.dataMap.set(name, response.data)
+
         this.resultsState = response.data ? LoadingStates.Loaded : LoadingStates.Empty
       }).catch(response => {
         this.resultsState = LoadingStates.Error
@@ -143,16 +157,21 @@ export default defineComponent({
         this.toastStore.addToastFromAxiosError(response)
         this.dataState = LoadingStates.Error
       })
+    },
+    loadData() {
+      this.getBests()
+      this.getResults()
+      this.getUser()
+    }
+  },
+  watch: {
+    "$route.params.id"(val){
+      (this.$refs.evolutionChart as any).resetData()
+      this.loadData()
     }
   },
   mounted() {
-    if (!this.authStore.token) {
-      // this.$router.push('/')
-    }
-
-    this.getBests()
-    this.getResults()
-    this.getUser()
+    this.loadData()
   }
 })
 </script>
