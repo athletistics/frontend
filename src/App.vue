@@ -8,7 +8,7 @@
       <div class="w-100 p-7 border-t-2 text-center">
         <p>© 2023 - Nicolas Baeriswyl</p>
         <p>Made with ☕️ by <a href="https://baeriswyl.dev" target="_blank">baeriswyl.dev</a></p>
-        <p class="uppercase text-sm mt-4 !text-gray-300 font-bold">Version 0.1.1 (early access)</p>
+        <p class="uppercase text-sm mt-4 !text-gray-300 font-bold">Version 0.1.2 (early alpha)</p>
       </div>
     </footer>
   </div>

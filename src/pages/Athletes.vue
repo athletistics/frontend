@@ -100,8 +100,7 @@ export default defineComponent({
         baseURL: Const.API_URL,
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
-        },
-        data: this.newAthlete
+        }
       }).then(response => {
         this.athletes = response.data
         this.athletesState = response.data ? LoadingStates.Loaded : LoadingStates.Empty
