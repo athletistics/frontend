@@ -19,7 +19,7 @@ import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
 import {canManageResults} from "../plugins/AccessControl";
 
 export default defineComponent({
-  name: "Events",
+  name: "Results",
   components: {TitleWithBtnPlus, ResultTable, ModalResult},
   setup() {
     const authStore = useAuthStore()

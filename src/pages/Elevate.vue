@@ -134,7 +134,6 @@ export default defineComponent({
         'Authorization': 'Bearer ' + this.authStore.token
       }
     }).then(response => {
-      console.log(response)
       this.secret = response.data.secret
       this.qrCode = response.data.qrCode
     }).catch(() => {
