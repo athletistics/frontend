@@ -13,7 +13,7 @@ export default defineComponent({
   },
   components: {SimpleListEntry, SimpleListLoading},
   props: {
-    state: {type: Number as PropType<LoadingStates>, required: true},
+    state: {type: Number as PropType<LoadingStates>, required: false, default: LoadingStates.Loaded},
   },
 })
 </script>

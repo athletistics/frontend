@@ -57,6 +57,7 @@
 import {Line} from 'vue-chartjs'
 import {
   Chart as ChartJS,
+  ChartOptions,
   Title,
   Tooltip,
   Legend,
@@ -107,11 +108,12 @@ export default defineComponent({
   },
   computed: {
     filteredCategories(): Category[] {
-      let categories = []
+      let categories = [] as Category[]
 
       this.dataStore.staticResults.forEach(r => {
         if (r.disciplineId == this.discipline) {
-          categories.push(this.dataStore.getCategoryById(r.categoryId))
+          const c = this.dataStore.getCategoryById(r.categoryId)
+          if (c) categories.push(c)
         }
       })
 
@@ -146,7 +148,7 @@ export default defineComponent({
 
       // create a dataset entry for each available result set
       this.dataMap.forEach((d, name) => {
-        let xyData = []
+        let xyData = [] as any[]
 
         // select the entries of the selected discipline
         d.forEach(d => {
@@ -189,7 +191,7 @@ export default defineComponent({
         datasets
       }
     },
-    chartOptions() {
+    chartOptions(): ChartOptions {
       return {
         responsive: true,
         scales: {
