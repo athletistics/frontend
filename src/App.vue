@@ -33,8 +33,6 @@ export default defineComponent({
     return {authStore, userStore, dataStore}
   },
   mounted() {
-    if (this.authStore.token == "") return
-    this.authStore.updateFromServer()
     this.userStore.updateFromServer()
     this.dataStore.updateAll()
   },

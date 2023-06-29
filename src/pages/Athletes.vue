@@ -1,5 +1,5 @@
 <template>
-  <TitleWithBtnPlus @click="setVisibility(true)">{{$t('page.athletes.title')}}</TitleWithBtnPlus>
+  <TitleWithBtnPlus :btn-visible="canManageUsers()" @btn-click="setVisibility(true)">{{$t('page.athletes.title')}}</TitleWithBtnPlus>
 
   <UserList :state="athletesState" :users="athletes"/>
 
@@ -66,6 +66,7 @@ import {LoadingStates} from "../types/LoadingStates";
 import {useToastStore} from "../stores/toast";
 import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
 import {useDataStore} from "../stores/data";
+import {canManageUsers} from "../plugins/AccessControl";
 
 export default defineComponent({
   components: {TitleWithBtnPlus, UserList, Modal},
@@ -87,6 +88,7 @@ export default defineComponent({
     this.loadAthletes()
   },
   methods: {
+    canManageUsers,
     setVisibility(visible: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
 

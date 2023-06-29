@@ -23,7 +23,7 @@
         </div>
       </div>
 
-      <div>
+      <div v-if="canManageResults()">
         <button type="button" class="btn btn-primary btn-block !mt-0" @click="setModalVisibility(true)">{{
             $t('comp.evolution.compare')
           }}
@@ -82,6 +82,7 @@ import Discipline from "../../types/Discipline";
 import Modal from "../modals/Modal.vue";
 import {namedColor, transparentize} from "../../plugins/ChartUtils";
 import Category from "../../types/Category";
+import {canManageResults} from "../../plugins/AccessControl";
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineController, LineElement, PointElement, TimeScale)
 export default defineComponent({
@@ -203,6 +204,7 @@ export default defineComponent({
     },
   },
   methods: {
+    canManageResults,
     setModalVisibility(visible: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
 

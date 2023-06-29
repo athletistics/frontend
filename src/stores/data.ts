@@ -86,15 +86,16 @@ export const useDataStore = defineStore('data', {
   },
   actions: {
     updateAll() {
-      this.updateDisciplines()
       this.updateUsers()
-      this.updateStaticResults()
-      this.updateCategories()
-      this.updateEventTypes()
       this.updateLanguages()
+      this.updateEventTypes()
+      this.updateCategories()
+      this.updateDisciplines()
+      this.updateStaticResults()
     },
     updateDisciplines() {
       const authStore = useAuthStore()
+      if (!authStore.token) return
       this.disciplineMapIsReady = false
 
       axios.request({
@@ -114,6 +115,8 @@ export const useDataStore = defineStore('data', {
     },
     updateUsers() {
       const authStore = useAuthStore()
+      if (!authStore.token) return
+      if (!authStore.is2FaOk) return;
 
       axios.request({
         url: "/users",
@@ -128,6 +131,7 @@ export const useDataStore = defineStore('data', {
     },
     updateCategories() {
       const authStore = useAuthStore()
+      if (!authStore.token) return
 
       axios.request({
         url: "/data/categories?sport=1",
@@ -145,6 +149,7 @@ export const useDataStore = defineStore('data', {
     },
     updateStaticResults() {
       const authStore = useAuthStore()
+      if (!authStore.token) return
 
       axios.request({
         url: "/results/static?sport=1",
@@ -160,6 +165,7 @@ export const useDataStore = defineStore('data', {
     },
     updateEventTypes() {
       const authStore = useAuthStore()
+      if (!authStore.token) return
 
       axios.request({
         url: "/data/eventTypes?filter=false",
@@ -174,6 +180,7 @@ export const useDataStore = defineStore('data', {
     },
     updateLanguages() {
       const authStore = useAuthStore()
+      if (!authStore.token) return
 
       axios.request({
         url: "/data/languages",

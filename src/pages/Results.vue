@@ -1,5 +1,5 @@
 <template>
-  <TitleWithBtnPlus @click="setModalVisibility(true)">{{$t('page.results.btn.create')}}</TitleWithBtnPlus>
+  <TitleWithBtnPlus :btn-visible="canManageResults()" @btn-click="setModalVisibility(true)">{{$t('page.results.title')}}</TitleWithBtnPlus>
 
   <ResultTable :results="results" :state="resultsState"></ResultTable>
 
@@ -16,6 +16,7 @@ import Const from "../plugins/Constants";
 import ResultTable from "../components/results/ResultTable.vue";
 import {LoadingStates} from "../types/LoadingStates";
 import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
+import {canManageResults} from "../plugins/AccessControl";
 
 export default defineComponent({
   name: "Events",
@@ -33,6 +34,7 @@ export default defineComponent({
     }
   },
   methods: {
+    canManageResults,
     setModalVisibility(visible: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
     },

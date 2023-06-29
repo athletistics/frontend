@@ -1,17 +1,34 @@
 <template>
   <h1>{{ team.name }}</h1>
-  <button v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">{{ $t('page.team.addPart') }}</button>
-  <hr>
+
+
+  <div class="grid md:grid-cols-2 gap-4" v-if="canManageTeam() && !editMode">
+    <button type="button" v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">{{
+        $t('page.team.addPart')
+      }}
+    </button>
+    <button type="button" @click="setSelectable(true)" class="btn btn-block btn-error">
+      {{ $t('page.team.selectForRemoval') }}
+    </button>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-4" v-if="canManageTeam() && editMode">
+    <button type="button" v-on:click="removeFromTeam()" class="btn btn-block btn-error">{{
+        $t('page.team.removePart')
+      }}
+    </button>
+    <button type="button" @click="setSelectable(false)" class="btn btn-block">
+      {{ $t('glob.btn.cancel') }}
+    </button>
+  </div>
+
 
   <SimpleList :state="state">
-    <SimpleListEntry v-for="p in participants">
-      <input class="mr-2" :id="p.id" :value="p.id" type="checkbox" v-model="usersToRemove">
+    <SimpleListEntry v-for="p in participants" :to="'/athletes/' + p.id" :enabled="!editMode">
+      <input v-if="editMode" class="mr-2" :id="p.id" :value="p.id" type="checkbox" v-model="usersToRemove">
       <label class="w-full" :for="p.id">{{ p.lastName }} {{ p.firstName }}</label>
     </SimpleListEntry>
   </SimpleList>
-
-  <button type="button" v-on:click="removeFromTeam()" class="btn btn-block btn-error">{{ $t('page.team.removePart') }}
-  </button>
 
   <Modal ref="modal">
     <h3>{{ $t('page.team.addPartTitle') }}</h3>
@@ -42,6 +59,7 @@ import {useToastStore} from "../stores/toast";
 import SimpleList from "../components/list/SimpleList.vue";
 import SimpleListEntry from "../components/list/SimpleListEntry.vue";
 import {LoadingStates} from "../types/LoadingStates";
+import {canManageTeam} from "../plugins/AccessControl";
 
 export default defineComponent({
   components: {SimpleListEntry, Modal, SimpleList},
@@ -57,6 +75,7 @@ export default defineComponent({
       users: [] as User[],
       participants: [] as User[],
       state: NaN as LoadingStates,
+      editMode: false as boolean,
       usersToAdd: [] as string[],
       usersToRemove: [] as string[]
     }
@@ -72,8 +91,13 @@ export default defineComponent({
     }
   },
   methods: {
+    canManageTeam,
     setModalVisibility(visible: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
+    },
+    setSelectable(selectable: boolean){
+      this.editMode = selectable
+      this.usersToRemove = []
     },
     addToTeam() {
       axios.request({

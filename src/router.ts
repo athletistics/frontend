@@ -11,7 +11,7 @@ import Callback from "./pages/Callback.vue"
 import Athletes from "./pages/Athletes.vue"
 import Results from "./pages/Results.vue"
 
-import {OPEN_ROUTES} from "./plugins/Constants";
+import {OPEN_ROUTES, TOTPLESS_ROUTES} from "./plugins/Constants";
 import {useAuthStore} from "./stores/auth";
 
 const routes = [
@@ -49,11 +49,27 @@ function isRouteProtected(route: RouteLocationNormalized) {
     return true
 }
 
-router.beforeEach((to) => {
+function isRouteTotpProtected(route: RouteLocationNormalized) {
+    for (let i = 0; i < TOTPLESS_ROUTES.length; i++) {
+        // @ts-ignore
+        if (TOTPLESS_ROUTES[i] == route?.name) {
+            return false
+        }
+    }
+    return true
+}
+
+router.beforeEach(async (to) => {
     const authStore = useAuthStore()
+
+    await authStore.updateFromServer()
 
     if (isRouteProtected(to) && !authStore.token) {
         return "/"
+    }
+
+    if (isRouteTotpProtected(to) && !authStore.is2FaOk){
+        return "/elevate"
     }
 })
 

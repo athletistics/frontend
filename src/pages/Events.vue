@@ -1,5 +1,5 @@
 <template>
-  <TitleWithBtnPlus @click="setModalVisibility(true)">{{$t('page.event.title')}}</TitleWithBtnPlus>
+  <TitleWithBtnPlus :btn-visible="canManageEvents()" @btn-click="setModalVisibility(true)">{{$t('page.event.title')}}</TitleWithBtnPlus>
 
   <SimpleTable :headers="headers" :i18n="true" :state="state">
     <SimpleTableRow v-for="e in events">
@@ -73,6 +73,7 @@ import SimpleTableRow from "../components/list/SimpleTableRow.vue";
 import SimpleTableCell from "../components/list/SimpleTableCell.vue";
 import {useDataStore} from "../stores/data";
 import {LoadingStates} from "../types/LoadingStates";
+import {canManageEvents} from "../plugins/AccessControl";
 
 export default defineComponent({
   name: "Events",
@@ -97,6 +98,7 @@ export default defineComponent({
     this.loadEvents()
   },
   methods: {
+    canManageEvents,
     setModalVisibility(visible: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
       this.newEvent = {} as Event

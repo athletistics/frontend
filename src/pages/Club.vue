@@ -1,12 +1,14 @@
 <template>
   <div v-if="club?.sport" class="flex items-baseline">
     <h1 class="mr-2">{{ club.name }}</h1>
-    <h4>{{ $t('data.sport.' + club.sport.i18nName) }}</h4>
+    <h4>{{ $t('data.' + club.sport.i18nName) }}</h4>
   </div>
 
   <div class="my-5">&nbsp;</div>
 
-  <TitleWithBtnPlus @click="setTeamPopupVisibility(true)">{{ $t('page.club.title.teams') }}</TitleWithBtnPlus>
+  <TitleWithBtnPlus @btn-click="setTeamPopupVisibility(true)" :btn-visible="canManageTeam()">
+    {{ $t('page.club.title.teams') }}
+  </TitleWithBtnPlus>
 
   <SimpleList :state="teamsState">
     <SimpleListEntry v-for="t in teams" :to="'/team/'+t.id">{{ t.name }}</SimpleListEntry>
@@ -14,13 +16,14 @@
 
   <div class="my-5">&nbsp;</div>
 
-  <TitleWithBtnPlus @click="setDisciplinePopupVisibility(true)">{{
+  <TitleWithBtnPlus @btn-click="setDisciplinePopupVisibility(true)" :btn-visible="canManageDiscipline()">{{
       $t('page.club.title.disciplines')
     }}
   </TitleWithBtnPlus>
 
   <SimpleList>
-    <SimpleListEntry v-for="d in dataStore.disciplines">{{ d.i18nName ?? d.customName }} <span v-if="!d.isOfficial">(custom)</span></SimpleListEntry>
+    <SimpleListEntry v-for="d in dataStore.disciplines.filter(d => !d.isOfficial)">{{ d.customName }}
+    </SimpleListEntry>
   </SimpleList>
 
   <Modal ref="modal">
@@ -83,6 +86,7 @@ import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
 import SimpleListEntry from "../components/list/SimpleListEntry.vue";
 import SimpleList from "../components/list/SimpleList.vue";
 import {LoadingStates} from "../types/LoadingStates";
+import {canManageDiscipline, canManageTeam} from "../plugins/AccessControl";
 
 export default defineComponent({
   components: {SimpleList, SimpleListEntry, TitleWithBtnPlus, BtnPlus, Modal},
@@ -119,6 +123,7 @@ export default defineComponent({
     this.loadTeams()
   },
   methods: {
+    canManageDiscipline, canManageTeam,
     setTeamPopupVisibility(visible: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
 

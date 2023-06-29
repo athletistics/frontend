@@ -81,7 +81,8 @@
     "team": {
       "addPart": "Add participants",
       "addPartTitle": "Select participants to add",
-      "removePart": "Remove selected Users from team"
+      "removePart": "Remove selected Users from team",
+      "selectForRemoval": "Select users for removal"
     }
   },
   "comp": {
@@ -170,7 +171,7 @@
       },
       "training": "Training"
     },
-    "sport": {
+    "sports": {
       "athletics": "Athletics"
     }
   }

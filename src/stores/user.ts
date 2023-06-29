@@ -24,6 +24,7 @@ export const useMyUserStore = defineStore('myUser', {
   actions: {
     updateFromServer() {
       const authStore = useAuthStore()
+      if (!authStore.token) return
 
       axios.request({
         url: "/me",
