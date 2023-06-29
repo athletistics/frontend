@@ -6,7 +6,7 @@
       <SimpleTableCell>{{e.name}}</SimpleTableCell>
       <SimpleTableCell>{{e.place}}</SimpleTableCell>
       <SimpleTableCell>{{$d(new Date(e.date))}}</SimpleTableCell>
-      <SimpleTableCell>{{$t('data.' +dataStore.getEventTypeById(e.eventTypeId).i18nName)}}</SimpleTableCell>
+      <SimpleTableCell>{{$t('data.' +dataStore.getEventTypeById(e.eventTypeId)?.i18nName)}}</SimpleTableCell>
       <SimpleTableCell>{{ e.isOutdoor ? $t('glob.event.outdoor') : $t('glob.event.indoor')}}</SimpleTableCell>
     </SimpleTableRow>
   </SimpleTable>

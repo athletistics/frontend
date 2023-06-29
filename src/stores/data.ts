@@ -6,6 +6,7 @@ import {useAuthStore} from "./auth";
 import User from "../types/User";
 import Category from "../types/Category";
 import EventType from "../types/EventType";
+import Language from "../types/Language";
 
 interface State {
   eventTypes: EventType[]
@@ -15,7 +16,8 @@ interface State {
   categories: Category[]
   categoryMap: Map<string, Category>,
   staticResults: Result.Static[]
-  staticResultTypes: Result.StaticType[]
+  staticResultTypes: Result.StaticType[],
+  languages: Language[],
   users: User[]
 }
 
@@ -29,6 +31,7 @@ export const useDataStore = defineStore('data', {
     categoryMap: new Map<string, Category>(),
     staticResults: [] as Result.Static[],
     staticResultTypes: [] as Result.StaticType[],
+    languages: [] as Language[],
     users: [] as User[]
   }),
   getters: {
@@ -71,6 +74,14 @@ export const useDataStore = defineStore('data', {
         }
         return {id: 0, i18nType: ""}
       }
+    },
+    getLanguageById(state) {
+      return (id: number): Language | undefined => {
+        for (let i = 0; i < state.languages.length; i++) {
+          if (state.languages[i].id === id) return state.languages[i]
+        }
+        return undefined
+      }
     }
   },
   actions: {
@@ -80,6 +91,7 @@ export const useDataStore = defineStore('data', {
       this.updateStaticResults()
       this.updateCategories()
       this.updateEventTypes()
+      this.updateLanguages()
     },
     updateDisciplines() {
       const authStore = useAuthStore()
@@ -159,6 +171,20 @@ export const useDataStore = defineStore('data', {
       }).then(response => {
         this.eventTypes = response.data
       }).catch(() => console.log('error reading event types'))
+    },
+    updateLanguages() {
+      const authStore = useAuthStore()
+
+      axios.request({
+        url: "/data/languages",
+        method: 'get',
+        baseURL: Const.API_URL,
+        headers: {
+          'Authorization': 'Bearer ' + authStore.token
+        },
+      }).then(response => {
+        this.languages = response.data
+      }).catch(() => console.log('error reading languages'))
     }
   },
   persist: true

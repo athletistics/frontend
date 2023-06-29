@@ -137,7 +137,15 @@
       "birthdate": "Birthdate",
       "gender": "Gender",
       "prefLang": "Preferred language",
-      "email": "Email"
+      "email": "Email",
+      "primaryMail": "Primary email",
+      "primaryPhone": "Primary (emergency) phone",
+      "oasi": "OASI number",
+      "address": "Address",
+      "state": "State",
+      "place": "City",
+      "country": "Country",
+      "nationality": "Nationality"
     },
     "date": "Date",
     "gender": {
@@ -147,7 +155,12 @@
   },
   "data": {
     "discipline": {},
-    "gender": {},
+    "gender": [
+      "Unspecified",
+      "Female",
+      "Male",
+      "Diverse"
+    ],
     "language": {},
     "eventType":{
       "competition": {

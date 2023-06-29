@@ -2,18 +2,22 @@
   <h1>{{ $t(`page.${pref}.title.account`) }}</h1>
 
   <div class="p-4 white-rounded grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-    <LabeledText label="glob.user.firstName" :text="data.firstName"/>
-    <LabeledText label="glob.user.lastName" :text="data.lastName"/>
-    <LabeledText label="glob.user.birthdate" :text="new Date(data.birthDate).toString()"/>
-    <LabeledText label="glob.user.address" :text="undefined"/>
-    <LabeledText label="glob.user.place" :text="undefined"/>
-    <LabeledText label="glob.user.country" :text="undefined"/>
-    <LabeledText label="glob.user.primaryMail" :text="undefined"/>
-    <LabeledText label="glob.user.primaryPhone" :text="undefined"/>
-    <LabeledText label="glob.user.nationality" :text="undefined"/>
+    <LabeledText :state="dataState" label="glob.user.firstName" :text="data.firstName"/>
+    <LabeledText :state="dataState" label="glob.user.lastName" :text="data.lastName"/>
+    <LabeledText :state="dataState" label="glob.user.birthdate"
+                 :text="data.birthDate ? $d(new Date(data.birthDate)) : undefined"/>
+    <LabeledText :state="dataState" label="glob.user.prefLang"
+                 :text="dataStore.getLanguageById(data.languageId)?.short"/>
+    <LabeledText :state="dataState" label="glob.user.gender" :text="$t('data.gender['+(data.genderId-1)+']')"/>
+    <LabeledText :state="dataState" label="glob.user.oasi" :text="data.oasi"/>
+    <LabeledText :state="dataState" label="glob.user.address" :text="data.address"/>
+    <LabeledText :state="dataState" label="glob.user.place" :text="`${data.place?.postCode} ${data.place?.place}`"/>
+    <LabeledText :state="dataState" label="glob.user.state" :text="data.place?.state?.name"/>
+    <LabeledText :state="dataState" label="glob.user.country" :text="data.place?.state?.country?.name"/>
+    <LabeledText :state="dataState" label="glob.user.primaryMail" :text="data.primaryMail"/>
+    <LabeledText :state="dataState" label="glob.user.primaryPhone" :text="data.primaryPhone"/>
+    <LabeledText :state="dataState" label="glob.user.nationality" :text="data.nationality?.name"/>
   </div>
-
-  <p>{{ data }}</p>
 
   <hr>
 
@@ -67,6 +71,7 @@ export default defineComponent({
   data() {
     return {
       data: {} as User,
+      dataState: NaN as LoadingStates,
       bests: [] as Result.Data[],
       results: [] as Result.Data[],
       resultsState: NaN as LoadingStates
@@ -122,6 +127,7 @@ export default defineComponent({
     },
     getUser() {
       const url = this.isMe ? "/me" : `/users/${this.userId}`
+      this.dataState = LoadingStates.Loading
 
       axios.request({
         url,
@@ -132,7 +138,11 @@ export default defineComponent({
         }
       }).then(response => {
         this.data = response.data
-      }).catch(response => this.toastStore.addToastFromAxiosError(response))
+        this.dataState = LoadingStates.Loaded
+      }).catch(response => {
+        this.toastStore.addToastFromAxiosError(response)
+        this.dataState = LoadingStates.Error
+      })
     }
   },
   mounted() {

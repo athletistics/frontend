@@ -1,14 +1,27 @@
 <script lang="ts">
-import {computed, defineComponent, PropType} from "vue";
+import {defineComponent, PropType} from "vue";
+import {LoadingStates} from "../types/LoadingStates";
 
 export default defineComponent({
   props: {
     text: {type: String as PropType<string | undefined>, required: true},
-    label: {type: String as PropType<string | undefined>, required: true}
+    label: {type: String as PropType<string | undefined>, required: true},
+    state: {type: Number as PropType<LoadingStates>, required: false, default: LoadingStates.Loaded}
   },
   computed: {
+    LoadingStates() {
+      return LoadingStates
+    },
     animateClass() {
-      return this.text ? "" : "animate-pulse"
+      return this.state === LoadingStates.Loading ? "animate-pulse" : ""
+    },
+    visualClass() {
+      switch (this.state) {
+        case LoadingStates.Error:
+          return "bg-red-200"
+        case LoadingStates.Loading:
+          return "bg-slate-200"
+      }
     }
   }
 })
@@ -17,7 +30,7 @@ export default defineComponent({
 <template>
   <div :class="animateClass">
     <p>{{$t(label)}}</p>
-    <p v-if="text" class="font-argentum">{{text}}</p>
-    <div v-else class="h-2 my-2 bg-slate-200 rounded"></div>
+    <p v-if="state === LoadingStates.Loaded" class="font-argentum">{{text ? text : "-"}}</p>
+    <div v-else class="h-2 my-2 rounded" :class="visualClass"></div>
   </div>
 </template>

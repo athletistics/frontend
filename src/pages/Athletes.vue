@@ -33,11 +33,8 @@
 
       <div>
         <label>{{$t('glob.user.prefLang')}}</label>
-        <!-- todo: replace with data from server -->
         <select v-model="newAthlete.languageId" required>
-          <option :value="1" selected>English</option>
-          <option :value="2" selected>German</option>
-          <option :value="3" selected>French</option>
+          <option v-for="l in dataStore.languages" :value="l.id">{{l.short}}</option>
         </select>
       </div>
 
@@ -68,14 +65,16 @@ import UserList from "../components/user/UserList.vue";
 import {LoadingStates} from "../types/LoadingStates";
 import {useToastStore} from "../stores/toast";
 import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
+import {useDataStore} from "../stores/data";
 
 export default defineComponent({
   components: {TitleWithBtnPlus, UserList, Modal},
   setup() {
     const authStore = useAuthStore()
     const toastStore = useToastStore()
+    const dataStore = useDataStore()
 
-    return {authStore, toastStore}
+    return {authStore, toastStore, dataStore}
   },
   data() {
     return {
