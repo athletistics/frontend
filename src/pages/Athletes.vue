@@ -1,27 +1,43 @@
 <template>
-  <TitleWithBtnPlus :btn-visible="canManageUsers()" @btn-click="setVisibility(true)">{{$t('page.athletes.title')}}</TitleWithBtnPlus>
+  <TitleWithBtnPlus :btn-visible="canManageUsers()" @btn-click="setVisibility(true)">{{ $t('page.athletes.title') }}
+  </TitleWithBtnPlus>
 
   <UserList :state="athletesState" :users="athletes"/>
 
-  <Modal ref="modal">
-    <form class="grid sm:grid-cols-2 gap-4 with-label mt-4">
+  <Modal ref="modal" classes="xl:max-w-5xl sm:h-auto h-5/6">
+    <form class="grid xl:grid-cols-3 sm:grid-cols-2 gap-4 with-label mt-4">
       <div>
-        <label>{{$t('glob.user.firstName')}}</label>
+        <label>{{ $t('glob.user.firstName') }}</label>
         <input v-model="newAthlete.firstName" required>
       </div>
 
       <div>
-        <label>{{$t('glob.user.lastName')}}</label>
+        <label>{{ $t('glob.user.firstName') }}</label>
+        <input v-model="newAthlete.firstName" required>
+      </div>
+
+      <div>
+        <label>{{ $t('glob.user.firstName') }}</label>
+        <input v-model="newAthlete.firstName" required>
+      </div>
+
+      <div>
+        <label>{{ $t('glob.user.firstName') }}</label>
+        <input v-model="newAthlete.firstName" required>
+      </div>
+
+      <div>
+        <label>{{ $t('glob.user.lastName') }}</label>
         <input v-model="newAthlete.lastName" required>
       </div>
 
       <div>
-        <label>{{$t('glob.user.birthdate')}}</label>
+        <label>{{ $t('glob.user.birthdate') }}</label>
         <input type="date" v-model="newAthlete.birthDate" required>
       </div>
 
       <div>
-        <label>{{$t('glob.user.gender')}}</label>
+        <label>{{ $t('glob.user.gender') }}</label>
         <!-- todo: replace with data from server -->
         <select v-model="newAthlete.genderId" required>
           <option :value="1" selected>Unspecified</option>
@@ -32,23 +48,28 @@
       </div>
 
       <div>
-        <label>{{$t('glob.user.prefLang')}}</label>
+        <label>{{ $t('glob.user.prefLang') }}</label>
         <select v-model="newAthlete.languageId" required>
-          <option v-for="l in dataStore.languages" :value="l.id">{{l.short}}</option>
+          <option v-for="l in dataStore.languages" :value="l.id">{{ l.short }}</option>
         </select>
       </div>
 
       <div>
-        <label>{{$t('glob.user.email')}}</label>
+        <label>{{ $t('glob.user.email') }}</label>
         <input v-model="newAthlete.primaryMail">
       </div>
 
     </form>
 
-    <div class="grid sm:grid-cols-2 gap-4">
-      <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createUser()">{{$t('glob.btn.create')}}</LoadingBtn>
-      <LoadingBtn full outlined @click="setVisibility(false)">{{$t('glob.btn.cancel')}}</LoadingBtn>
-    </div>
+    <template #bottom>
+      <hr>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createUser()">
+          {{ $t('glob.btn.create') }}
+        </LoadingBtn>
+        <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
+      </div>
+    </template>
 
   </Modal>
 </template>

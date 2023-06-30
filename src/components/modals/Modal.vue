@@ -1,21 +1,27 @@
 <template>
   <div class="fixed top-0 left-0 w-full h-full backdrop-blur flex items-center" :class="visibility">
-    <div class="rounded-md shadow-xl bg-white sm:mx-auto mx-10 p-5 max-h-full overflow-scroll sm:w-96 w-full relative">
+    <div class="rounded-md shadow-xl bg-white sm:mx-auto mx-4 my-10 p-5 container w-full relative" :class="classes">
       <button @click="setVisibility(false)" class="absolute right-0 mr-5">
         <font-awesome-icon icon="fa-xmark"></font-awesome-icon>
       </button>
-      <form class="space-y-4 with-label">
-        <slot/>
-      </form>
+      <div class="flex flex-col space-y-4 h-full">
+        <div class="flex-shrink overflow-scroll">
+          <slot/>
+        </div>
+        <slot name="bottom"/>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
+import {defineComponent, PropType} from "vue";
 
 export default defineComponent({
   name: "Modal",
+  props: {
+    classes: {type: String as PropType<string>, required: false, default: "sm:max-w-sm"}
+  },
   data() {
     return {
       visible: false as boolean
@@ -31,7 +37,7 @@ export default defineComponent({
       return {
         "invisible": !this.visible
       }
-    }
+    },
   },
   created() {
     let that = this
