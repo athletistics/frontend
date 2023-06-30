@@ -38,7 +38,7 @@
     </div>
 
     <div>
-      <label>{{ $t('glob.event.locality') }}</label>
+      <label>{{ $t('glob.event.season') }}</label>
       <select v-model="newEvent.isOutdoor" required>
         <option :value="true">{{ $t('glob.event.outdoor') }}</option>
         <option :value="false">{{ $t('glob.event.indoor') }}</option>
@@ -52,8 +52,8 @@
 
     <hr>
     <div class="grid sm:grid-cols-2 gap-4">
-      <button type="button" v-on:click="createEvent()" class="btn btn-block btn-primary">{{$t('glob.btn.add')}}</button>
-      <button type="button" v-on:click="setModalVisibility(false)" class="btn btn-block">{{$t('glob.btn.cancel')}}</button>
+      <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createEvent()">{{$t('glob.btn.add')}}</LoadingBtn>
+      <LoadingBtn full outlined @click="setModalVisibility(false)">{{$t('glob.btn.cancel')}}</LoadingBtn>
     </div>
   </Modal>
 </template>
@@ -75,10 +75,11 @@ import {useDataStore} from "../stores/data";
 import {LoadingStates} from "../types/LoadingStates";
 import {canManageEvents} from "../plugins/AccessControl";
 import LoadingState from "../types/LoadingState";
+import LoadingBtn from "../components/button/LoadingBtn.vue";
 
 export default defineComponent({
   name: "Events",
-  components: {SimpleTableCell, SimpleTableRow, SimpleTable, TitleWithBtnPlus, Modal},
+  components: {LoadingBtn, SimpleTableCell, SimpleTableRow, SimpleTable, TitleWithBtnPlus, Modal},
   setup() {
     const authStore = useAuthStore()
     const toastStore = useToastStore()
@@ -92,7 +93,8 @@ export default defineComponent({
       events: [] as Event[],
       newEvent: {} as Event,
       homologated: [] as number[],
-      state: {state: NaN} as LoadingState
+      state: {state: NaN} as LoadingState,
+      createState: {state: NaN} as LoadingState
     }
   },
   methods: {
@@ -106,6 +108,7 @@ export default defineComponent({
       this.$router.push("/events/" + id)
     },
     createEvent() {
+      this.createState.state = LoadingStates.Loading
       this.newEvent.isHomologated = this.homologated.length > 0
       this.newEvent.date = moment(this.newEvent.webDate).format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS) + "Z"
 
@@ -118,10 +121,14 @@ export default defineComponent({
         },
         data: this.newEvent
       }).then(() => {
+        this.createState.state = LoadingStates.Loaded
         this.toastStore.addSuccessToast()
         this.dataStore.updateEvents(this.state)
         this.setModalVisibility(false)
-      }).catch(error => this.toastStore.addToastFromAxiosError(error))
+      }).catch(error => {
+        this.createState.state = LoadingStates.Error
+        this.toastStore.addToastFromAxiosError(error)
+      })
     },
   }
 })

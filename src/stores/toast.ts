@@ -19,8 +19,14 @@ export const useToastStore = defineStore('toast', {
         },
         addSuccessToast(){
             this.addToast({
-                title: "success",
+                title: "Success",
                 color: "bg-primary"
+            })
+        },
+        addErrorToast(title: string) {
+            this.addToast({
+                title,
+                color: "bg-red-600"
             })
         },
         addToastFromAxiosError(error: AxiosError){

@@ -1,4 +1,5 @@
 import {useMyUserStore} from "../stores/user";
+import {useAuthStore} from "../stores/auth";
 
 const coach = "coach"
 const headCoach = "head_coach"
@@ -14,27 +15,32 @@ function isHeadCoach(): boolean {
   return userStore.hasRole(headCoach)
 }
 
+function is2FaOk(): boolean  {
+  const authStore = useAuthStore()
+  return authStore.is2FaOk
+}
+
 function isAthlete(): boolean {
   const userStore = useMyUserStore()
   return userStore.hasRole(athlete)
 }
 
 export function canManageTeam(): boolean {
-  return isHeadCoach()
+  return isHeadCoach() && is2FaOk()
 }
 
 export function canManageDiscipline(): boolean {
-  return isCoach()
+  return isCoach() && is2FaOk()
 }
 
 export function canManageEvents(): boolean {
-  return isCoach()
+  return isCoach() && is2FaOk()
 }
 
 export function canManageResults(): boolean {
-  return isCoach()
+  return isCoach() && is2FaOk()
 }
 
 export function canManageUsers(): boolean {
-  return isHeadCoach()
+  return isHeadCoach() && is2FaOk()
 }

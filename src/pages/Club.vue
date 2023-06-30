@@ -34,11 +34,11 @@
       <input v-model="newTeam.name">
     </div>
     <hr>
-    <div>
-      <button class="btn btn-primary btn-block !mt-0" @click="createTeam()" type="button">{{ $t('glob.btn.save') }}
-      </button>
-      <button class="btn btn-block" @click="setTeamPopupVisibility(false)" type="button">{{ $t('glob.btn.cancel') }}
-      </button>
+    <div class="grid md:grid-cols-2 gap-4">
+      <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createTeam()" type="button">{{ $t('glob.btn.save') }}
+      </LoadingBtn>
+      <LoadingBtn full outlined @click="setTeamPopupVisibility(false)" type="button">{{ $t('glob.btn.cancel') }}
+      </LoadingBtn>
     </div>
   </Modal>
 
@@ -58,13 +58,13 @@
       </select>
     </div>
     <hr>
-    <div>
-      <button class="btn btn-primary btn-block !mt-0" @click="createDiscipline()" type="button">
+    <div class="grid md:grid-cols-2 gap-4">
+      <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createDiscipline()">
         {{ $t('glob.btn.save') }}
-      </button>
-      <button class="btn btn-block" @click="setDisciplinePopupVisibility(false)" type="button">
+      </LoadingBtn>
+      <LoadingBtn full outlined @click="setDisciplinePopupVisibility(false)">
         {{ $t('glob.btn.cancel') }}
-      </button>
+      </LoadingBtn>
     </div>
   </Modal>
 </template>
@@ -88,9 +88,10 @@ import SimpleList from "../components/list/SimpleList.vue";
 import {LoadingStates} from "../types/LoadingStates";
 import {canManageDiscipline, canManageTeam} from "../plugins/AccessControl";
 import LoadingState from "../types/LoadingState";
+import LoadingBtn from "../components/button/LoadingBtn.vue";
 
 export default defineComponent({
-  components: {SimpleList, SimpleListEntry, TitleWithBtnPlus, BtnPlus, Modal},
+  components: {LoadingBtn, SimpleList, SimpleListEntry, TitleWithBtnPlus, BtnPlus, Modal},
   setup() {
     const authStore = useAuthStore()
     const userStore = useMyUserStore()
@@ -106,7 +107,8 @@ export default defineComponent({
       teamsState: NaN as LoadingStates,
       disciplineStateObj: {state: NaN} as LoadingState,
       newTeam: {} as Team,
-      newDiscipline: {} as Discipline
+      newDiscipline: {} as Discipline,
+      createState: {state: NaN} as LoadingState
     }
   },
   mounted() {
@@ -136,6 +138,7 @@ export default defineComponent({
       if (!visible) this.newDiscipline = {} as Discipline
     },
     createDiscipline() {
+      this.createState.state = LoadingStates.Loading
       axios.request({
         url: "/disciplines",
         method: 'post',
@@ -145,12 +148,18 @@ export default defineComponent({
         },
         data: this.newDiscipline
       }).then(() => {
+        this.createState.state = LoadingStates.Loaded
+
         this.dataStore.updateDisciplines(this.disciplineStateObj)
         this.setDisciplinePopupVisibility(false)
         this.toastStore.addSuccessToast()
-      }).catch(error => this.toastStore.addToastFromAxiosError(error))
+      }).catch(error => {
+        this.createState.state = LoadingStates.Error
+        this.toastStore.addToastFromAxiosError(error)
+      })
     },
     createTeam() {
+      this.createState.state = LoadingStates.Loading
       axios.request({
         url: "/club/" + this.userStore.user.clubId + "/teams",
         method: 'post',
@@ -160,9 +169,13 @@ export default defineComponent({
         },
         data: this.newTeam
       }).then(() => {
+        this.createState.state = LoadingStates.Loaded
         this.loadTeams()
         this.setTeamPopupVisibility(false)
-      }).catch(error => this.toastStore.addToastFromAxiosError(error))
+      }).catch(error => {
+        this.createState.state = LoadingStates.Error
+        this.toastStore.addToastFromAxiosError(error)
+      })
     },
     loadTeams() {
       this.teamsState = LoadingStates.Loading

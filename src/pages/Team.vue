@@ -1,25 +1,23 @@
 <template>
-  <h1>{{ team.name }}</h1>
+  <h1>{{ team.name }}&nbsp;</h1>
 
 
   <div class="grid md:grid-cols-2 gap-4" v-if="canManageTeam() && !editMode">
-    <button type="button" v-on:click="setModalVisibility(true)" class="btn btn-block btn-primary">{{
-        $t('page.team.addPart')
-      }}
-    </button>
-    <button type="button" @click="setSelectable(true)" class="btn btn-block btn-error">
+    <LoadingBtn full outlined visual-type="primary" @click="setModalVisibility(true)">{{ $t('page.team.addPart') }}
+    </LoadingBtn>
+    <LoadingBtn full outlined visual-type="error" @click="setSelectable(true)">
       {{ $t('page.team.selectForRemoval') }}
-    </button>
+    </LoadingBtn>
   </div>
 
   <div class="grid md:grid-cols-2 gap-4" v-if="canManageTeam() && editMode">
-    <button type="button" v-on:click="removeFromTeam()" class="btn btn-block btn-error">{{
+    <LoadingBtn full outlined visual-type="error" :loading="removeState" @click="removeFromTeam()">{{
         $t('page.team.removePart')
       }}
-    </button>
-    <button type="button" @click="setSelectable(false)" class="btn btn-block">
+    </LoadingBtn>
+    <LoadingBtn full outlined @click="setSelectable(false)">
       {{ $t('glob.btn.cancel') }}
-    </button>
+    </LoadingBtn>
   </div>
 
 
@@ -39,9 +37,8 @@
     </div>
     <hr>
     <div class="grid sm:grid-cols-2 gap-4">
-      <button type="button" v-on:click="addToTeam()" class="btn btn-block btn-primary">{{ $t('glob.btn.add') }}</button>
-      <button type="button" v-on:click="setModalVisibility(false)" class="btn btn-block">{{ $t('glob.btn.cancel') }}
-      </button>
+      <LoadingBtn full outlined visual-type="primary" :loading="addState" @click="addToTeam()">{{ $t('glob.btn.add') }}</LoadingBtn>
+      <LoadingBtn full outlined @click="setModalVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
     </div>
   </Modal>
 
@@ -60,9 +57,11 @@ import SimpleList from "../components/list/SimpleList.vue";
 import SimpleListEntry from "../components/list/SimpleListEntry.vue";
 import {LoadingStates} from "../types/LoadingStates";
 import {canManageTeam} from "../plugins/AccessControl";
+import LoadingBtn from "../components/button/LoadingBtn.vue";
+import LoadingState from "../types/LoadingState";
 
 export default defineComponent({
-  components: {SimpleListEntry, Modal, SimpleList},
+  components: {LoadingBtn, SimpleListEntry, Modal, SimpleList},
   setup() {
     const authStore = useAuthStore()
     const toastStore = useToastStore()
@@ -77,7 +76,9 @@ export default defineComponent({
       state: NaN as LoadingStates,
       editMode: false as boolean,
       usersToAdd: [] as string[],
-      usersToRemove: [] as string[]
+      usersToRemove: [] as string[],
+      addState: {state: NaN} as LoadingState,
+      removeState: {state: NaN} as LoadingState
     }
   },
   computed: {
@@ -95,11 +96,12 @@ export default defineComponent({
     setModalVisibility(visible: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
     },
-    setSelectable(selectable: boolean){
+    setSelectable(selectable: boolean) {
       this.editMode = selectable
       this.usersToRemove = []
     },
     addToTeam() {
+      this.addState.state = LoadingStates.Loading
       axios.request({
         url: "/teams/" + this.$route.params.id + "/participants",
         method: 'post',
@@ -109,10 +111,13 @@ export default defineComponent({
         },
         data: this.usersToAdd
       }).then(() => {
+        this.addState.state = LoadingStates.Loaded
+        this.setModalVisibility(false)
         this.getParticipants()
         this.usersToAdd = []
         this.toastStore.addToast({title: "Success", color: "bg-primary"})
       }).catch(error => {
+        this.addState.state = LoadingStates.Error
         this.toastStore.addToast({
           title: "Unable to fulfill request",
           code: error.response.data.error,
@@ -123,6 +128,7 @@ export default defineComponent({
       })
     },
     removeFromTeam() {
+      this.removeState.state = LoadingStates.Loading
       axios.request({
         url: "/teams/" + this.$route.params.id + "/participants",
         method: 'delete',
@@ -132,9 +138,14 @@ export default defineComponent({
         },
         data: this.usersToRemove
       }).then(() => {
+        this.removeState.state = LoadingStates.Loaded
+        this.editMode = false
         this.getParticipants()
         this.usersToRemove = []
-      }).catch(() => console.log('error adding participants'))
+      }).catch(() => {
+        this.removeState.state = LoadingStates.Error
+        console.log('error adding participants')
+      })
     },
     getAthletes() {
       axios.request({
@@ -149,6 +160,7 @@ export default defineComponent({
       })
     },
     getParticipants() {
+      this.participants = [] as User[]
       this.state = LoadingStates.Loading
 
       axios.request({

@@ -1,15 +1,17 @@
 <template>
 
   <div class="shadow-2xl rounded-md max-w-md p-5 mx-auto grid gap-5 mt-10 text-center">
-    <h1 v-if="state===stateDefault">{{ $t('page.landing.title')}}</h1>
-    <h1 v-else>{{$t('page.landing.titleWelcomeBack')}}</h1>
-    <p>{{$t('page.landing.message')}}</p>
+    <h1 v-if="state===stateDefault">{{ $t('page.landing.title') }}</h1>
+    <h1 v-else>{{ $t('page.landing.titleWelcomeBack') }}</h1>
+    <p>{{ $t('page.landing.message') }}</p>
     <hr>
     <form class="space-y-4 with-label">
-      <p v-if="state===stateExpired">{{$t('page.landing.messageExpired')}}</p>
+      <p v-if="state===stateExpired">{{ $t('page.landing.messageExpired') }}</p>
       <div>
-        <button v-if="state!==stateOK" type="button" class="bg-primary text-white" v-on:click="login">{{$t('page.landing.btnLogin')}}</button>
-        <button v-else type="button" class="bg-primary text-white" v-on:click="$router.push('/home')">{{$t('page.landing.btnHome')}}</button>
+        <LoadingBtn v-if="state!==stateOK" full visual-type="primary" @click="login">{{ $t('page.landing.btnLogin') }}
+        </LoadingBtn>
+        <LoadingBtn v-else full visual-type="primary" @click="$router.push('/home')">{{ $t('page.landing.btnHome') }}
+        </LoadingBtn>
       </div>
     </form>
   </div>
@@ -22,6 +24,7 @@ import {defineComponent, PropType} from "vue";
 import authConfig from "../plugins/AuthConfig";
 import {OidcClient} from "oidc-client-ts";
 import {useAuthStore} from "../stores/auth";
+import LoadingBtn from "../components/button/LoadingBtn.vue";
 
 const stateDefault = 0
 const stateLoading = 1
@@ -30,6 +33,7 @@ const stateExpired = 3
 
 export default defineComponent({
   name: "Landing",
+  components: {LoadingBtn},
   data() {
     return {
       state: 0,

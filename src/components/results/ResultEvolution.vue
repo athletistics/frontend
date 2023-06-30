@@ -26,10 +26,7 @@
       </div>
 
       <div v-if="canManageResults()">
-        <button type="button" class="btn btn-primary btn-block !mt-0" @click="setModalVisibility(true)">{{
-            $t('comp.evolution.compare')
-          }}
-        </button>
+        <LoadingBtn full outlined visual-type="primary" @click="setModalVisibility(true)">{{ $t('comp.evolution.compare') }}</LoadingBtn>
       </div>
     </form>
 
@@ -49,8 +46,10 @@
 
     <hr>
     <div class="grid sm:grid-cols-2 gap-4">
-      <button type="button" v-on:click="compare()" class="btn btn-block btn-primary">Add</button>
-      <button type="button" v-on:click="setModalVisibility(false)" class="btn btn-block">Cancel</button>
+      <LoadingBtn full outlined visual-type="primary"
+                  :state="state" @click="compare()">{{$t('glob.btn.add')}}</LoadingBtn>
+      <LoadingBtn full outlined
+                  @click="setModalVisibility(false)">{{$t('glob.btn.cancel')}}</LoadingBtn>
     </div>
   </Modal>
 </template>
@@ -86,11 +85,14 @@ import {namedColor, transparentize} from "../../plugins/ChartUtils";
 import Category from "../../types/Category";
 import {canManageResults} from "../../plugins/AccessControl";
 import {formatResult} from "../../plugins/Helper";
+import LoadingBtn from "../button/LoadingBtn.vue";
+import LoadingState from "../../types/LoadingState";
+import {LoadingStates} from "../../types/LoadingStates";
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineController, LineElement, PointElement, TimeScale)
 export default defineComponent({
   name: "ResultEvolution",
-  components: {Modal, Line},
+  components: {LoadingBtn, Modal, Line},
   props: {
     defaultUser: {type: Object as PropType<string | undefined>, default: undefined}
   },
@@ -107,7 +109,8 @@ export default defineComponent({
       category: "" as string,
       showReference: false as boolean,
       dataMap: new Map<string, Result.Data[]>() as Map<string, Result.Data[]>,
-      usersToAdd: [] as string[]
+      usersToAdd: [] as string[],
+      state: {state: NaN} as LoadingState
     }
   },
   computed: {
@@ -247,6 +250,7 @@ export default defineComponent({
       this.setModalVisibility(false)
     },
     addResultSet(userId: string) {
+      this.state.state = LoadingStates.Loading
       axios.request({
         url: `/results?userId=${userId}`,
         method: 'get',
@@ -255,12 +259,15 @@ export default defineComponent({
           'Authorization': 'Bearer ' + this.authStore.token
         }
       }).then(response => {
+        this.state.state = LoadingStates.Loaded
+
         if (!this.dataMap || !this.dataMap.size) this.dataMap = new Map()
 
         const name = response.data[0]?.userLastName + " " + response.data[0]?.userFirstName
 
         this.dataMap.set(name ?? userId, response.data)
       }).catch(response => {
+        this.state.state = LoadingStates.Error
         this.toastStore.addToastFromAxiosError(response)
       })
     },

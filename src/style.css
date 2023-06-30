@@ -53,7 +53,7 @@ h4 {
 }
 
 .hover\:bg-main:hover {
-    @apply bg-orange-50
+    @apply bg-primary-variant-100
 }
 
 #app {
@@ -72,40 +72,12 @@ nav {
 
 }
 
-.btn {
-    @apply border-2 main-transition rounded-md hover:bg-gray-200 p-3 mt-5;
-}
-
-.btn-plus {
-    @apply border-2 main-transition hover:bg-gray-200 md:w-12 md:h-12 w-10 h-10 text-primary;
-}
-
-.btn-block {
-    @apply block w-full text-center;
-}
-
-.btn-primary {
-    @apply border-primary hover:bg-primary text-black hover:text-white;
-}
-
-.btn-warning {
-    @apply border-yellow-500 hover:bg-yellow-500 text-black hover:text-black;
-}
-
-.btn-error {
-    @apply border-red-500 hover:bg-red-500 text-black hover:text-black;
-}
-
 form.with-label label {
     @apply block text-left text-sm
 }
 
 form.with-label input:not([type=checkbox]), form.with-label select {
     @apply block p-2 rounded-md bg-slate-100 w-full
-}
-
-form.with-label button {
-    @apply block p-3 rounded-md w-full
 }
 
 .table-head {
@@ -156,6 +128,6 @@ form.with-label button {
     @apply visible opacity-100 main-transition
 }
 
-.white-rounded{
+.white-rounded {
     @apply bg-white shadow-lg rounded-xl
 }

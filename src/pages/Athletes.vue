@@ -43,12 +43,12 @@
         <input v-model="newAthlete.primaryMail">
       </div>
 
-      <div class="grid sm:grid-cols-2 gap-4">
-        <button type="button" v-on:click="createUser()" class="btn btn-block btn-primary">{{$t('glob.btn.create')}}</button>
-        <button v-on:click="setVisibility(false)" class="btn btn-block">{{$t('glob.btn.cancel')}}</button>
-      </div>
-
     </form>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createUser()">{{$t('glob.btn.create')}}</LoadingBtn>
+      <LoadingBtn full outlined @click="setVisibility(false)">{{$t('glob.btn.cancel')}}</LoadingBtn>
+    </div>
 
   </Modal>
 </template>
@@ -67,9 +67,11 @@ import {useToastStore} from "../stores/toast";
 import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
 import {useDataStore} from "../stores/data";
 import {canManageUsers} from "../plugins/AccessControl";
+import LoadingBtn from "../components/button/LoadingBtn.vue";
+import LoadingState from "../types/LoadingState";
 
 export default defineComponent({
-  components: {TitleWithBtnPlus, UserList, Modal},
+  components: {LoadingBtn, TitleWithBtnPlus, UserList, Modal},
   setup() {
     const authStore = useAuthStore()
     const toastStore = useToastStore()
@@ -82,6 +84,7 @@ export default defineComponent({
       athletes: [] as User[],
       athletesState: NaN as LoadingStates,
       newAthlete: {} as User,
+      createState: {state: NaN} as LoadingState
     }
   },
   mounted() {
@@ -112,6 +115,7 @@ export default defineComponent({
       })
     },
     createUser() {
+      this.createState.state = LoadingStates.Loading
       this.newAthlete.birthDate = moment(this.newAthlete.birthDate).format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS) + "Z"
       this.newAthlete.placeId = 1
       this.newAthlete.nationalityId = 1
@@ -124,8 +128,12 @@ export default defineComponent({
         },
         data: this.newAthlete
       }).then(() => {
+        this.createState.state = LoadingStates.Loaded
         this.loadAthletes()
         this.setVisibility(false)
+      }).catch((error) => {
+        this.createState.state = LoadingStates.Error
+        this.toastStore.addToastFromAxiosError(error)
       })
     },
   }

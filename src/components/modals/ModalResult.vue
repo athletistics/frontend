@@ -43,8 +43,8 @@
 
     <hr>
     <div class="grid sm:grid-cols-2 gap-4">
-      <button type="button" v-on:click="createResult()" class="btn btn-block btn-primary">Add</button>
-      <button type="button" v-on:click="setVisibility(false)" class="btn btn-block">Cancel</button>
+      <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createResult">{{$t('glob.btn.add')}}</LoadingBtn>
+      <LoadingBtn full outlined @click="setVisibility(false)">{{$t('glob.btn.cancel')}}</LoadingBtn>
     </div>
   </Modal>
 </template>
@@ -59,10 +59,13 @@ import {useDataStore} from "../../stores/data";
 import {useToastStore} from "../../stores/toast";
 import Event from "../../types/Event";
 import User from "../../types/User";
+import LoadingBtn from "../button/LoadingBtn.vue";
+import LoadingState from "../../types/LoadingState";
+import {LoadingStates} from "../../types/LoadingStates";
 
 export default defineComponent({
   name: "ModalResult",
-  components: {Modal},
+  components: {LoadingBtn, Modal},
   props: {
     result: {type: Object as PropType<Result.Data | undefined>, default: undefined},
     user: {type: Object as PropType<User | undefined>, default: undefined},
@@ -79,7 +82,8 @@ export default defineComponent({
   data() {
     return {
       events: [] as Event[],
-      newResult: {} as Result.RequestBody
+      newResult: {} as Result.RequestBody,
+      createState: {state: NaN} as LoadingState
     }
   },
   computed: {
@@ -97,6 +101,7 @@ export default defineComponent({
       if (this.event) this.newResult.eventId = this.event.id
     },
     createResult() {
+      this.createState.state = LoadingStates.Loading
       const url = this.isPersonal ? "/me/results" : "/results"
 
       if (this.isPersonal) {
@@ -112,10 +117,14 @@ export default defineComponent({
         },
         data: this.newResult,
       }).then(response => {
+        this.createState.state = LoadingStates.Loaded
         this.toastStore.addSuccessToast()
         this.$emit('created')
         this.setVisibility(false)
-      }).catch(response => this.toastStore.addToastFromAxiosError(response))
+      }).catch(response => {
+        this.createState.state = LoadingStates.Error
+        this.toastStore.addToastFromAxiosError(response)
+      })
     },
     getEvents() {
       axios.request({
