@@ -19,6 +19,7 @@ declare namespace Result {
     eventName: string,
     eventPlace: string,
     eventOutdoor: boolean,
+    isTraining: boolean,
     date: Date,
     value: string, // value is stored as decimal, API sends a string
     wind?: string, // wind is stored as decimal, API sends a string

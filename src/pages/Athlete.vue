@@ -9,21 +9,28 @@
                  :text="data.birthDate ? $d(new Date(data.birthDate)) : undefined"/>
     <LabeledText :state="dataState" label="glob.user.prefLang"
                  :text="dataStore.getLanguageById(data.languageId)?.short"/>
-    <LabeledText :state="dataState" label="glob.user.gender" :text="data.genderId ? $t('data.gender['+(data.genderId-1)+']') : undefined"/>
+    <LabeledText :state="dataState" label="glob.user.gender"
+                 :text="data.genderId ? $t('data.gender['+(data.genderId-1)+']') : undefined"/>
     <LabeledText :state="dataState" label="glob.user.oasi" :text="data.oasi"/>
     <LabeledText :state="dataState" label="glob.user.address" :text="data.address"/>
     <LabeledText :state="dataState" label="glob.user.city" :text="`${data.postCode} ${data.city}`"/>
     <LabeledText :state="dataState" label="glob.user.country" :text="data.country?.name"/>
-    <LabeledText :state="dataState" label="glob.user.primaryMail" :text="data.primaryMail"/>
-    <LabeledText :state="dataState" label="glob.user.primaryPhone" :text="data.primaryPhone"/>
+    <LabeledText :state="dataState" label="glob.user.primaryMail">
+      <a :href="'mailto:' + data.primaryMail">{{ data.primaryMail }}</a>
+    </LabeledText>
+    <LabeledText :state="dataState" label="glob.user.primaryPhone">
+      <a :href="'tel:'+data.primaryPhone">{{ data.primaryPhone }}</a>
+    </LabeledText>
     <LabeledText :state="dataState" label="glob.user.nationality" :text="data.nationality?.name"/>
   </div>
 
-  <div class="my-5">&nbsp;</div>
+  <div v-if="bests?.length">
+    <div class="my-5">&nbsp;</div>
 
-  <h1>{{ $t(`page.${pref}.title.bestResults`) }}</h1>
-  <div class="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
-    <ResultCard v-for="b in bests" :result="b" :with-users="false"></ResultCard>
+    <h1>{{ $t(`page.${pref}.title.bestResults`) }}</h1>
+    <div class="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
+      <ResultCard v-for="b in bests" :result="b" :with-users="false"></ResultCard>
+    </div>
   </div>
 
   <div class="my-5">&nbsp;</div>
@@ -110,6 +117,9 @@ export default defineComponent({
           'Authorization': 'Bearer ' + this.authStore.token
         }
       }).then(response => {
+        this.resultsState = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
+        if (!response.data?.length) return
+
         this.results = response.data
 
         // load data into evolution chart, whith user's name as a label
@@ -117,8 +127,6 @@ export default defineComponent({
         const chart = this.$refs.evolutionChart as typeof ResultEvolution
 
         chart.dataMap.set(name, response.data)
-
-        this.resultsState = response.data ? LoadingStates.Loaded : LoadingStates.Empty
       }).catch(response => {
         this.resultsState = LoadingStates.Error
         this.toastStore.addToastFromAxiosError(response)
@@ -164,7 +172,7 @@ export default defineComponent({
     }
   },
   watch: {
-    "$route.params.id"(val){
+    "$route.params.id"(val) {
       (this.$refs.evolutionChart as any).resetData()
       this.loadData()
     }

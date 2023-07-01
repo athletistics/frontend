@@ -36,7 +36,7 @@
 
       <div>
         <label>{{ $t('glob.user.oasi') }}*</label>
-        <input v-model="newAthlete.firstName" required>
+        <input v-model="newAthlete.oasi" required>
       </div>
 
       <div>

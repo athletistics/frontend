@@ -9,6 +9,9 @@ export default defineComponent({
     state: {type: Number as PropType<LoadingStates>, required: false, default: LoadingStates.Loaded}
   },
   computed: {
+    slotEmpty() {
+      return !this.$slots.default
+    },
     LoadingStates() {
       return LoadingStates
     },
@@ -22,6 +25,11 @@ export default defineComponent({
         case LoadingStates.Loading:
           return "bg-slate-200"
       }
+    },
+    content() {
+      if (!this.slotEmpty) return ""
+      if (this.text) return this.text
+      return "-"
     }
   }
 })
@@ -29,8 +37,10 @@ export default defineComponent({
 
 <template>
   <div :class="animateClass">
-    <p>{{$t(label)}}</p>
-    <p v-if="state === LoadingStates.Loaded" class="font-argentum">{{text ? text : "-"}}</p>
+    <p>{{ $t(label) }}</p>
+    <p v-if="state === LoadingStates.Loaded" class="font-argentum">{{ content }}
+      <slot/>
+    </p>
     <div v-else class="h-2 my-2 rounded" :class="visualClass"></div>
   </div>
 </template>

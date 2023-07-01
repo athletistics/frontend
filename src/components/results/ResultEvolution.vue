@@ -87,7 +87,7 @@ import Const from "../../plugins/Constants";
 import {useToastStore} from "../../stores/toast";
 import Discipline from "../../types/Discipline";
 import Modal from "../modals/Modal.vue";
-import {namedColor, transparentize} from "../../plugins/ChartUtils";
+import {CHART_COLORS, namedColor, transparentize} from "../../plugins/ChartUtils";
 import Category from "../../types/Category";
 import {canManageResults} from "../../plugins/AccessControl";
 import {formatResult} from "../../plugins/Helper";
@@ -172,13 +172,20 @@ export default defineComponent({
 
             xyData.push({
               x: new Date(d.date).getTime(),
-              y: d.value
+              y: d.value,
+              isTraining: d.isTraining
             })
           }
         })
 
+        xyData.sort((a, b) => a.x - b.x)
+
         datasets.push({
           label: name,
+          fill: false,
+          pointRadius: 4,
+          pointBackgroundColor: xyData.map(d => d.isTraining ? transparentize(CHART_COLORS.grey , 0.5) : transparentize(namedColor(datasets.length), 0.5)),
+          pointBorderColor: xyData.map(d => d.isTraining ? CHART_COLORS.grey : namedColor(datasets.length)),
           backgroundColor: transparentize(namedColor(datasets.length), 0.5),
           borderColor: namedColor(datasets.length),
           data: xyData
