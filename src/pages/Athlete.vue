@@ -12,9 +12,8 @@
     <LabeledText :state="dataState" label="glob.user.gender" :text="data.genderId ? $t('data.gender['+(data.genderId-1)+']') : undefined"/>
     <LabeledText :state="dataState" label="glob.user.oasi" :text="data.oasi"/>
     <LabeledText :state="dataState" label="glob.user.address" :text="data.address"/>
-    <LabeledText :state="dataState" label="glob.user.place" :text="`${data.place?.postCode} ${data.place?.place}`"/>
-    <LabeledText :state="dataState" label="glob.user.state" :text="data.place?.state?.name"/>
-    <LabeledText :state="dataState" label="glob.user.country" :text="data.place?.state?.country?.name"/>
+    <LabeledText :state="dataState" label="glob.user.city" :text="`${data.postCode} ${data.city}`"/>
+    <LabeledText :state="dataState" label="glob.user.country" :text="data.country?.name"/>
     <LabeledText :state="dataState" label="glob.user.primaryMail" :text="data.primaryMail"/>
     <LabeledText :state="dataState" label="glob.user.primaryPhone" :text="data.primaryPhone"/>
     <LabeledText :state="dataState" label="glob.user.nationality" :text="data.nationality?.name"/>

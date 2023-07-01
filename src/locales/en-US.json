@@ -5,6 +5,7 @@
     },
     "athletes": {
       "title": "Athletes",
+      "create": "Create athlete",
       "btn": {
         "create": "Create athlete"
       }
@@ -147,8 +148,8 @@
       "primaryPhone": "Primary (emergency) phone",
       "oasi": "OASI number",
       "address": "Address",
-      "state": "State",
-      "place": "City",
+      "postCode": "Postal code",
+      "city": "City",
       "country": "Country",
       "nationality": "Nationality"
     },

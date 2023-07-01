@@ -15,8 +15,10 @@ export default interface User {
   oasi?: string,
   birthDate: Date | string,
   address: string,
-  placeId: number,
-  place?: Place
-  nationalityId: number
+  postCode: string,
+  city: string,
+  countryId: number,
+  country?: Country,
+  nationalityId: number,
   nationality?: Country
 }

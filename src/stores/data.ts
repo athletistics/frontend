@@ -11,11 +11,13 @@ import Language from "../types/Language";
 import LoadingState from "../types/LoadingState";
 import {LoadingStates} from "../types/LoadingStates";
 import Indexable from "../types/Indexable";
+import Country from "../types/Country";
 
 interface State {
   eventTypes: EventType[]
   disciplines: Discipline[]
   categories: Category[]
+  countries: Country[]
   staticResults: Result.Static[]
   staticResultTypes: Result.StaticType[],
   languages: Language[],
@@ -35,6 +37,7 @@ export const useDataStore = defineStore('data', {
     eventTypes: [] as EventType[],
     disciplines: [] as Discipline[],
     categories: [] as Category[],
+    countries: [] as Country[],
     staticResults: [] as Result.Static[],
     staticResultTypes: [] as Result.StaticType[],
     languages: [] as Language[],
@@ -108,6 +111,7 @@ export const useDataStore = defineStore('data', {
       this.updateEvents()
       this.updateLanguages()
       this.updateEventTypes()
+      this.updateCountries()
       this.updateCategories()
       this.updateDisciplines()
       this.updateStaticResults()
@@ -123,6 +127,9 @@ export const useDataStore = defineStore('data', {
     },
     updateCategories(s?: LoadingState) {
       this.updateData<Category>('/data/categories?sport=1', 'categories', 'categories', s)
+    },
+    updateCountries(s?: LoadingState){
+      this.updateData<Country>('/data/countries', 'countries', undefined, s)
     },
     updateStaticResults(s?: LoadingState) {
       this.updateData('/results/static?sport=1', undefined, undefined, s)?.then(response => {
