@@ -27,45 +27,50 @@
   </SimpleList>
 
   <Modal ref="modal">
-    <h3>{{ $t('page.club.title.createTeam') }}</h3>
-    <hr>
-    <div>
-      <label>{{ $t('page.club.teamName') }}</label>
-      <input v-model="newTeam.name">
-    </div>
-    <hr>
-    <div class="grid md:grid-cols-2 gap-4">
-      <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createTeam()" type="button">{{ $t('glob.btn.save') }}
-      </LoadingBtn>
-      <LoadingBtn full outlined @click="setTeamPopupVisibility(false)" type="button">{{ $t('glob.btn.cancel') }}
-      </LoadingBtn>
-    </div>
+    <form class="space-y-4 with-label">
+      <h3>{{ $t('page.club.title.createTeam') }}</h3>
+      <hr>
+      <div>
+        <label>{{ $t('page.club.teamName') }}</label>
+        <input v-model="newTeam.name">
+      </div>
+      <hr>
+      <div class="grid md:grid-cols-2 gap-4">
+        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createTeam()" type="button">
+          {{ $t('glob.btn.save') }}
+        </LoadingBtn>
+        <LoadingBtn full outlined @click="setTeamPopupVisibility(false)" type="button">{{ $t('glob.btn.cancel') }}
+        </LoadingBtn>
+      </div>
+    </form>
   </Modal>
 
   <Modal ref="modalDiscipline">
-    <h3>{{ $t('page.club.title.createDiscipline') }}</h3>
-    <hr>
-    <div>
-      <label>{{ $t('page.club.disciplineName') }}</label>
-      <input v-model="newDiscipline.customName">
-    </div>
+    <form class="space-y-4 with-label">
+      <h3>{{ $t('page.club.title.createDiscipline') }}</h3>
+      <hr>
+      <div>
+        <label>{{ $t('page.club.disciplineName') }}</label>
+        <input v-model="newDiscipline.customName">
+      </div>
 
-    <div>
-      <label>{{ $t('page.club.disciplineType') }}</label>
-      <select v-model="newDiscipline.isDescending" required>
-        <option :value="true" selected>{{ $t('page.club.disciplineTypeAsc') }}</option>
-        <option :value="false" selected>{{ $t('page.club.disciplineTypeDesc') }}</option>
-      </select>
-    </div>
-    <hr>
-    <div class="grid md:grid-cols-2 gap-4">
-      <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createDiscipline()">
-        {{ $t('glob.btn.save') }}
-      </LoadingBtn>
-      <LoadingBtn full outlined @click="setDisciplinePopupVisibility(false)">
-        {{ $t('glob.btn.cancel') }}
-      </LoadingBtn>
-    </div>
+      <div>
+        <label>{{ $t('page.club.disciplineType') }}</label>
+        <select v-model="newDiscipline.isDescending" required>
+          <option :value="true" selected>{{ $t('page.club.disciplineTypeAsc') }}</option>
+          <option :value="false" selected>{{ $t('page.club.disciplineTypeDesc') }}</option>
+        </select>
+      </div>
+      <hr>
+      <div class="grid md:grid-cols-2 gap-4">
+        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createDiscipline()">
+          {{ $t('glob.btn.save') }}
+        </LoadingBtn>
+        <LoadingBtn full outlined @click="setDisciplinePopupVisibility(false)">
+          {{ $t('glob.btn.cancel') }}
+        </LoadingBtn>
+      </div>
+    </form>
   </Modal>
 </template>
 

@@ -26,7 +26,9 @@
       </div>
 
       <div v-if="canManageResults()">
-        <LoadingBtn full outlined visual-type="primary" @click="setModalVisibility(true)">{{ $t('comp.evolution.compare') }}</LoadingBtn>
+        <LoadingBtn full outlined visual-type="primary" @click="setModalVisibility(true)">
+          {{ $t('comp.evolution.compare') }}
+        </LoadingBtn>
       </div>
     </form>
 
@@ -34,23 +36,27 @@
   </div>
 
   <Modal ref="modal">
-    <h3>{{ $t('comp.evolution.compare') }}</h3>
-    <hr>
+    <form class="space-y-4 with-label">
+      <h3>{{ $t('comp.evolution.compare') }}</h3>
+      <hr>
 
-    <div>
-      <div v-for="u in dataStore.users" class="flex hover:bg-main cursor-pointer">
-        <input :id="u.id" :value="u.id" type="checkbox" v-model="usersToAdd" class="mr-2 cursor-pointer">
-        <label :for="u.id" class="flex-grow py-3 cursor-pointer">{{ u.lastName }} {{ u.firstName }}</label>
+      <div>
+        <div v-for="u in dataStore.users" class="flex hover:bg-main cursor-pointer">
+          <input :id="u.id" :value="u.id" type="checkbox" v-model="usersToAdd" class="mr-2 cursor-pointer">
+          <label :for="u.id" class="flex-grow py-3 cursor-pointer">{{ u.lastName }} {{ u.firstName }}</label>
+        </div>
       </div>
-    </div>
 
-    <hr>
-    <div class="grid sm:grid-cols-2 gap-4">
-      <LoadingBtn full outlined visual-type="primary"
-                  :state="state" @click="compare()">{{$t('glob.btn.add')}}</LoadingBtn>
-      <LoadingBtn full outlined
-                  @click="setModalVisibility(false)">{{$t('glob.btn.cancel')}}</LoadingBtn>
-    </div>
+      <hr>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <LoadingBtn full outlined visual-type="primary"
+                    :state="state" @click="compare()">{{ $t('glob.btn.add') }}
+        </LoadingBtn>
+        <LoadingBtn full outlined
+                    @click="setModalVisibility(false)">{{ $t('glob.btn.cancel') }}
+        </LoadingBtn>
+      </div>
+    </form>
   </Modal>
 </template>
 
@@ -272,7 +278,7 @@ export default defineComponent({
       })
     },
     resetData() {
-      this.dataMap = new Map<string,  Result.Data[]>()
+      this.dataMap = new Map<string, Result.Data[]>()
     }
   },
 })

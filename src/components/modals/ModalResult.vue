@@ -1,51 +1,55 @@
 <template>
   <Modal ref="modal">
-    <h3 v-if="isPersonal">{{ $t('comp.result.createTraining') }}</h3>
-    <h3 v-else>{{ $t('comp.result.create') }}</h3>
+    <form class="space-y-4 with-label">
+      <h3 v-if="isPersonal">{{ $t('comp.result.createTraining') }}</h3>
+      <h3 v-else>{{ $t('comp.result.create') }}</h3>
 
-    <hr>
+      <hr>
 
-    <div>
-      <label>{{ $t('glob.result.value') }}</label>
-      <input v-model="newResult.value" required>
-    </div>
+      <div>
+        <label>{{ $t('glob.result.value') }}</label>
+        <input v-model="newResult.value" required>
+      </div>
 
-    <div>
-      <label>{{ $t('glob.result.wind') }}</label>
-      <input v-model="newResult.wind" required>
-    </div>
+      <div>
+        <label>{{ $t('glob.result.wind') }}</label>
+        <input v-model="newResult.wind" required>
+      </div>
 
-    <div>
-      <label>{{ $t('glob.result.rank') }}</label>
-      <input v-model="newResult.rank" required>
-    </div>
+      <div>
+        <label>{{ $t('glob.result.rank') }}</label>
+        <input v-model="newResult.rank" required>
+      </div>
 
-    <div v-if="!isPersonal">
-      <label>{{ $t('glob.user.name') }}</label>
-      <select v-model="newResult.userId" :disabled="!!user">
-        <option v-for="u in dataStore.users" :value="u.id">{{ u.lastName }} {{ u.firstName }}</option>
-      </select>
-    </div>
+      <div v-if="!isPersonal">
+        <label>{{ $t('glob.user.name') }}</label>
+        <select v-model="newResult.userId" :disabled="!!user">
+          <option v-for="u in dataStore.users" :value="u.id">{{ u.lastName }} {{ u.firstName }}</option>
+        </select>
+      </div>
 
-    <div>
-      <label>{{ $t('glob.discipline.name') }}</label>
-      <select v-model="newResult.disciplineId">
-        <option v-for="d in dataStore.disciplines" :value="d.id">{{ d.i18nName ?? d.customName }}</option>
-      </select>
-    </div>
+      <div>
+        <label>{{ $t('glob.discipline.name') }}</label>
+        <select v-model="newResult.disciplineId">
+          <option v-for="d in dataStore.disciplines" :value="d.id">{{ d.i18nName ?? d.customName }}</option>
+        </select>
+      </div>
 
-    <div>
-      <label>{{ $t('glob.event.name') }}</label>
-      <select v-model="newResult.eventId" :disabled="!!event">
-        <option v-for="e in filteredEvents" :value="e.id">{{ e.name }}, {{ e.place }} ({{ e.date }})</option>
-      </select>
-    </div>
+      <div>
+        <label>{{ $t('glob.event.name') }}</label>
+        <select v-model="newResult.eventId" :disabled="!!event">
+          <option v-for="e in filteredEvents" :value="e.id">{{ e.name }}, {{ e.place }} ({{ e.date }})</option>
+        </select>
+      </div>
 
-    <hr>
-    <div class="grid sm:grid-cols-2 gap-4">
-      <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createResult">{{$t('glob.btn.add')}}</LoadingBtn>
-      <LoadingBtn full outlined @click="setVisibility(false)">{{$t('glob.btn.cancel')}}</LoadingBtn>
-    </div>
+      <hr>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createResult">
+          {{ $t('glob.btn.add') }}
+        </LoadingBtn>
+        <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
+      </div>
+    </form>
   </Modal>
 </template>
 

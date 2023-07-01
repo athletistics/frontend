@@ -29,17 +29,22 @@
   </SimpleList>
 
   <Modal ref="modal">
-    <h3>{{ $t('page.team.addPartTitle') }}</h3>
-    <hr>
-    <div v-for="u in filteredUsers" class="flex hover:bg-main cursor-pointer">
-      <input class="mr-2 cursor-pointer" :id="u.id" :value="u.id" type="checkbox" v-model="usersToAdd">
-      <label class="flex-grow py-3 cursor-pointer" :for="u.id">{{ u.lastName }} {{ u.firstName }}</label>
-    </div>
-    <hr>
-    <div class="grid sm:grid-cols-2 gap-4">
-      <LoadingBtn full outlined visual-type="primary" :loading="addState" @click="addToTeam()">{{ $t('glob.btn.add') }}</LoadingBtn>
-      <LoadingBtn full outlined @click="setModalVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
-    </div>
+    <form class="space-y-4 with-label">
+      <h3>{{ $t('page.team.addPartTitle') }}</h3>
+      <hr>
+      <div v-for="u in filteredUsers" class="flex hover:bg-main cursor-pointer">
+        <input class="mr-2 cursor-pointer" :id="u.id" :value="u.id" type="checkbox" v-model="usersToAdd">
+        <label class="flex-grow py-3 cursor-pointer" :for="u.id">{{ u.lastName }} {{ u.firstName }}</label>
+      </div>
+      <hr>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <LoadingBtn full outlined visual-type="primary" :loading="addState" @click="addToTeam()">{{
+            $t('glob.btn.add')
+          }}
+        </LoadingBtn>
+        <LoadingBtn full outlined @click="setModalVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
+      </div>
+    </form>
   </Modal>
 
 </template>

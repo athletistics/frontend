@@ -1,60 +1,66 @@
 <template>
-  <TitleWithBtnPlus :btn-visible="canManageEvents()" @btn-click="setModalVisibility(true)">{{$t('page.event.title')}}</TitleWithBtnPlus>
+  <TitleWithBtnPlus :btn-visible="canManageEvents()" @btn-click="setModalVisibility(true)">
+    {{ $t('page.event.title') }}
+  </TitleWithBtnPlus>
 
   <SimpleTable :headers="headers" :i18n="true" :state="state.state">
     <SimpleTableRow v-for="e in dataStore.events" :clickable="true" @click="toEvent(e.id)">
-      <SimpleTableCell>{{e.name}}</SimpleTableCell>
-      <SimpleTableCell>{{e.place}}</SimpleTableCell>
-      <SimpleTableCell>{{$d(new Date(e.date))}}</SimpleTableCell>
-      <SimpleTableCell>{{$t('data.' +dataStore.getEventTypeById(e.eventTypeId)?.i18nName)}}</SimpleTableCell>
-      <SimpleTableCell>{{ e.isOutdoor ? $t('glob.event.outdoor') : $t('glob.event.indoor')}}</SimpleTableCell>
+      <SimpleTableCell>{{ e.name }}</SimpleTableCell>
+      <SimpleTableCell>{{ e.place }}</SimpleTableCell>
+      <SimpleTableCell>{{ $d(new Date(e.date)) }}</SimpleTableCell>
+      <SimpleTableCell>{{ $t('data.' + dataStore.getEventTypeById(e.eventTypeId)?.i18nName) }}</SimpleTableCell>
+      <SimpleTableCell>{{ e.isOutdoor ? $t('glob.event.outdoor') : $t('glob.event.indoor') }}</SimpleTableCell>
     </SimpleTableRow>
   </SimpleTable>
 
   <Modal ref="modal">
-    <h3>{{$t('page.event.createTitle')}}</h3>
-    <hr>
+    <form class="space-y-4 with-label">
+      <h3>{{ $t('page.event.createTitle') }}</h3>
+      <hr>
 
-    <div>
-      <label>{{$t('glob.event.name')}}</label>
-      <input v-model="newEvent.name" required>
-    </div>
+      <div>
+        <label>{{ $t('glob.event.name') }}</label>
+        <input v-model="newEvent.name" required>
+      </div>
 
-    <div>
-      <label>{{$t('glob.event.place')}}</label>
-      <input v-model="newEvent.place" required>
-    </div>
+      <div>
+        <label>{{ $t('glob.event.place') }}</label>
+        <input v-model="newEvent.place" required>
+      </div>
 
-    <div>
-      <label>{{$t('glob.event.date')}}</label>
-      <input v-model="newEvent.webDate" type="date" required>
-    </div>
+      <div>
+        <label>{{ $t('glob.event.date') }}</label>
+        <input v-model="newEvent.webDate" type="date" required>
+      </div>
 
-    <div>
-      <label>{{$t('glob.event.type')}}</label>
-      <select v-model="newEvent.eventTypeId" required>
-        <option v-for="e in dataStore.eventTypes" :value="e.id">{{$t('data.' + e.i18nName)}}</option>
-      </select>
-    </div>
+      <div>
+        <label>{{ $t('glob.event.type') }}</label>
+        <select v-model="newEvent.eventTypeId" required>
+          <option v-for="e in dataStore.eventTypes" :value="e.id">{{ $t('data.' + e.i18nName) }}</option>
+        </select>
+      </div>
 
-    <div>
-      <label>{{ $t('glob.event.season') }}</label>
-      <select v-model="newEvent.isOutdoor" required>
-        <option :value="true">{{ $t('glob.event.outdoor') }}</option>
-        <option :value="false">{{ $t('glob.event.indoor') }}</option>
-      </select>
-    </div>
+      <div>
+        <label>{{ $t('glob.event.season') }}</label>
+        <select v-model="newEvent.isOutdoor" required>
+          <option :value="true">{{ $t('glob.event.outdoor') }}</option>
+          <option :value="false">{{ $t('glob.event.indoor') }}</option>
+        </select>
+      </div>
 
-    <div class="inline-flex">
-      <input id="homologated" :value="1" type="checkbox" v-model="homologated">
-      <label for="homologated">{{$t('glob.event.homologated')}}</label>
-    </div>
+      <div class="inline-flex">
+        <input id="homologated" :value="1" type="checkbox" v-model="homologated">
+        <label for="homologated">{{ $t('glob.event.homologated') }}</label>
+      </div>
 
-    <hr>
-    <div class="grid sm:grid-cols-2 gap-4">
-      <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createEvent()">{{$t('glob.btn.add')}}</LoadingBtn>
-      <LoadingBtn full outlined @click="setModalVisibility(false)">{{$t('glob.btn.cancel')}}</LoadingBtn>
-    </div>
+      <hr>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createEvent()">
+          {{ $t('glob.btn.add') }}
+        </LoadingBtn>
+        <LoadingBtn full outlined @click="setModalVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
+      </div>
+    </form>
   </Modal>
 </template>
 
@@ -104,7 +110,7 @@ export default defineComponent({
       this.newEvent = {} as Event
       this.newEvent.isOutdoor = true
     },
-    toEvent(id: string){
+    toEvent(id: string) {
       this.$router.push("/events/" + id)
     },
     createEvent() {
