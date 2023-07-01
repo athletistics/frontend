@@ -33,7 +33,7 @@ export default defineComponent({
   computed: {
     formattedValue(): string {
       this.dataStore.maps.disciplines?.size
-      return formatResult(this.result.value, this.result.disciplineId)
+      return formatResult(this.result.value, this.dataStore.getDisciplineById(this.result.disciplineId))
     }
   }
 })

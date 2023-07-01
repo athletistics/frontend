@@ -10,10 +10,10 @@ export default defineComponent({
 </script>
 
 <template>
-  <li v-if="to && enabled">
+  <li v-if="to && enabled" data-testid="sle-link">
     <router-link :to="to" class="block hover:bg-main p-4 main-transition"><slot></slot></router-link>
   </li>
-  <li v-else class="p-4">
+  <li v-else class="p-4" data-testid="sle-default">
     <slot></slot>
   </li>
 </template>

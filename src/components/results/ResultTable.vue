@@ -41,12 +41,12 @@ export default defineComponent({
   computed: {
     headers() {
       const h = [] as string[]
-      if(this.showUser) h.push('glob.user.name')
-      if(this.showDisciplines) h.push('glob.discipline.name')
+      if (this.showUser) h.push('glob.user.name')
+      if (this.showDisciplines) h.push('glob.discipline.name')
 
       h.push('glob.result.name')
 
-      if(this.showEvent) h.push('glob.event.name', 'glob.date', 'glob.event.place')
+      if (this.showEvent) h.push('glob.event.name', 'glob.date', 'glob.event.place')
       return h
     },
     LoadingStates() {
@@ -55,7 +55,7 @@ export default defineComponent({
     getFormattedValue() {
       this.dataStore.maps.disciplines?.size
       return (result: Result.Data) => {
-        return formatResult(result.value, result.disciplineId)
+        return formatResult(result.value, this.dataStore.getDisciplineById(result.disciplineId))
       }
     },
   },

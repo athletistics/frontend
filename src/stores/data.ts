@@ -63,7 +63,7 @@ export const useDataStore = defineStore('data', {
     },
     getDisciplineById(state) {
       return (id: string): Discipline | undefined => {
-        if (!state.maps.disciplines?.size) return {id, isOfficial: false}
+        if (!state.maps.disciplines?.size) return undefined
 
         return state.maps.disciplines.get(id)
       }

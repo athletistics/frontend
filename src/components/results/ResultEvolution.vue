@@ -184,7 +184,7 @@ export default defineComponent({
           label: name,
           fill: false,
           pointRadius: 4,
-          pointBackgroundColor: xyData.map(d => d.isTraining ? transparentize(CHART_COLORS.grey , 0.5) : transparentize(namedColor(datasets.length), 0.5)),
+          pointBackgroundColor: xyData.map(d => d.isTraining ? transparentize(CHART_COLORS.grey, 0.5) : transparentize(namedColor(datasets.length), 0.5)),
           pointBorderColor: xyData.map(d => d.isTraining ? CHART_COLORS.grey : namedColor(datasets.length)),
           backgroundColor: transparentize(namedColor(datasets.length), 0.5),
           borderColor: namedColor(datasets.length),
@@ -224,7 +224,7 @@ export default defineComponent({
           y: {
             ticks: {
               callback: (value, index, ticks) => {
-                return formatResult(value.toString(), this.discipline)
+                return formatResult(value.toString(), this.dataStore.getDisciplineById(this.discipline))
               }
             },
             title: {
@@ -240,7 +240,7 @@ export default defineComponent({
                 return this.$d(new Date(context[0].parsed.x))
               },
               label: (context) => {
-                return context.dataset.label + ": " + formatResult(context.parsed.y.toString(), this.discipline)
+                return context.dataset.label + ": " + formatResult(context.parsed.y.toString(), this.dataStore.getDisciplineById(this.discipline))
               }
             }
           }

@@ -1,53 +1,7 @@
-import {OPEN_ROUTES} from './Constants'
-import {RouteRecordName} from "vue-router";
-
 import moment, {duration} from "moment/moment";
-import axios from "axios";
-import Const from "./Constants";
-import Router from '../router';
-import {useMyUserStore} from "../stores/user";
-import {useAuthStore} from "../stores/auth";
-import {useDataStore} from "../stores/data";
+import Discipline from "../types/Discipline";
 
-export function checkLoginState() {
-  const userStore = useMyUserStore()
-  const authStore = useAuthStore()
-
-  axios.request({
-    url: "/me/auth",
-    method: 'get',
-    baseURL: Const.API_URL,
-    headers: {
-      'Authorization': 'Bearer ' + authStore.token
-    }
-  }).then(() => {
-    // all good, continue
-  }).catch(() => {
-    // we are logged out!
-    userStore.$reset()
-    authStore.$reset()
-    Router.push('/')
-  })
-}
-
-export function formatDate(date: string | undefined) {
-  if (!date) return ""
-  return moment(date).format("DD.MM.Y")
-}
-
-export function formatDateForInput(date: string | undefined) {
-  if (!date) return ""
-  return moment(date).format("Y-MM-DD")
-}
-
-export function formatResult(value: string, disciplineId: string): string {
-
-  const dataStore = useDataStore()
-
-  // return value
-  if (!dataStore.maps.disciplines?.size) return value
-  const discipline = dataStore.maps.disciplines.get(disciplineId)
-
+export function formatResult(value: string, discipline: Discipline | undefined): string {
   if (!discipline) return value
   const numValue = Number.parseFloat(value)
 
@@ -63,14 +17,4 @@ export function formatResult(value: string, disciplineId: string): string {
     default:
       return d.format("h:mm:ss.SS") + 's'
   }
-}
-
-export function isRouteProtected(route: RouteRecordName | null | undefined): boolean {
-  for (let i = 0; i < OPEN_ROUTES.length; i++) {
-    // @ts-ignore
-    if (OPEN_ROUTES[i] == route?.name) {
-      return false
-    }
-  }
-  return true
 }
