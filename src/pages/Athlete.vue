@@ -34,11 +34,12 @@
   </div>
 
   <div class="my-5">&nbsp;</div>
-
   <ResultEvolution ref="evolutionChart"/>
 
   <div class="my-5">&nbsp;</div>
+  <ResultLimitComparison :results="bests" />
 
+  <div class="my-5">&nbsp;</div>
   <TitleWithBtnPlus @btn-click="setModalVisibility(true)" :btn-visible="canManageResults() || !$route.params.id">
     {{ $t(`page.${pref}.title.results`) }}
   </TitleWithBtnPlus>
@@ -66,10 +67,13 @@ import ResultList from "../components/results/ResultTable.vue";
 import ResultEvolution from "../components/results/ResultEvolution.vue";
 import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
 import {canManageResults} from "../plugins/AccessControl";
+import ResultLimitComparison from "../components/results/ResultLimitComparison.vue";
 
 export default defineComponent({
   name: "Athlete",
-  components: {TitleWithBtnPlus, LabeledText, ResultEvolution, ResultList, ModalResult, ResultCard},
+  components: {
+    ResultLimitComparison,
+    TitleWithBtnPlus, LabeledText, ResultEvolution, ResultList, ModalResult, ResultCard},
   setup() {
     const authStore = useAuthStore()
     const dataStore = useDataStore()

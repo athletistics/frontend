@@ -23,6 +23,8 @@ export const CHART_COLORS = {
   grey: 'rgb(201, 203, 207)'
 };
 
+export const CHART_COLOR_TRANSPARENT = 'rgba(0,0,0,0)'
+
 export const NAMED_COLORS = [
   CHART_COLORS.red,
   CHART_COLORS.orange,

@@ -123,7 +123,7 @@ export const useDataStore = defineStore('data', {
       this.updateData<Event>('/events', 'events', 'events', s)
     },
     updateUsers(s?: LoadingState) {
-      this.updateData<User>('/users', 'users', undefined, s)
+      this.updateData<User>('/users', 'users', undefined, s, true)
     },
     updateCategories(s?: LoadingState) {
       this.updateData<Category>('/data/categories?sport=1', 'categories', 'categories', s)

@@ -78,10 +78,9 @@ import {
 } from 'chart.js'
 import 'chartjs-adapter-moment';
 
-import {defineComponent} from 'vue'
+import {defineComponent, PropType} from 'vue'
 import {useAuthStore} from "../../stores/auth";
 import {useDataStore} from "../../stores/data";
-import {PropType} from "vue/dist/vue";
 import axios from "axios";
 import Const from "../../plugins/Constants";
 import {useToastStore} from "../../stores/toast";

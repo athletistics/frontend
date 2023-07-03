@@ -90,6 +90,9 @@
     "nav": {
       "logout": "Logout"
     },
+    "limits": {
+      "title": "Result comparison to limits"
+    },
     "evolution": {
       "title": "Performance evolution",
       "reference": "Reference value",
@@ -131,7 +134,8 @@
       "name": "Result",
       "value": "Value",
       "wind": "Wind",
-      "rank": "Rank"
+      "rank": "Rank",
+      "limit": "National limits"
     },
     "discipline": {
       "name": "Discipline"
@@ -162,7 +166,15 @@
     "distance": "Distance"
   },
   "data": {
-    "discipline": {},
+    "discipline": {
+      "sprint60m": "60 m",
+      "sprint80m": "80 m",
+      "sprint100m": "100 m",
+      "throw3kg": "Shot Put 3kg",
+      "throw4kg": "Shot Put 4kg",
+      "throw5kg": "Shot Put 5kg",
+      "javelin400g": "Javelin 400g"
+    },
     "gender": [
       "Unspecified",
       "Female",
