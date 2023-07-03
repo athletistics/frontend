@@ -5,7 +5,7 @@
       <p class="text-xl font-argentum mt-5">{{ result.userLastName }} {{ result.userFirstName }}</p>
     </div>
     <div v-else>
-      <p class="text-xl font-bold font-argentum">{{ result.disciplineName }}</p>
+      <p class="text-xl font-bold font-argentum">{{ $te('data.' + result.disciplineName) ? $t('data.' + result.disciplineName) : result.disciplineName }}</p>
       <p class="text-xl font-argentum">{{ formattedValue }} <span
           v-if="result.wind">({{ $t('glob.result.wind') }}: {{ result.wind }})</span></p>
     </div>

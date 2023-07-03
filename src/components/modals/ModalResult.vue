@@ -31,7 +31,7 @@
       <div>
         <label>{{ $t('glob.discipline.name') }}</label>
         <select v-model="newResult.disciplineId">
-          <option v-for="d in dataStore.disciplines" :value="d.id">{{ d.i18nName ?? d.customName }}</option>
+          <option v-for="d in dataStore.disciplines" :value="d.id">{{ d.i18nName ? $t('data.' + d.i18nName) : d.customName }}</option>
         </select>
       </div>
 

@@ -2,7 +2,9 @@
   <SimpleTable :headers="headers" :i18n="true" :state="state">
     <SimpleTableRow v-for="r in results">
       <SimpleTableCell v-if="showUser">{{ r.userLastName }} {{ r.userFirstName }}</SimpleTableCell>
-      <SimpleTableCell v-if="showDisciplines" class="table-cell">{{ r.disciplineName }}</SimpleTableCell>
+      <SimpleTableCell v-if="showDisciplines" class="table-cell">{{
+          $te('data.' + r.disciplineName) ? $t('data.' + r.disciplineName) : r.disciplineName
+        }}</SimpleTableCell>
       <SimpleTableCell>{{ getFormattedValue(r) }}</SimpleTableCell>
       <SimpleTableCell v-if="showEvent">{{ r.eventName }} - {{
           r.eventOutdoor ? $t('glob.event.outdoor') : $t('glob.event.indoor')

@@ -15,7 +15,7 @@
         "club": "Club",
         "teams": "Teams",
         "createTeam": "Create team",
-        "disciplines": "Disciplines",
+        "disciplines": "Custom disciplines",
         "createDiscipline": "Create custom discipline"
       },
       "teamName": "Team name",

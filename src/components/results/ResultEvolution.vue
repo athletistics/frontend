@@ -10,7 +10,7 @@
       <div>
         <label>{{ $t('glob.discipline.name') }}</label>
         <select v-model="discipline">
-          <option v-for="d in disciplines" :value="d.id">{{ d.i18nName ?? d.customName }}</option>
+          <option v-for="d in disciplines" :value="d.id">{{ d.i18nName ? $t('data.' + d.i18nName) : d.customName }}</option>
         </select>
       </div>
 

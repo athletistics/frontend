@@ -28,7 +28,7 @@
 
   <SimpleTable :headers="['Discipline', 'M', 'W']" :state="state">
     <SimpleTableRow v-for="v in values">
-      <SimpleTableCell>{{ $t('data.' + v.discipline.i18nName) }}</SimpleTableCell>
+      <SimpleTableCell>{{ v.discipline.i18nName ? $t('data.' + v.discipline.i18nName) : v.discipline.customName }}</SimpleTableCell>
       <SimpleTableCell>{{ v.m }}</SimpleTableCell>
       <SimpleTableCell>{{ v.w }}</SimpleTableCell>
     </SimpleTableRow>
