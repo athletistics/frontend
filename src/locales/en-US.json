@@ -114,6 +114,8 @@
     }
   },
   "glob": {
+    "track": "Track",
+    "field": "Field",
     "btn": {
       "save": "Save",
       "verify": "Verify",

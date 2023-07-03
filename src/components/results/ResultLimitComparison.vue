@@ -1,8 +1,20 @@
 <template>
-  <div>
+  <div v-if="results?.length">
     <h1>{{ $t('comp.limits.title') }}</h1>
 
     <form class="grid md:grid-cols-3 grid-cols-1 gap-4 with-label">
+
+      <div>
+        <label>{{ $t('page.references.referenceType') }}</label>
+        <div class="flex">
+          <select v-model="typeId">
+            <option v-for="t in dataStore.staticResultTypes" :value="t.id">{{
+                $t('data.staticResultTypes.' + t.i18nType)
+              }}
+            </option>
+          </select>
+        </div>
+      </div>
 
       <div>
         <div v-if="filteredCategories?.length">
@@ -21,10 +33,12 @@
     </form>
 
     <div class="grid lg:grid-cols-2 gap-4">
-      <div>
+      <div v-if="chartDataTrack?.labels?.length">
+        <h3 class="text-center">{{ $t('glob.track') }}</h3>
         <Radar :data="chartDataTrack" :options="chartOptions"/>
       </div>
-      <div>
+      <div v-if="chartDataField?.labels?.length">
+        <h3 class="text-center">{{ $t('glob.field') }}</h3>
         <Radar :data="chartDataField" :options="chartOptions"/>
       </div>
     </div>
@@ -50,12 +64,9 @@ import 'chartjs-adapter-moment';
 import {defineComponent, PropType, ref} from 'vue'
 import {useAuthStore} from "../../stores/auth";
 import {useDataStore} from "../../stores/data";
-import axios from "axios";
-import Const from "../../plugins/Constants";
 import {useToastStore} from "../../stores/toast";
 import {formatResult} from "../../plugins/Helper";
 import LoadingState from "../../types/LoadingState";
-import {LoadingStates} from "../../types/LoadingStates";
 import Category from "../../types/Category";
 import {CHART_COLOR_TRANSPARENT, CHART_COLORS, transparentize} from "../../plugins/ChartUtils";
 
@@ -86,18 +97,30 @@ export default defineComponent({
       trackBests: [] as number[],
       fieldReferences: [] as number[],
       fieldBests: [] as number[],
+      typeId: NaN as number,
       state: {state: NaN} as LoadingState
     }
   },
+  mounted() {
+    // select first result type on loading
+    this.typeId = this.dataStore.staticResultTypes[0].id
+  },
   computed: {
+    // search for all categories that have static results for the selected static result type
     filteredCategories(): Category[] {
+      // categories are stored in a set, simplifying the search for distinct categories
       let categories = new Set<Category>()
 
       this.dataStore.staticResults.forEach(r => {
+        // reject static results of different types
+        if (r.resultStaticTypeId !== this.typeId) return
+
+        // search for the category of the current static result, and add it to the set
         const c = this.dataStore.getCategoryById(r.categoryId)
         if (c) categories.add(c)
       })
 
+      // create an array based on the set
       const categoriesArray = Array.from(categories)
       if (categoriesArray.length) this.category = categoriesArray[0].id
 
@@ -167,7 +190,7 @@ export default defineComponent({
         if (!discipline || discipline.isDescending === isDescending) return
 
         // only continue for disciplines and categories that have a reference value
-        const refValue = this.dataStore.getReferenceValue(discipline.id, this.category)
+        const refValue = this.dataStore.getReferenceValue(discipline.id, this.category, this.typeId)
         if (!refValue) return
 
         // compute the percentage value. Disciplines that are sorted in descending order (lower values are better)
@@ -199,23 +222,6 @@ export default defineComponent({
         labels,
         datasets
       }
-    },
-    loadResults(userId: string) {
-      this.state.state = LoadingStates.Loading
-      axios.request({
-        url: `/results/best?userId=${userId}`,
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        }
-      }).then(response => {
-        this.state.state = LoadingStates.Loaded
-        this.results = response.data
-      }).catch(response => {
-        this.state.state = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(response)
-      })
     }
   },
 })
