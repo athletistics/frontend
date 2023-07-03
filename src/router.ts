@@ -14,6 +14,7 @@ import Results from "./pages/Results.vue"
 
 import {OPEN_ROUTES, TOTPLESS_ROUTES} from "./plugins/Constants";
 import {useAuthStore} from "./stores/auth";
+import References from "./pages/References.vue";
 
 const routes = [
     {path: '/', name: 'index', component: Landing},
@@ -32,6 +33,7 @@ const routes = [
     {path: '/elevate', name: 'elevate', component: Elevate},
     {path: '/results', name: 'results', component: Results},
     {path: '/callback', name: 'callback', component: Callback},
+    {path: '/references', name: 'references', component: References},
 
     {path: '/:catchAll(.*)', redirect: '/'}
 ]

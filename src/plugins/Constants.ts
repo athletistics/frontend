@@ -12,7 +12,8 @@ export const TOTPLESS_ROUTES: string[] = [
   'elevate',
   'me',
   'events',
-  'home'
+  'home',
+  'references'
 ]
 
 const TOTP_CODE_LENGTH: number = 6

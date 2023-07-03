@@ -76,11 +76,11 @@ export const useDataStore = defineStore('data', {
       }
     },
     getReferenceValue(state) {
-      return (disciplineId: string, categoryId: string): Result.Static | undefined => {
+      return (disciplineId: string, categoryId: string, typeId: number): Result.Static | undefined => {
         for (let i = 0; i < state.staticResults.length; i++) {
           const r = state.staticResults[i]
 
-          if (r.categoryId == categoryId && r.disciplineId == disciplineId) {
+          if (r.categoryId == categoryId && r.disciplineId == disciplineId && r.resultStaticTypeId === typeId) {
             return r
           }
         }

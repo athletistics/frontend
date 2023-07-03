@@ -84,6 +84,11 @@
       "addPartTitle": "Select participants to add",
       "removePart": "Remove selected Users from team",
       "selectForRemoval": "Select users for removal"
+    },
+    "references": {
+      "title": "Reference results",
+      "referenceType": "Reference result type",
+      "ageCat": "Age category"
     }
   },
   "comp": {
@@ -189,6 +194,14 @@
         "custom": "Custom"
       },
       "training": "Training"
+    },
+    "staticResultTypes": {
+      "swissAthletics": {
+        "national": {
+          "outdoors": "Swiss-Athletics SM Limits - Outdoor",
+          "indoors": "Swiss-Athletics SM Limits - Indoor"
+        }
+      }
     },
     "sports": {
       "athletics": "Athletics"

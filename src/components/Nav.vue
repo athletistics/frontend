@@ -27,6 +27,9 @@
       <li v-if="resultsVisible">
         <router-link class="router-link" to="/results">{{$t('page.results.title')}}</router-link>
       </li>
+      <li>
+        <router-link class="router-link" to="/references">{{$t('page.references.title')}}</router-link>
+      </li>
       <li class="flex-1"></li>
       <li class="md:hidden"><hr></li>
       <li v-if="elevateVisible">
