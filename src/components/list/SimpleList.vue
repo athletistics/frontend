@@ -22,9 +22,9 @@ export default defineComponent({
   <ul role="list" class="my-2 divide-y divide-slate-200 white-rounded overflow-hidden">
     <slot></slot>
 
-    <SimpleListLoading v-if="state===LoadingStates.Loading"/>
-    <SimpleListEntry v-else-if="state===LoadingStates.Empty">{{ $t('comp.list.empty') }}</SimpleListEntry>
-    <SimpleListEntry v-else-if="state===LoadingStates.Error">{{ $t('comp.list.error') }}</SimpleListEntry>
+    <SimpleListLoading v-if="state===LoadingStates.Loading" data-testid="sl-loading"/>
+    <SimpleListEntry v-else-if="state===LoadingStates.Empty" data-testid="sl-empty">{{ $t('comp.list.empty') }}</SimpleListEntry>
+    <SimpleListEntry v-else-if="state===LoadingStates.Error" data-testid="sl-error">{{ $t('comp.list.error') }}</SimpleListEntry>
   </ul>
 </template>
 

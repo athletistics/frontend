@@ -1,10 +1,10 @@
 <script lang="ts">
-import ListStates from "./TableStates.vue";
+import TableStates from "./TableStates.vue";
 import {defineComponent, PropType} from "vue";
 import {LoadingStates} from "../../types/LoadingStates";
 
 export default defineComponent({
-  components: {ListStates},
+  components: {TableStates},
   props: {
     headers: {type: Array as PropType<string[]>, required: true},
     i18n: {type: Boolean as PropType<boolean>, required: false, default: false},
@@ -24,7 +24,7 @@ export default defineComponent({
       <tbody>
       <slot></slot>
 
-      <ListStates :state="state" :cols="headers.length"/>
+      <TableStates :state="state" :cols="headers.length"/>
       </tbody>
     </table>
   </div>
