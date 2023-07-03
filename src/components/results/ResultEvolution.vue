@@ -169,7 +169,6 @@ export default defineComponent({
     },
     chartData() {
       // return an empty dataset and hide the chart if no data is available
-      console.log(this.dataMap)
       if (!this.dataMap.size) {
         this.visible = false
         return {labels: [], datasets: []}

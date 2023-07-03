@@ -19,7 +19,7 @@
 
       <div>
         <div v-if="filteredCategories?.length">
-          <label>{{ $t('comp.evolution.reference') }}</label>
+          <label>{{ $t('comp.evolution.category') }}</label>
           <div class="flex">
             <select v-model="category">
               <option v-for="c in filteredCategories" :value="c.id">{{ c.name }} {{
