@@ -100,8 +100,11 @@
     },
     "evolution": {
       "title": "Performance evolution",
-      "reference": "Reference value",
-      "compare": "Compare with..."
+      "category": "Category",
+      "compare": "Compare with...",
+      "referenceType": "Reference result type",
+      "noCat": "No category available for the selected type",
+      "noData": "No results available for selected user"
     },
     "result": {
       "createTraining": "Create training result",

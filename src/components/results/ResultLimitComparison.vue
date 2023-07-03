@@ -1,5 +1,6 @@
 <template>
   <div v-if="results?.length">
+    <div class="my-5">&nbsp;</div>
     <h1>{{ $t('comp.limits.title') }}</h1>
 
     <form class="grid md:grid-cols-3 grid-cols-1 gap-4 with-label">

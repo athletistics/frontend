@@ -33,10 +33,8 @@
     </div>
   </div>
 
-  <div class="my-5">&nbsp;</div>
   <ResultEvolution ref="evolutionChart"/>
 
-  <div class="my-5">&nbsp;</div>
   <ResultLimitComparison :results="bests" />
 
   <div class="my-5">&nbsp;</div>

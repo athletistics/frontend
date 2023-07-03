@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <!--  Hide element with CSS, as otherwise computed functions are not executed, -->
+  <!--  causing the element to be invisible forever due to the asynchronously -->
+  <!--  content -->
+  <div :class="{'hidden': !visible}">
+    <div class="my-5">&nbsp;</div>
     <h1>{{ $t('comp.evolution.title') }}</h1>
 
     <form class="grid md:grid-cols-3 grid-cols-1 gap-4 with-label">
@@ -11,8 +15,18 @@
       </div>
 
       <div>
+        <div>
+          <label>{{ $t('comp.evolution.referenceType') }}</label>
+          <div class="flex">
+            <select v-model="typeId">
+              <option v-for="c in dataStore.staticResultTypes" :value="c.id">
+                {{ $t("data.staticResultTypes." + c.i18nType) }}
+              </option>
+            </select>
+          </div>
+        </div>
         <div v-if="filteredCategories?.length">
-          <label>{{ $t('comp.evolution.reference') }}</label>
+          <label>{{ $t('comp.evolution.category') }}</label>
           <div class="flex">
             <input type="checkbox" class="w-6 mr-2" v-model="showReference">
             <select v-model="category">
@@ -23,6 +37,7 @@
             </select>
           </div>
         </div>
+        <p v-else>{{ $t('comp.evolution.noCat') }}</p>
       </div>
 
       <div v-if="canManageResults()">
@@ -115,7 +130,9 @@ export default defineComponent({
       showReference: false as boolean,
       dataMap: new Map<string, Result.Data[]>() as Map<string, Result.Data[]>,
       usersToAdd: [] as string[],
-      state: {state: NaN} as LoadingState
+      state: {state: NaN} as LoadingState,
+      typeId: NaN as number,
+      visible: true as boolean
     }
   },
   computed: {
@@ -123,7 +140,7 @@ export default defineComponent({
       let categories = [] as Category[]
 
       this.dataStore.staticResults.forEach(r => {
-        if (r.disciplineId == this.discipline) {
+        if (r.disciplineId == this.discipline && r.resultStaticTypeId === this.typeId) {
           const c = this.dataStore.getCategoryById(r.categoryId)
           if (c) categories.push(c)
         }
@@ -151,8 +168,13 @@ export default defineComponent({
       return r
     },
     chartData() {
-      // return an empty dataset if no data is available
-      if (!this.dataMap.size) return {labels: [], datasets: []}
+      // return an empty dataset and hide the chart if no data is available
+      console.log(this.dataMap)
+      if (!this.dataMap.size) {
+        this.visible = false
+        return {labels: [], datasets: []}
+      }
+      this.visible = true
 
       let minX = 0
       let maxX = 0
@@ -193,10 +215,10 @@ export default defineComponent({
 
       // add the reference value as a horizontal line
       if (this.showReference) {
-        const limit = this.dataStore.getReferenceValue(this.discipline, this.category)
+        const limit = this.dataStore.getReferenceValue(this.discipline, this.category, this.typeId)
         if (limit) {
           datasets.push({
-            label: this.$t(this.dataStore.getStaticTypeById(limit.resultStaticTypeId).i18nType),
+            label: this.$t("data.staticResultTypes." + this.dataStore.getStaticTypeById(limit.resultStaticTypeId).i18nType),
             data: [
               {x: minX, y: parseFloat(limit.value)},
               {x: maxX, y: parseFloat(limit.value)}
@@ -255,6 +277,7 @@ export default defineComponent({
       this.usersToAdd = [] as string[]
     },
     compare() {
+      // add all selected athletes to the graph
       this.usersToAdd.forEach(u => {
         this.addResultSet(u)
       })
@@ -273,8 +296,17 @@ export default defineComponent({
       }).then(response => {
         this.state.state = LoadingStates.Loaded
 
-        if (!this.dataMap || !this.dataMap.size) this.dataMap = new Map()
+        // create a dataMap. this is only required on first call
+        if (!this.dataMap || !this.dataMap.size) {
+          this.dataMap = new Map()
+        } else if (!response.data?.length) {
+          // stop here, if the additionally loaded results are empty (i.e. athlete to compare against
+          // has no results)
+          this.toastStore.addErrorToast(this.$t('comp.evolution.noData'))
+          return
+        }
 
+        // read the athlete name from the first result entry
         const name = response.data[0]?.userLastName + " " + response.data[0]?.userFirstName
 
         this.dataMap.set(name ?? userId, response.data)
