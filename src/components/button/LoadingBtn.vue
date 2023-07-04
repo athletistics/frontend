@@ -10,7 +10,7 @@ export default defineComponent({
     full: {type: Boolean as PropType<boolean>, required: false, default: false},
     outlined: {type: Boolean as PropType<boolean>, required: false, default: false},
     loading: {type: Object as PropType<LoadingState>, required: false, default: {state: LoadingStates.Loaded}},
-    type: {type: String as PropType<ButtonHTMLAttributes>, required: false, default: "button"},
+    type: {type: String as PropType<ButtonHTMLAttributes>, required: false, default: {type: "button"}},
     visualType: {type: String as PropType<string>, required: false}
   },
   computed: {
