@@ -36,10 +36,10 @@
       </div>
       <hr>
       <div class="grid md:grid-cols-2 gap-4">
-        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createTeam()" type="button">
+        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createTeam()">
           {{ $t('glob.btn.save') }}
         </LoadingBtn>
-        <LoadingBtn full outlined @click="setTeamPopupVisibility(false)" type="button">{{ $t('glob.btn.cancel') }}
+        <LoadingBtn full outlined @click="setTeamPopupVisibility(false)">{{ $t('glob.btn.cancel') }}
         </LoadingBtn>
       </div>
     </form>

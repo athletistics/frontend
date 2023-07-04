@@ -139,7 +139,7 @@ export default defineComponent({
 
       return this.computeDatasets(this.results, true)
     },
-    chartOptions(): ChartOptions {
+    chartOptions(): ChartOptions<"radar"> {
       return {
         responsive: true,
         scales: {
@@ -157,8 +157,9 @@ export default defineComponent({
           tooltip: {
             callbacks: {
               label: (context) => {
-                const formattedResult = formatResult(context.raw.val.toString(), this.dataStore.getDisciplineById(context.raw.disciplineId))
-                return `${context.dataset.label}: ${formattedResult} (${context.raw.r.toFixed(2)}%)`
+                const raw = context.raw as any
+                const formattedResult = formatResult(raw.val.toString(), this.dataStore.getDisciplineById(raw.disciplineId))
+                return `${context.dataset.label}: ${formattedResult} (${raw.r.toFixed(2)}%)`
               }
             }
           }
@@ -168,17 +169,17 @@ export default defineComponent({
   },
   methods: {
     computeDatasets(results: Result.Data[], isDescending: boolean) {
-      let labels = []
+      let labels = [] as string[]
       let datasets = [{
         label: this.$t('glob.result.limit'),
-        data: [],
+        data: [] as any[],
         pointBackgroundColor: transparentize(CHART_COLORS.green, 0.5),
         backgroundColor: CHART_COLOR_TRANSPARENT,
         borderColor: CHART_COLORS.green,
       }, {
         label: this.$t('page.user.title.bestResults'),
         fill: true,
-        data: [],
+        data: [] as any[],
         backgroundColor: transparentize(CHART_COLORS.red, 0.5),
         borderColor: CHART_COLORS.red,
       }]
@@ -204,7 +205,7 @@ export default defineComponent({
         const r = isDescending ? 100 + percentDiff : 100 - percentDiff
 
         // Add the achieved percentage of the limit
-        labels.push(discipline.i18nName ? this.$t('data.' + discipline.i18nName) : discipline.customName)
+        labels.push(discipline.i18nName ? this.$t('data.' + discipline.i18nName) : (discipline.customName ?? ""))
         datasets[1].data.push({
           r,
           val: resVal,
