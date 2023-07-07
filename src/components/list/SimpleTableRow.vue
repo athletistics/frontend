@@ -9,7 +9,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <tr v-if="clickable" class="table-row cursor-pointer" @click="$emit('click')">
+  <tr v-if="clickable" class="table-row cursor-pointer">
     <slot></slot>
   </tr>
   <tr v-else class="table-row">

@@ -15,7 +15,11 @@
       "weekday": "Weekday",
       "duration": "Duration",
       "place": "Location",
-      "type": "Type"
+      "type": "Type",
+      "export": "Export data for NDS",
+      "attendance": "Attendance",
+      "coaches": "Coaches",
+      "athletes": "Athletes"
     },
     "athletes": {
       "title": "Athletes",

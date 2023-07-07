@@ -5,7 +5,7 @@ import {LoadingStates} from "../../types/LoadingStates";
 import SimpleListEntry from "./SimpleListEntry.vue";
 
 export default defineComponent({
-  name: "ListStates",
+  name: "SimpleList",
   computed: {
     LoadingStates() {
       return LoadingStates
