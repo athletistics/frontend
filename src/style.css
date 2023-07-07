@@ -72,11 +72,11 @@ nav {
 
 }
 
-form.with-label label {
+form.with-label label, div.with-label label {
     @apply block text-left text-sm
 }
 
-form.with-label input:not([type=checkbox]), form.with-label select {
+form.with-label input:not([type=checkbox]), div.with-label input:not([type=checkbox]), form.with-label select, div.with-label select {
     @apply block p-2 rounded-md bg-slate-100 w-full
 }
 

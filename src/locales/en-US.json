@@ -3,6 +3,20 @@
     "home": {
       "title": "Home"
     },
+    "activity": {
+      "title": {
+        "default": "Activity",
+        "instances": "Instances"
+      },
+      "startDate": "Start date",
+      "endDate": "End date",
+      "date": "Date",
+      "startTime": "Start time",
+      "weekday": "Weekday",
+      "duration": "Duration",
+      "place": "Location",
+      "type": "Type"
+    },
     "athletes": {
       "title": "Athletes",
       "create": "Create athlete",
@@ -192,7 +206,7 @@
       "Diverse"
     ],
     "language": {},
-    "eventType":{
+    "eventType": {
       "competition": {
         "swissAthletics": "Swiss-Athletics",
         "ubsKidsCup": "UBS Kids Cup",
