@@ -1,10 +1,10 @@
 <template>
-  <Modal ref="modal">
+  <Modal ref="modal" classes="lg:max-w-5xl">
     <h3>{{ $t('page.activity.title.new') }}</h3>
     <div class="with-label grid lg:grid-cols-3 sm:grid-cols-2 gap-4">
 
       <div>
-        <label>{{ $t('page.activity.starDate') }}*</label>
+        <label>{{ $t('page.activity.startDate') }}*</label>
         <input v-model="newActivity.startDate" type="date" required>
       </div>
 
@@ -16,13 +16,7 @@
       <div>
         <label>{{ $t('page.activity.weekday') }}*</label>
         <select v-model="newActivity.weekday" required>
-          <option :value="0" selected>Mon</option>
-          <option :value="1" selected>Tue</option>
-          <option :value="2" selected>Wed</option>
-          <option :value="3" selected>Thu</option>
-          <option :value="4" selected>Fri</option>
-          <option :value="5" selected>Sat</option>
-          <option :value="6" selected>Sun</option>
+          <option v-for="(i) in 7" :value="i" selected>{{ $t('glob.weekday[' + i%7 + ']') }}</option>
         </select>
       </div>
 
@@ -66,10 +60,20 @@ import Modal from "../modals/Modal.vue";
 import LoadingBtn from "../button/LoadingBtn.vue";
 import LabeledText from "../LabeledText.vue";
 import LoadingState from "../../types/LoadingState";
+import {LoadingStates} from "../../types/LoadingStates";
+import axios from "axios";
+import Const from "../../plugins/Constants";
+import {useToastStore} from "../../stores/toast";
+import {useAuthStore} from "../../stores/auth";
 
 export default defineComponent({
   name: "ActivityModal",
   components: {LabeledText, LoadingBtn, Modal},
+  setup() {
+    const authStore = useAuthStore()
+    const toastStore = useToastStore()
+    return {authStore, toastStore}
+  },
   data() {
     return {
       newActivity: {} as Nds.ActivityReq,
@@ -82,8 +86,26 @@ export default defineComponent({
       this.newActivity = {} as Nds.ActivityReq
     },
     createActivity() {
-      this.setVisibility(false)
-      this.$emit("created")
+      this.createState.state = LoadingStates.Loading
+      this.newActivity.teamId = this.$route.params.id
+
+      axios.request({
+        url: '/nds/activities',
+        method: 'post',
+        baseURL: Const.API_URL,
+        headers: {
+          'Authorization': 'Bearer ' + this.authStore.token
+        },
+        data: this.newActivity,
+      }).then(response => {
+        this.createState.state = LoadingStates.Loaded
+        this.toastStore.addSuccessToast()
+        this.$emit('created')
+        this.setVisibility(false)
+      }).catch(response => {
+        this.createState.state = LoadingStates.Error
+        this.toastStore.addToastFromAxiosError(response)
+      })
     }
   }
 })

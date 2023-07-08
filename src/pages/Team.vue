@@ -28,6 +28,22 @@
     </SimpleListEntry>
   </SimpleList>
 
+  <div class="my-5"></div>
+
+  <TitleWithBtnPlus :btn-visible="canManageActivities()" @btn-click="setActivityModalVisibility(true)">{{ $t('page.team.activities') }}</TitleWithBtnPlus>
+
+  <SimpleTable i18n :state="stateActivities"
+               :headers="['page.activity.weekday', 'page.activity.startTime', 'page.activity.duration', 'page.activity.startDate', 'page.activity.endDate', 'page.activity.place']">
+    <SimpleTableRow v-for="a in activities" clickable @click="$router.push('/activity/' + a.id)">
+      <SimpleTableCell>{{ $t('glob.weekday['+a.weekday+']') }}</SimpleTableCell>
+      <SimpleTableCell>{{ a.startTime }}</SimpleTableCell>
+      <SimpleTableCell>{{ a.duration }}</SimpleTableCell>
+      <SimpleTableCell>{{ $d(a.startDate) }}</SimpleTableCell>
+      <SimpleTableCell>{{ $d(a.endDate) }}</SimpleTableCell>
+      <SimpleTableCell>{{ a.place }}</SimpleTableCell>
+    </SimpleTableRow>
+  </SimpleTable>
+
   <Modal ref="modal">
     <form class="space-y-4 with-label">
       <h3>{{ $t('page.team.addPartTitle') }}</h3>
@@ -47,6 +63,8 @@
     </form>
   </Modal>
 
+  <ActivityModal ref="activity"/>
+
 </template>
 
 <script lang="ts">
@@ -61,12 +79,21 @@ import {useToastStore} from "../stores/toast";
 import SimpleList from "../components/list/SimpleList.vue";
 import SimpleListEntry from "../components/list/SimpleListEntry.vue";
 import {LoadingStates} from "../types/LoadingStates";
-import {canManageTeam} from "../plugins/AccessControl";
+import {canManageActivities, canManageTeam} from "../plugins/AccessControl";
 import LoadingBtn from "../components/button/LoadingBtn.vue";
 import LoadingState from "../types/LoadingState";
+import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
+import SimpleTable from "../components/list/SimpleTable.vue";
+import SimpleTableRow from "../components/list/SimpleTableRow.vue";
+import SimpleTableCell from "../components/list/SimpleTableCell.vue";
+import ActivityModal from "../components/nds/ActivityModal.vue";
 
 export default defineComponent({
-  components: {LoadingBtn, SimpleListEntry, Modal, SimpleList},
+  components: {
+    ActivityModal,
+    SimpleTableCell,
+    SimpleTableRow, SimpleTable, TitleWithBtnPlus, LoadingBtn, SimpleListEntry, Modal, SimpleList
+  },
   setup() {
     const authStore = useAuthStore()
     const toastStore = useToastStore()
@@ -79,7 +106,9 @@ export default defineComponent({
       users: [] as User[],
       participants: [] as User[],
       state: NaN as LoadingStates,
+      stateActivities: NaN as LoadingStates,
       editMode: false as boolean,
+      activities: [] as Nds.Activity[],
       usersToAdd: [] as string[],
       usersToRemove: [] as string[],
       addState: {state: NaN} as LoadingState,
@@ -97,9 +126,13 @@ export default defineComponent({
     }
   },
   methods: {
+    canManageActivities,
     canManageTeam,
     setModalVisibility(visible: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
+    },
+    setActivityModalVisibility(visible: boolean){
+      (this.$refs.activity as any).setVisibility(visible)
     },
     setSelectable(selectable: boolean) {
       this.editMode = selectable
@@ -181,6 +214,22 @@ export default defineComponent({
       }).catch(() => {
         this.state = LoadingStates.Error
       })
+    },
+    getActivities() {
+      this.stateActivities = LoadingStates.Loading
+      axios.request({
+        url: "/nds/activities?teamId=" + this.$route.params.id,
+        method: 'get',
+        baseURL: Const.API_URL,
+        headers: {
+          'Authorization': 'Bearer ' + this.authStore.token
+        }
+      }).then(response => {
+        this.activities = response.data
+        this.stateActivities = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
+      }).catch(e => {
+        this.stateActivities = LoadingStates.Error
+      })
     }
   },
   mounted() {
@@ -196,6 +245,7 @@ export default defineComponent({
     })
 
     this.getAthletes()
+    this.getActivities()
     this.getParticipants()
   }
 })

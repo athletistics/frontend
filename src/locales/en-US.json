@@ -6,7 +6,8 @@
     "activity": {
       "title": {
         "default": "Activity",
-        "instances": "Instances"
+        "instances": "Instances",
+        "new": "Create activity"
       },
       "startDate": "Start date",
       "endDate": "End date",
@@ -101,7 +102,8 @@
       "addPart": "Add participants",
       "addPartTitle": "Select participants to add",
       "removePart": "Remove selected Users from team",
-      "selectForRemoval": "Select users for removal"
+      "selectForRemoval": "Select users for removal",
+      "activities": "Activities"
     },
     "references": {
       "title": "Reference results",
@@ -135,6 +137,15 @@
     }
   },
   "glob": {
+    "weekday": [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ],
     "track": "Track",
     "field": "Field",
     "btn": {
@@ -224,6 +235,12 @@
           "outdoors": "Swiss-Athletics SM Limits - Outdoor",
           "indoors": "Swiss-Athletics SM Limits - Indoor"
         }
+      }
+    },
+    "nds": {
+      "activityType": {
+        "training": "Training",
+        "competition": "Competition"
       }
     },
     "sports": {

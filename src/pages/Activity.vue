@@ -3,27 +3,32 @@
 
   <div class="white-rounded p-4 space-y-4">
     <div class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4">
-      <LabeledText label="page.activity.starDate" :state="activityState">{{ $d(activity.startDate) }}</LabeledText>
-      <LabeledText label="page.activity.endDate" :state="activityState">{{ $d(activity.endDate) }}</LabeledText>
-      <LabeledText label="page.activity.weekday" :state="activityState">{{ activity.weekday }}</LabeledText>
-      <LabeledText label="page.activity.startTime" :state="activityState">{{ activity.startTime }}</LabeledText>
-      <LabeledText label="page.activity.duration" :state="activityState">{{ activity.duration }}</LabeledText>
-      <LabeledText label="page.activity.place" :state="activityState">{{ activity.place }}</LabeledText>
+      <LabeledText label="page.activity.startDate" :state="stateActivity">{{ $d(activity.startDate) }}</LabeledText>
+      <LabeledText label="page.activity.endDate" :state="stateActivity">{{ $d(activity.endDate) }}</LabeledText>
+      <LabeledText label="page.activity.weekday" :state="stateActivity">{{
+          $t('glob.weekday[' + activity.weekday + ']')
+        }}
+      </LabeledText>
+      <LabeledText label="page.activity.startTime" :state="stateActivity">{{ activity.startTime }}</LabeledText>
+      <LabeledText label="page.activity.duration" :state="stateActivity">{{ activity.duration }} min</LabeledText>
+      <LabeledText label="page.activity.place" :state="stateActivity">{{ activity.place }}</LabeledText>
     </div>
     <LoadingBtn full visual-type="primary">{{ $t('page.activity.export') }}</LoadingBtn>
   </div>
 
   <div class="my-5">&nbsp;</div>
 
-  <TitleWithBtnPlus @btn-click="$refs.instance.setVisibility(true)" :btn-visible="true" >{{ $t('page.activity.title.instances') }}</TitleWithBtnPlus>
+  <TitleWithBtnPlus @btn-click="$refs.instance.setVisibility(true)" :btn-visible="canManageActivityInstances()">
+    {{ $t('page.activity.title.instances') }}
+  </TitleWithBtnPlus>
 
   <SimpleTable
-      :state="instancesState" i18n
+      :state="stateInstances" i18n
       :headers="['page.activity.date', 'page.activity.startTime', 'page.activity.duration', 'page.activity.type', 'page.activity.place', '']">
-    <SimpleTableRow clickable v-for="i in instances" @click="$refs.attendance.setVisibility(true)">
+    <SimpleTableRow clickable v-for="i in instances" @click="$refs.attendance.setVisibility(true, i)">
       <SimpleTableCell>{{ i.date ? $d(i.date) : "" }}</SimpleTableCell>
       <SimpleTableCell>{{ i.startTime }}</SimpleTableCell>
-      <SimpleTableCell>{{ i.duration }}</SimpleTableCell>
+      <SimpleTableCell>{{ i.duration }} min</SimpleTableCell>
       <SimpleTableCell>{{ $t('data.' + i.ndsActivityType?.i18nName) }}</SimpleTableCell>
       <SimpleTableCell>{{ i.place }}</SimpleTableCell>
       <SimpleTableCell class="!py-0">
@@ -52,6 +57,10 @@ import LoadingBtn from "../components/button/LoadingBtn.vue";
 import AttendanceModal from "../components/nds/AttendanceModal.vue";
 import {useDataStore} from "../stores/data";
 import InstanceModal from "../components/nds/InstanceModal.vue";
+import axios from "axios";
+import Const from "../plugins/Constants";
+import {useAuthStore} from "../stores/auth";
+import {canManageActivityInstances} from "../plugins/AccessControl";
 
 export default defineComponent({
   name: "Activity",
@@ -67,20 +76,57 @@ export default defineComponent({
   },
   setup() {
     const dataStore = useDataStore()
-    return {dataStore}
+    const authStore = useAuthStore()
+    return {dataStore, authStore}
   },
   data() {
     return {
       activity: {} as Nds.Activity,
-      activityState: LoadingStates.Loading as LoadingStates,
-      instances: [{}] as Nds.ActivityInstance[],
-      instancesState: LoadingStates.Loading as LoadingStates,
+      stateActivity: LoadingStates.Loading as LoadingStates,
+      instances: [] as Nds.ActivityInstance[],
+      stateInstances: LoadingStates.Loading as LoadingStates,
     }
   },
   methods: {
+    canManageActivityInstances,
     openInstanceContext() {
       console.log("click")
+    },
+    getActivity() {
+      this.stateActivity = LoadingStates.Loading
+      axios.request({
+        url: "/nds/activities/" + this.$route.params.id,
+        method: 'get',
+        baseURL: Const.API_URL,
+        headers: {'Authorization': 'Bearer ' + this.authStore.token}
+      }).then(response => {
+        this.activity = response.data
+        this.stateActivity = response.data ? LoadingStates.Loaded : LoadingStates.Empty
+      }).catch(e => {
+        this.stateActivity = LoadingStates.Error
+      })
+    },
+    getInstances() {
+      this.stateInstances = LoadingStates.Loading
+      axios.request({
+        url: "/nds/activities/" + this.$route.params.id + "/instances",
+        method: 'get',
+        baseURL: Const.API_URL,
+        headers: {'Authorization': 'Bearer ' + this.authStore.token}
+      }).then(response => {
+        this.instances = response.data
+        this.stateInstances = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
+      }).catch(e => {
+        this.stateInstances = LoadingStates.Error
+      })
+    },
+    getUsers() {
+
     }
+  },
+  mounted() {
+    this.getActivity()
+    this.getInstances()
   }
 })
 </script>

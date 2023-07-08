@@ -1,6 +1,6 @@
 <template>
   <Modal ref="modal">
-    <h3>{{ $t('page.activity.attendance') }}</h3>
+    <h3>{{ $t('page.activity.attendance') }} - {{instance?.date ? $d(instance.date) : ""}}</h3>
     <!--    Future update: differentiate between coaches and athletes -->
     <!--    <h4>{{ $t('page.activity.coaches') }}</h4>-->
 
@@ -40,13 +40,14 @@ export default defineComponent({
   name: "AttendanceModal",
   components: {LoadingBtn, Modal},
   props: {
-    users: {type: Array as PropType<User[]>, required: true}
+    users: {type: Array as PropType<User[]>, required: true},
   },
   data() {
     return {
       selectedCoaches: [] as string[],
       selectedAthletes: [] as string[],
-      state: {state: NaN} as LoadingState
+      state: {state: NaN} as LoadingState,
+      instance: {} as Nds.ActivityInstance
     }
   },
   computed: {
@@ -58,8 +59,9 @@ export default defineComponent({
     },
   },
   methods: {
-    setVisibility(visibility: boolean) {
+    setVisibility(visibility: boolean, instance?: Nds.ActivityInstance) {
       (this.$refs.modal as any).setVisibility(visibility)
+      if(instance) this.instance = instance
       this.selectedCoaches = [] as string[]
       this.selectedAthletes = [] as string[]
     },

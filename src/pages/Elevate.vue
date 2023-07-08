@@ -11,7 +11,7 @@
           <input type="text" v-model="code"/>
         </div>
         <div>
-          <LoadingBtn :type="{type: 'submit'}" :loading="state" :disabled="code.length !== Constants.TOTP_CODE_LENGTH" full visual-type="primary">{{ $t('glob.btn.verify') }}</LoadingBtn>
+          <LoadingBtn :type="'submit'" :loading="state" :disabled="code.length !== Constants.TOTP_CODE_LENGTH" full visual-type="primary">{{ $t('glob.btn.verify') }}</LoadingBtn>
         </div>
       </form>
     </div>
@@ -39,7 +39,7 @@
           <input type="text" v-model="code"/>
         </div>
         <div>
-          <LoadingBtn :type="{type: 'submit'}" full visual-type="primary"
+          <LoadingBtn :type="'submit'" full visual-type="primary"
                       :loading="state"
                       :disabled="deviceName.length === 0 || code.length !== Constants.TOTP_CODE_LENGTH"  >{{ $t('glob.btn.verify') }}</LoadingBtn>
         </div>

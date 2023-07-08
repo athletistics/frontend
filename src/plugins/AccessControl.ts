@@ -15,7 +15,7 @@ function isHeadCoach(): boolean {
   return userStore.hasRole(headCoach)
 }
 
-function is2FaOk(): boolean  {
+function is2FaOk(): boolean {
   const authStore = useAuthStore()
   return authStore.is2FaOk
 }
@@ -38,6 +38,14 @@ export function canManageEvents(): boolean {
 }
 
 export function canManageResults(): boolean {
+  return isCoach() && is2FaOk()
+}
+
+export function canManageActivities(): boolean {
+  return isHeadCoach() && is2FaOk()
+}
+
+export function canManageActivityInstances(): boolean {
   return isCoach() && is2FaOk()
 }
 
