@@ -2,10 +2,16 @@
   <h1>{{ team.name }}&nbsp;</h1>
 
 
-  <div class="grid md:grid-cols-2 gap-4" v-if="canManageTeam() && !editMode">
-    <LoadingBtn full outlined visual-type="primary" @click="setModalVisibility(true)">{{ $t('page.team.addPart') }}
+  <div class="grid md:grid-cols-3 grid-cols-2 gap-4" v-if="canManageTeam() && !editMode">
+    <LoadingBtn full outlined visual-type="primary" @click="setModalVisibility(true, false)">{{
+        $t('page.team.addPart')
+      }}
     </LoadingBtn>
-    <LoadingBtn full outlined visual-type="error" @click="setSelectable(true)">
+    <LoadingBtn full outlined visual-type="primary" @click="setModalVisibility(true, true)">{{
+        $t('page.team.addCoach')
+      }}
+    </LoadingBtn>
+    <LoadingBtn class="md:col-span-1 col-span-2" full outlined visual-type="error" @click="setSelectable(true)">
       {{ $t('page.team.selectForRemoval') }}
     </LoadingBtn>
   </div>
@@ -21,8 +27,17 @@
   </div>
 
 
+  <h2>{{$t('page.team.title.coaches')}}</h2>
   <SimpleList :state="state">
-    <SimpleListEntry v-for="p in participants" :to="'/athletes/' + p.id" :enabled="!editMode">
+    <SimpleListEntry v-for="p in participantCoaches" :to="'/athletes/' + p.id" :enabled="!editMode">
+      <input v-if="editMode" class="mr-2" :id="p.id" :value="p.id" type="checkbox" v-model="usersToRemove">
+      <label class="w-full" :for="p.id">{{ p.lastName }} {{ p.firstName }}</label>
+    </SimpleListEntry>
+  </SimpleList>
+
+  <h2>{{$t('page.team.title.athletes')}}</h2>
+  <SimpleList :state="state">
+    <SimpleListEntry v-for="p in participantAthletes" :to="'/athletes/' + p.id" :enabled="!editMode">
       <input v-if="editMode" class="mr-2" :id="p.id" :value="p.id" type="checkbox" v-model="usersToRemove">
       <label class="w-full" :for="p.id">{{ p.lastName }} {{ p.firstName }}</label>
     </SimpleListEntry>
@@ -30,12 +45,14 @@
 
   <div class="py-5"></div>
 
-  <TitleWithBtnPlus :btn-visible="canManageActivities()" @btn-click="setActivityModalVisibility(true)">{{ $t('page.team.activities') }}</TitleWithBtnPlus>
+  <TitleWithBtnPlus :btn-visible="canManageActivities()" @btn-click="setActivityModalVisibility(true)">
+    {{ $t('page.team.activities') }}
+  </TitleWithBtnPlus>
 
   <SimpleTable i18n :state="stateActivities"
                :headers="['page.activity.weekday', 'page.activity.startTime', 'page.activity.duration', 'page.activity.startDate', 'page.activity.endDate', 'page.activity.place']">
     <SimpleTableRow v-for="a in activities" clickable @click="$router.push('/activity/' + a.id)">
-      <SimpleTableCell>{{ $t('glob.weekday['+a.weekday+']') }}</SimpleTableCell>
+      <SimpleTableCell>{{ $t('glob.weekday[' + a.weekday + ']') }}</SimpleTableCell>
       <SimpleTableCell>{{ a.startTime }}</SimpleTableCell>
       <SimpleTableCell>{{ a.duration }}</SimpleTableCell>
       <SimpleTableCell>{{ $d(a.startDate) }}</SimpleTableCell>
@@ -46,7 +63,7 @@
 
   <Modal ref="modal">
     <form class="space-y-4 with-label">
-      <h3>{{ $t('page.team.addPartTitle') }}</h3>
+      <h3>{{ asCoach ? $t('page.team.addCoachTitle') : $t('page.team.addPartTitle') }}</h3>
       <hr>
       <div v-for="u in filteredUsers" class="flex hover:bg-main cursor-pointer">
         <input class="mr-2 cursor-pointer" :id="u.id" :value="u.id" type="checkbox" v-model="usersToAdd">
@@ -103,9 +120,11 @@ export default defineComponent({
   },
   data() {
     return {
+      asCoach: false as boolean,
       team: {} as Team,
       users: [] as User[],
-      participants: [] as User[],
+      participantCoaches: [] as User[],
+      participantAthletes: [] as User[],
       state: NaN as LoadingStates,
       stateActivities: NaN as LoadingStates,
       editMode: false as boolean,
@@ -120,7 +139,8 @@ export default defineComponent({
     filteredUsers(): User[] {
       const users = []
       for (let i = 0; i < this.users.length; i++) {
-        if (this.participants.some(p => p.id === this.users[i].id)) continue
+        if (this.participantAthletes.some(p => p.id === this.users[i].id)) continue
+        if (this.participantCoaches.some(p => p.id === this.users[i].id)) continue
         users.push(this.users[i])
       }
       return users
@@ -129,10 +149,11 @@ export default defineComponent({
   methods: {
     canManageActivities,
     canManageTeam,
-    setModalVisibility(visible: boolean) {
+    setModalVisibility(visible: boolean, asCoach?: boolean) {
       (this.$refs.modal as any).setVisibility(visible)
+      this.asCoach = !!asCoach
     },
-    setActivityModalVisibility(visible: boolean){
+    setActivityModalVisibility(visible: boolean) {
       (this.$refs.activity as any).setVisibility(visible)
     },
     setSelectable(selectable: boolean) {
@@ -148,7 +169,9 @@ export default defineComponent({
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         },
-        data: this.usersToAdd
+        data: this.usersToAdd.map(id => {
+          return {userId: id, isCoach: this.asCoach}
+        })
       }).then(() => {
         this.addState.state = LoadingStates.Loaded
         this.setModalVisibility(false)
@@ -157,13 +180,7 @@ export default defineComponent({
         this.toastStore.addToast({title: "Success", color: "bg-primary"})
       }).catch(error => {
         this.addState.state = LoadingStates.Error
-        this.toastStore.addToast({
-          title: "Unable to fulfill request",
-          code: error.response.data.error,
-          message: error.response.data.message,
-          color: "bg-error",
-        })
-        console.log('error adding participants')
+        this.toastStore.addToastFromAxiosError(error)
       })
     },
     removeFromTeam() {
@@ -175,15 +192,17 @@ export default defineComponent({
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         },
-        data: this.usersToRemove
+        data: this.usersToRemove.map(id => {
+          return {userId: id}
+        })
       }).then(() => {
         this.removeState.state = LoadingStates.Loaded
         this.editMode = false
         this.getParticipants()
         this.usersToRemove = []
-      }).catch(() => {
+      }).catch(error => {
         this.removeState.state = LoadingStates.Error
-        console.log('error adding participants')
+        this.toastStore.addToastFromAxiosError(error)
       })
     },
     getAthletes() {
@@ -199,7 +218,8 @@ export default defineComponent({
       })
     },
     getParticipants() {
-      this.participants = [] as User[]
+      this.participantAthletes = [] as User[]
+      this.participantCoaches = [] as User[]
       this.state = LoadingStates.Loading
 
       axios.request({
@@ -210,8 +230,9 @@ export default defineComponent({
           'Authorization': 'Bearer ' + this.authStore.token
         }
       }).then(response => {
-        this.state = response.data.length ? LoadingStates.Loaded : LoadingStates.Empty
-        this.participants = response.data
+        this.state = response.data.athletes.length ? LoadingStates.Loaded : LoadingStates.Empty
+        this.participantAthletes = response.data.athletes
+        this.participantCoaches = response.data.coaches
       }).catch(() => {
         this.state = LoadingStates.Error
       })

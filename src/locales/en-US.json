@@ -103,9 +103,15 @@
       }
     },
     "team": {
-      "addPart": "Add participants",
-      "addPartTitle": "Select participants to add",
-      "removePart": "Remove selected Users from team",
+      "title": {
+        "athletes": "Athletes",
+        "coaches": "Coaches"
+      },
+      "addPart": "Add athletes",
+      "addCoach": "Add coaches",
+      "addPartTitle": "Select athletes to add",
+      "addCoachTitle": "Select coaches to add",
+      "removePart": "Remove selected users from team",
       "selectForRemoval": "Select users for removal",
       "activities": "Activities"
     },
