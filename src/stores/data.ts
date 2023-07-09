@@ -15,6 +15,7 @@ import Country from "../types/Country";
 import {Nds} from "../types/Nds";
 
 interface State {
+  externalIdTypes: ExternalId.Type[]
   activityTypes: Nds.ActivityType[]
   eventTypes: EventType[]
   disciplines: Discipline[]
@@ -36,6 +37,7 @@ interface StateMaps {
 
 export const useDataStore = defineStore('data', {
   state: (): State => ({
+    externalIdTypes: [] as ExternalId.Type[],
     activityTypes: [] as Nds.ActivityType[],
     eventTypes: [] as EventType[],
     disciplines: [] as Discipline[],
@@ -53,6 +55,11 @@ export const useDataStore = defineStore('data', {
     }
   }),
   getters: {
+    getExternalIdTypeById(state) {
+      return (id: number): EventType | undefined => {
+        return state.externalIdTypes.find(e => e.id === id)
+      }
+    },
     getActivityById(state) {
       return (id: number): EventType | undefined => {
         return state.activityTypes.find(e => e.id === id)
@@ -124,6 +131,10 @@ export const useDataStore = defineStore('data', {
       this.updateDisciplines()
       this.updateActivityTypes()
       this.updateStaticResults()
+      this.updateExternalIdTypes()
+    },
+    updateExternalIdTypes(s?: LoadingState) {
+      this.updateData<ExternalId.Type>('/externalId/idTypes', 'externalIdTypes', undefined, s)
     },
     updateActivityTypes(s?: LoadingState) {
       this.updateData<Nds.ActivityType>('/nds/types', 'activityTypes', undefined, s)

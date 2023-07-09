@@ -2,7 +2,7 @@ declare namespace ExternalId {
   interface Id {
     externalId: string,
     internalId: string,
-    externalIdTypeId: Type
+    externalIdTypeId: number
   }
 
   interface Type {

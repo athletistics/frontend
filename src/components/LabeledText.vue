@@ -5,7 +5,7 @@ import {LoadingStates} from "../types/LoadingStates";
 export default defineComponent({
   props: {
     text: {type: String as PropType<string>, required: false},
-    label: {type: String as PropType<string>, required: true},
+    label: {type: String as PropType<string>, required: false},
     state: {type: Number as PropType<LoadingStates>, required: false, default: LoadingStates.Loaded}
   },
   computed: {
@@ -37,7 +37,7 @@ export default defineComponent({
 
 <template>
   <div :class="animateClass">
-    <p>{{ $t(label) }}</p>
+    <p>{{ label ? $t(label) : '' }}</p>
     <p v-if="state === LoadingStates.Loaded" class="font-argentum">{{ content }}
       <slot/>
     </p>

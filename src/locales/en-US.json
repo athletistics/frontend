@@ -65,11 +65,15 @@
       "title": {
         "account": "Account",
         "bestResults": "Personal bests",
-        "results": "Results"
+        "results": "Results",
+        "addId": "Add external id"
       },
       "btn": {
         "createTrainingResult": "Enter new training result"
-      }
+      },
+      "createLogin": "Create login (not implemented)",
+      "sendInit": "Resend init (not implemented)",
+      "addExternalId": "Add external ID"
     },
     "elevate": {
       "title": {
@@ -203,8 +207,8 @@
         "USER_STATE_ACTIVE": "Active"
       },
       "withLogin": "Create login for this user",
-      "createLogin": "Create login (not implemented)",
-      "sendInit": "Resend init (not implemented)"
+      "externalId": "External ID",
+      "externalIdType": "ID Type"
     },
     "date": "Date",
     "gender": {
@@ -215,6 +219,11 @@
     "distance": "Distance"
   },
   "data": {
+    "externalIdType": {
+      "nds": "NDS Personal Number",
+      "swissAthletics": "Swiss-Athletics License Number",
+      "ubsKidsCup": "UBS Kids Cup Kid-ID"
+    },
     "discipline": {
       "sprint60m": "60 m",
       "sprint80m": "80 m",
