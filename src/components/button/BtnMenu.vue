@@ -37,7 +37,7 @@ export default defineComponent({
       let el = this.$refs.menuBtn as any
 
       const btnHeight = el.clientHeight
-      const menuWidth = this.$refs.menu.clientWidth
+      const menuWidth = (this.$refs.menu as any).clientWidth
       this.style.left = Math.min(el.getBoundingClientRect().right, window.innerWidth) - menuWidth + 'px'
 
       // iterate through all parents to get the absolute distance from the top of the page
@@ -53,10 +53,10 @@ export default defineComponent({
       this.isMenuOpen = !this.isMenuOpen;
       this.updatePosition()
     },
-    handleClickOutside(event) {
+    handleClickOutside() {
       this.isMenuOpen = false;
     },
-    handleResize(event) {
+    handleResize() {
       this.updatePosition()
     }
   },

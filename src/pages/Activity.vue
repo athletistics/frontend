@@ -21,7 +21,7 @@
 
   <div class="py-5">&nbsp;</div>
 
-  <TitleWithBtnPlus @btn-click="$refs.instance.setVisibility(true)" :btn-visible="canManageActivityInstances()">
+  <TitleWithBtnPlus @btn-click="($refs.instance as any).setVisibility(true)" :btn-visible="canManageActivityInstances()">
     {{ $t('page.activity.title.instances') }}
   </TitleWithBtnPlus>
 
@@ -96,7 +96,7 @@ export default defineComponent({
   data() {
     return {
       activity: {} as Nds.Activity,
-      users: [] as User[],
+      users: {} as { coaches: User[], athletes: User[] },
       stateActivity: LoadingStates.Loading as LoadingStates,
       instances: [] as Nds.ActivityInstance[],
       stateInstances: LoadingStates.Loading as LoadingStates,
@@ -106,7 +106,7 @@ export default defineComponent({
   methods: {
     canManageActivityInstances,
     c(i: Nds.ActivityInstance) {
-      this.$refs.attendance.setVisibility(true, i)
+      (this.$refs.attendance as any).setVisibility(true, i)
     },
     fileName(suffix: string): string {
       const teamName = this.activity.team.name.replace(/[^0-9a-zA-Z]/g, '')
@@ -198,7 +198,7 @@ export default defineComponent({
       })
     },
     getUsers(teamId: string) {
-      this.users = [] as User[]
+      this.users = {} as { coaches: User[], athletes: User[] }
 
       axios.request({
         url: "/teams/" + teamId + "/participants",

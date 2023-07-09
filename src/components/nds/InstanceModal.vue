@@ -85,7 +85,7 @@ export default defineComponent({
     },
     createInstance() {
       this.state.state = LoadingStates.Loading
-      this.newInstance.ndsActivityId = this.$route.params.id
+      this.newInstance.ndsActivityId = typeof this.$route.params.id === 'string' ? this.$route.params.id : this.$route.params.id.join('')
 
       axios.request({
         url: '/nds/activities/' + this.$route.params.id + '/instances',

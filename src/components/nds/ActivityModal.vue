@@ -16,7 +16,7 @@
       <div>
         <label>{{ $t('page.activity.weekday') }}*</label>
         <select v-model="newActivity.weekday" required>
-          <option v-for="(i) in 7" :value="i" selected>{{ $t('glob.weekday[' + i%7 + ']') }}</option>
+          <option v-for="(i) in 7" :value="i" selected>{{ $t('glob.weekday[' + i % 7 + ']') }}</option>
         </select>
       </div>
 
@@ -88,7 +88,7 @@ export default defineComponent({
     },
     createActivity() {
       this.createState.state = LoadingStates.Loading
-      this.newActivity.teamId = this.$route.params.id
+      this.newActivity.teamId = typeof this.$route.params.id === 'string' ? this.$route.params.id : this.$route.params.id.join('')
 
       axios.request({
         url: '/nds/activities',

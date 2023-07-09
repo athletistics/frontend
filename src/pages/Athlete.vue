@@ -122,8 +122,9 @@ export default defineComponent({
     isMe() {
       return !this.$route.params.id
     },
-    userId() {
-      return this.isMe ? this.userStore.user.id : this.$route.params.id
+    userId(): string {
+      const paramId = typeof this.$route.params.id === 'string' ? this.$route.params.id : this.$route.params.id.join('')
+      return this.isMe ? this.userStore.user.id : paramId
     }
   },
   methods: {
