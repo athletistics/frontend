@@ -7,7 +7,7 @@
   <Modal ref="modal" classes="xl:max-w-5xl sm:h-auto h-5/6">
     <h3>{{ $t('page.athletes.create') }}</h3>
 
-    <form class="grid xl:grid-cols-3 sm:grid-cols-2 gap-4 with-label mt-4">
+    <form class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4 with-label mt-4">
       <div>
         <label>{{ $t('glob.user.firstName') }}*</label>
         <input v-model="newAthlete.firstName" required>
@@ -35,8 +35,8 @@
       </div>
 
       <div>
-        <label>{{ $t('glob.user.oasi') }}*</label>
-        <input v-model="newAthlete.oasi" required>
+        <label>{{ $t('glob.user.oasi') }}</label>
+        <input v-model="newAthlete.oasi">
       </div>
 
       <div>
@@ -62,28 +62,37 @@
         <label>{{ $t('glob.user.primaryPhone') }}</label>
         <input v-model="newAthlete.primaryPhone">
       </div>
+
+      <div class="flex">
+        <Switch v-model="newAthlete.withLogin">{{$t('glob.user.withLogin')}} {{newAthlete.withLogin}}</Switch>
+      </div>
     </form>
 
     <hr class="mt-4">
 
-    <form class="grid xl:grid-cols-3 sm:grid-cols-2 gap-4 with-label mt-4">
+    <form class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4 with-label mt-4">
       <div>
         <label>{{ $t('glob.user.address') }}</label>
-        <input v-model="newAthlete.address" required>
+        <input v-model="newAthlete.address">
       </div>
 
       <div>
-        <label>{{ $t('glob.user.postCode') }}</label>
-        <input v-model="newAthlete.postCode">
+        <label>{{ $t('glob.user.houseNumber') }}</label>
+        <input v-model="newAthlete.address">
       </div>
 
       <div>
-        <label>{{ $t('glob.user.city') }}</label>
-        <input v-model="newAthlete.city">
+        <label>{{ $t('glob.user.postCode') }}*</label>
+        <input v-model="newAthlete.postCode" required>
       </div>
 
       <div>
-        <label>{{ $t('glob.user.country') }}</label>
+        <label>{{ $t('glob.user.city') }}*</label>
+        <input v-model="newAthlete.city" required>
+      </div>
+
+      <div>
+        <label>{{ $t('glob.user.country') }}*</label>
         <select v-model="newAthlete.countryId" required>
           <option v-for="c in dataStore.countries" :value="c.id">{{ c.name }}</option>
         </select>
@@ -120,15 +129,18 @@ import {useDataStore} from "../stores/data";
 import {canManageUsers} from "../plugins/AccessControl";
 import LoadingBtn from "../components/button/LoadingBtn.vue";
 import LoadingState from "../types/LoadingState";
+import Switch from "../components/form/Switch.vue";
+import {useMyUserStore} from "../stores/user";
 
 export default defineComponent({
-  components: {LoadingBtn, TitleWithBtnPlus, UserList, Modal},
-  setup() {
+  components: {Switch, LoadingBtn, TitleWithBtnPlus, UserList, Modal},
+  setup: function () {
     const authStore = useAuthStore()
     const toastStore = useToastStore()
     const dataStore = useDataStore()
+    const userStore = useMyUserStore()
 
-    return {authStore, toastStore, dataStore}
+    return {authStore, toastStore, dataStore, userStore}
   },
   data() {
     return {
@@ -166,8 +178,8 @@ export default defineComponent({
       })
     },
     createUser() {
+      this.newAthlete.clubId = this.userStore.user.clubId
       this.createState.state = LoadingStates.Loading
-      this.newAthlete.birthDate = moment(this.newAthlete.birthDate).format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS) + "Z"
       axios.request({
         url: "/users",
         method: 'post',

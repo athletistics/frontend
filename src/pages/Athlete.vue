@@ -22,6 +22,9 @@
       <a :href="'tel:'+data.primaryPhone">{{ data.primaryPhone }}</a>
     </LabeledText>
     <LabeledText :state="dataState" label="glob.user.nationality" :text="data.nationality?.name"/>
+    <LabeledText :state="dataState" label="glob.user.loginState">{{$t('glob.user.state.' + data.userState)}}</LabeledText>
+    <LoadingBtn v-if="data.id && !data.withLogin" disabled>{{$t("glob.user.createLogin")}}</LoadingBtn>
+    <LoadingBtn v-if="data.userState==USER_STATE_INITIAL" disabled>{{$t("glob.user.sendInit")}}</LoadingBtn>
   </div>
 
   <div v-if="bests?.length">
@@ -51,7 +54,7 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import axios from "axios";
-import User from "../types/User";
+import User, {USER_STATE_INITIAL,} from "../types/User";
 import Const from "../plugins/Constants";
 import {useAuthStore} from "../stores/auth";
 import {useDataStore} from "../stores/data";
@@ -66,10 +69,12 @@ import ResultEvolution from "../components/results/ResultEvolution.vue";
 import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
 import {canManageResults} from "../plugins/AccessControl";
 import ResultLimitComparison from "../components/results/ResultLimitComparison.vue";
+import LoadingBtn from "../components/button/LoadingBtn.vue";
 
 export default defineComponent({
   name: "Athlete",
   components: {
+    LoadingBtn,
     ResultLimitComparison,
     TitleWithBtnPlus, LabeledText, ResultEvolution, ResultList, ModalResult, ResultCard},
   setup() {
@@ -77,7 +82,7 @@ export default defineComponent({
     const dataStore = useDataStore()
     const toastStore = useToastStore()
 
-    return {authStore, toastStore, dataStore}
+    return {authStore, toastStore, dataStore, USER_STATE_INITIAL}
   },
   data() {
     return {
@@ -151,6 +156,7 @@ export default defineComponent({
     getUser() {
       const url = this.isMe ? "/me" : `/users/${this.userId}`
       this.dataState = LoadingStates.Loading
+      this.data = {} as User
 
       axios.request({
         url,

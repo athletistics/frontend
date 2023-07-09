@@ -4,7 +4,6 @@ export default interface Event {
     name: string,
     place: string
     date: string,
-    webDate: string,
     isHomologated: boolean
     isOutdoor: boolean
 }

@@ -21,4 +21,9 @@ export default interface User {
   country?: Country,
   nationalityId: number,
   nationality?: Country
+  withLogin: boolean,
+  userState?: string,
 }
+
+export const USER_STATE_INITIAL = "USER_STATE_INITIAL"
+export const USER_STATE_ACTIVE = "USER_STATE_ACTIVE"

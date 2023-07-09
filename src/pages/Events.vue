@@ -30,7 +30,7 @@
 
       <div>
         <label>{{ $t('glob.event.date') }}</label>
-        <input v-model="newEvent.webDate" type="date" required>
+        <input v-model="newEvent.date" type="date" required>
       </div>
 
       <div>
@@ -116,7 +116,6 @@ export default defineComponent({
     createEvent() {
       this.createState.state = LoadingStates.Loading
       this.newEvent.isHomologated = this.homologated.length > 0
-      this.newEvent.date = moment(this.newEvent.webDate).format(moment.HTML5_FMT.DATETIME_LOCAL_SECONDS) + "Z"
 
       axios.request({
         url: "/events",
