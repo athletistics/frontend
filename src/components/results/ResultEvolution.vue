@@ -3,7 +3,7 @@
   <!--  causing the element to be invisible forever due to the asynchronously -->
   <!--  content -->
   <div :class="{'hidden': !visible}">
-    <div class="my-5">&nbsp;</div>
+    <div class="py-5">&nbsp;</div>
     <h1>{{ $t('comp.evolution.title') }}</h1>
 
     <form class="grid md:grid-cols-3 grid-cols-1 gap-4 with-label">

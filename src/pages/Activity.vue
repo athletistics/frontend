@@ -19,7 +19,7 @@
     </LoadingBtn>
   </div>
 
-  <div class="my-5">&nbsp;</div>
+  <div class="py-5">&nbsp;</div>
 
   <TitleWithBtnPlus @btn-click="$refs.instance.setVisibility(true)" :btn-visible="canManageActivityInstances()">
     {{ $t('page.activity.title.instances') }}

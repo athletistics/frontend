@@ -10,7 +10,7 @@
     <LabeledText :state="eventState" label="glob.event.season" :text="season"/>
   </div>
 
-  <div class="my-5">&nbsp;</div>
+  <div class="py-5">&nbsp;</div>
 
   <TitleWithBtnPlus :btn-visible="canManageResults()" @btn-click="setModalVisibility(true)">
     {{ $t('page.results.title') }}

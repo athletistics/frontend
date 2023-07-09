@@ -4,7 +4,7 @@
     <h4>{{ $t('data.' + club.sport.i18nName) }}</h4>
   </div>
 
-  <div class="my-5">&nbsp;</div>
+  <div class="py-5">&nbsp;</div>
 
   <TitleWithBtnPlus @btn-click="setTeamPopupVisibility(true)" :btn-visible="canManageTeam()">
     {{ $t('page.club.title.teams') }}
@@ -14,7 +14,7 @@
     <SimpleListEntry v-for="t in teams" :to="'/team/'+t.id">{{ t.name }}</SimpleListEntry>
   </SimpleList>
 
-  <div class="my-5">&nbsp;</div>
+  <div class="py-5">&nbsp;</div>
 
   <TitleWithBtnPlus @btn-click="setDisciplinePopupVisibility(true)" :btn-visible="canManageDiscipline()">{{
       $t('page.club.title.disciplines')

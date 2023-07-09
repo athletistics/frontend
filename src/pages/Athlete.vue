@@ -52,7 +52,7 @@
 
   <ResultLimitComparison :results="bests"/>
 
-  <div class="my-5">&nbsp;</div>
+  <div class="py-5">&nbsp;</div>
   <TitleWithBtnPlus @btn-click="setModalVisibility(true)" :btn-visible="canManageResults() || !$route.params.id">
     {{ $t(`page.${pref}.title.results`) }}
   </TitleWithBtnPlus>

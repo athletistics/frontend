@@ -28,7 +28,7 @@
     </SimpleListEntry>
   </SimpleList>
 
-  <div class="my-5"></div>
+  <div class="py-5"></div>
 
   <TitleWithBtnPlus :btn-visible="canManageActivities()" @btn-click="setActivityModalVisibility(true)">{{ $t('page.team.activities') }}</TitleWithBtnPlus>
 
