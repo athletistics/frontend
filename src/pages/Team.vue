@@ -87,6 +87,7 @@ import SimpleTable from "../components/list/SimpleTable.vue";
 import SimpleTableRow from "../components/list/SimpleTableRow.vue";
 import SimpleTableCell from "../components/list/SimpleTableCell.vue";
 import ActivityModal from "../components/nds/ActivityModal.vue";
+import {Nds} from "../types/Nds";
 
 export default defineComponent({
   components: {

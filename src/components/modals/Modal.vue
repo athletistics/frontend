@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed top-0 left-0 w-full h-full backdrop-blur flex items-center" :class="visibility">
+  <div class="fixed top-0 left-0 w-full h-full backdrop-blur flex items-center z-30" :class="visibility">
     <div class="rounded-md shadow-xl bg-white sm:mx-auto mx-4 my-10 p-5 container w-full relative" :class="classes">
       <button @click="setVisibility(false)" class="absolute right-0 mr-5">
         <font-awesome-icon icon="fa-xmark"></font-awesome-icon>

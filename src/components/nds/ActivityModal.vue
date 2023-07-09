@@ -65,6 +65,7 @@ import axios from "axios";
 import Const from "../../plugins/Constants";
 import {useToastStore} from "../../stores/toast";
 import {useAuthStore} from "../../stores/auth";
+import {Nds} from "../../types/Nds";
 
 export default defineComponent({
   name: "ActivityModal",

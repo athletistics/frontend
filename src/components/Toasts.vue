@@ -13,7 +13,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="toasts-wrapper" v-if="toasts.length">
+  <div class="toasts-wrapper z-50" v-if="toasts.length">
     <Toast v-for="t in toasts" :toast="t"></Toast>
   </div>
 </template>

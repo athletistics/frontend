@@ -4,10 +4,9 @@
     <div class="with-label grid gap-4">
 
       <div>
-        <label>{{ $t('page.activity.weekday') }}*</label>
+        <label>{{ $t('page.activity.type') }}*</label>
         <select v-model="newInstance.ndsActivityTypeId" required>
-          <option :value="0" selected>Comp</option>
-          <option :value="1" selected>Train</option>
+          <option v-for="t in dataStore.activityTypes" :value="t.id" selected>{{ $t('data.' + t.i18nName) }}</option>
         </select>
       </div>
 
@@ -16,12 +15,12 @@
         <input v-model="newInstance.date" type="date" required>
       </div>
 
-      <div>
+      <div v-if="newInstance.ndsActivityTypeId === 1">
         <label>{{ $t('page.activity.startTime') }}*</label>
         <input v-model="newInstance.startTime" type="time" required>
       </div>
 
-      <div>
+      <div v-if="newInstance.ndsActivityTypeId === 1">
         <label>{{ $t('page.activity.duration') }}*</label>
         <select v-model="newInstance.duration" required>
           <option :value="60" selected>60</option>
@@ -30,7 +29,7 @@
         </select>
       </div>
 
-      <div>
+      <div v-if="newInstance.ndsActivityTypeId === 1">
         <label>{{ $t('page.activity.place') }}*</label>
         <input v-model="newInstance.place" required>
       </div>
@@ -55,13 +54,27 @@ import {defineComponent} from 'vue'
 import Modal from "../modals/Modal.vue";
 import LoadingBtn from "../button/LoadingBtn.vue";
 import LoadingState from "../../types/LoadingState";
+import {Nds} from "../../types/Nds";
+import {useDataStore} from "../../stores/data";
+import {LoadingStates} from "../../types/LoadingStates";
+import axios from "axios";
+import Const from "../../plugins/Constants";
+import {useAuthStore} from "../../stores/auth";
+import {useToastStore} from "../../stores/toast";
 
 export default defineComponent({
   name: "InstanceModal",
   components: {LoadingBtn, Modal},
+  emits: ['created'],
+  setup() {
+    const dataStore = useDataStore()
+    const authStore = useAuthStore()
+    const toastStore = useToastStore()
+    return {dataStore, authStore, toastStore}
+  },
   data() {
     return {
-      newInstance: [] as Nds.ActivityInstanceReq,
+      newInstance: {} as Nds.ActivityInstanceReq,
       state: {state: NaN} as LoadingState
     }
   },
@@ -71,8 +84,26 @@ export default defineComponent({
       this.newInstance = {} as Nds.ActivityInstanceReq
     },
     createInstance() {
-      this.setVisibility(false)
-      this.$emit("created")
+      this.state.state = LoadingStates.Loading
+      this.newInstance.ndsActivityId = this.$route.params.id
+
+      axios.request({
+        url: '/nds/activities/' + this.$route.params.id + '/instances',
+        method: 'post',
+        baseURL: Const.API_URL,
+        headers: {
+          'Authorization': 'Bearer ' + this.authStore.token
+        },
+        data: this.newInstance,
+      }).then(response => {
+        this.state.state = LoadingStates.Loaded
+        this.toastStore.addSuccessToast()
+        this.$emit('created')
+        this.setVisibility(false)
+      }).catch(response => {
+        this.state.state = LoadingStates.Error
+        this.toastStore.addToastFromAxiosError(response)
+      })
     }
   }
 })

@@ -1,5 +1,7 @@
-declare namespace Nds {
-  interface Activity {
+import Team from "./Team";
+
+export namespace Nds {
+  export interface Activity {
     id: string,
     startDate: Date,
     endDate: Date,
@@ -7,10 +9,10 @@ declare namespace Nds {
     duration: number,
     weekday: number,
     place: string,
-    team: typeof import('./Team'),
+    team: Team,
   }
 
-  interface ActivityReq {
+  export interface ActivityReq {
     startDate: Date,
     endDate: Date,
     startTime: Date,
@@ -20,12 +22,12 @@ declare namespace Nds {
     teamId: string,
   }
 
-  interface ActivityType {
+  export interface ActivityType {
     id: number,
     i18nName: string,
   }
 
-  interface ActivityInstance {
+  export interface ActivityInstance {
     id: string,
     date: Date,
     startTime?: Date,
@@ -34,7 +36,7 @@ declare namespace Nds {
     ndsActivityType: ActivityType,
   }
 
-  interface ActivityInstanceReq {
+  export interface ActivityInstanceReq {
     date: Date,
     startTime?: Date,
     duration?: number,
@@ -43,13 +45,13 @@ declare namespace Nds {
     ndsActivityTypeId: number,
   }
 
-  interface Attendance {
+  export interface Attendance {
     userId: string,
     ndsActivityInstanceId: string,
     isCoach: boolean,
   }
 
-  interface AttendanceReq {
+  export interface AttendanceReq {
     userId: string,
     isCoach: boolean,
   }

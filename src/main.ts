@@ -14,12 +14,12 @@ import deCH from './locales/de-CH.json'
 type MessageSchema = typeof enUS
 
 const i18n = createI18n<MessageSchema, 'en-US' | 'de-CH'>({
-    locale: 'en-US',
-    fallbackLocale: 'en-US',
-    messages: {
-        'en-US': enUS,
-        'de-CH': deCH
-    }
+  locale: 'en-US',
+  fallbackLocale: 'en-US',
+  messages: {
+    'en-US': enUS,
+    'de-CH': deCH
+  }
 })
 
 // font awesome
@@ -36,13 +36,17 @@ library.add(faBars, faXmark, faArrowRightFromBracket, faLockOpen, faPlus, faElli
 
 import App from './App.vue'
 import router from './router'
+import withUUID from "vue-uuid";
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
-createApp(App)
-    .component('font-awesome-icon', FontAwesomeIcon)
-    .use(pinia)
-    .use(i18n)
-    .use(router)
-    .mount('#app')
+const app = withUUID(createApp(App))
+
+// createApp(App)
+app
+  .component('font-awesome-icon', FontAwesomeIcon)
+  .use(pinia)
+  .use(i18n)
+  .use(router)
+  .mount('#app')

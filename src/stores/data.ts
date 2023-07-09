@@ -12,8 +12,10 @@ import LoadingState from "../types/LoadingState";
 import {LoadingStates} from "../types/LoadingStates";
 import Indexable from "../types/Indexable";
 import Country from "../types/Country";
+import {Nds} from "../types/Nds";
 
 interface State {
+  activityTypes: Nds.ActivityType[]
   eventTypes: EventType[]
   disciplines: Discipline[]
   categories: Category[]
@@ -34,6 +36,7 @@ interface StateMaps {
 
 export const useDataStore = defineStore('data', {
   state: (): State => ({
+    activityTypes: [] as Nds.ActivityType[],
     eventTypes: [] as EventType[],
     disciplines: [] as Discipline[],
     categories: [] as Category[],
@@ -50,6 +53,11 @@ export const useDataStore = defineStore('data', {
     }
   }),
   getters: {
+    getActivityById(state) {
+      return (id: number): EventType | undefined => {
+        return state.activityTypes.find(e => e.id === id)
+      }
+    },
     getEventTypeById(state) {
       return (id: number): EventType | undefined => {
         return state.eventTypes.find(e => e.id === id)
@@ -114,7 +122,11 @@ export const useDataStore = defineStore('data', {
       this.updateCountries()
       this.updateCategories()
       this.updateDisciplines()
+      this.updateActivityTypes()
       this.updateStaticResults()
+    },
+    updateActivityTypes(s?: LoadingState) {
+      this.updateData<Nds.ActivityType>('/nds/types', 'activityTypes', undefined, s)
     },
     updateDisciplines(s?: LoadingState) {
       this.updateData<Discipline>('/disciplines', 'disciplines', 'disciplines', s)
