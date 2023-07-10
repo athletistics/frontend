@@ -9,6 +9,7 @@
         <p>© 2023 - Nicolas Baeriswyl</p>
         <p>Made with ☕️ by <a href="https://baeriswyl.dev" target="_blank">baeriswyl.dev</a></p>
         <p class="uppercase text-sm mt-4 !text-gray-300 font-bold">Version 0.3.0 (early alpha)</p>
+        <img class="max-w-full mx-auto" style="width: 200px" src="/src/assets/strava/api_logo_cptblWith_strava_horiz_light.svg"/>
       </div>
     </footer>
   </div>
@@ -23,6 +24,7 @@ import {useMyUserStore} from "./stores/user";
 import {useAuthStore} from "./stores/auth";
 import Toasts from "./components/Toasts.vue";
 import {useDataStore} from "./stores/data";
+
 export default defineComponent({
   components: {Toasts, Nav},
   setup() {
@@ -49,9 +51,11 @@ export default defineComponent({
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }
