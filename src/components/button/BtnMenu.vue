@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, onUnmounted} from 'vue'
+import {defineComponent} from 'vue'
 
 export default defineComponent({
   name: "BtnMenu",
@@ -28,7 +28,6 @@ export default defineComponent({
       isMenuOpen: false,
       top: 0 as number,
       right: 0 as number,
-      uid: this.$uuid.v4(),
       style: {top: "", left: ""}
     };
   },
