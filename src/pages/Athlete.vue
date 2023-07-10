@@ -123,8 +123,8 @@ export default defineComponent({
       return !this.$route.params.id
     },
     userId(): string {
-      const paramId = typeof this.$route.params.id === 'string' ? this.$route.params.id : this.$route.params.id.join('')
-      return this.isMe ? this.userStore.user.id : paramId
+      if (this.isMe) return this.userStore.user.id
+      return typeof this.$route.params.id === 'string' ? this.$route.params.id : this.$route.params.id.join('')
     }
   },
   methods: {
