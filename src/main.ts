@@ -36,15 +36,11 @@ library.add(faBars, faXmark, faArrowRightFromBracket, faLockOpen, faPlus, faElli
 
 import App from './App.vue'
 import router from './router'
-import withUUID from "vue-uuid";
-
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
-const app = withUUID(createApp(App))
 
-// createApp(App)
-app
+createApp(App)
   .component('font-awesome-icon', FontAwesomeIcon)
   .use(pinia)
   .use(i18n)
