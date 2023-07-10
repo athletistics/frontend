@@ -6,13 +6,15 @@ import {useAuthStore} from "./auth";
 
 interface State {
   user: User,
-  roles: string[]
+  roles: string[],
+  hasStravaToken: boolean,
 }
 
 export const useMyUserStore = defineStore('myUser', {
   state: (): State => ({
     user: {} as User,
-    roles: [] as string[]
+    roles: [] as string[],
+    hasStravaToken: false as boolean,
   }),
   getters: {
     hasRole(state) {
@@ -27,14 +29,30 @@ export const useMyUserStore = defineStore('myUser', {
       if (!authStore.token) return
 
       axios.request({
-        url: "/me",
+        url: "/me", method: 'get', baseURL: Const.API_URL,
+        headers: {'Authorization': 'Bearer ' + authStore.token}
+      }).then(response => {
+        this.user = response.data
+      }).catch(() => {
+      })
+
+      this.updateStrava()
+    },
+    updateStrava() {
+      const authStore = useAuthStore()
+      if (!authStore.token) return
+
+      axios.request({
+        url: "/",
         method: 'get',
-        baseURL: Const.API_URL,
+        baseURL: Const.STRAVA_API_URL,
         headers: {
           'Authorization': 'Bearer ' + authStore.token
         }
       }).then(response => {
-        this.user = response.data
+        this.hasStravaToken = true
+      }).catch(() => {
+        this.hasStravaToken = false
       })
     },
     setRoles(roles: { club: string, role: string }[]) {
@@ -56,6 +74,6 @@ export const useMyUserStore = defineStore('myUser', {
   persist: true
 })
 
-if(import.meta.hot) {
+if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useMyUserStore, import.meta.hot))
 }

@@ -134,10 +134,10 @@ export const useDataStore = defineStore('data', {
       this.updateExternalIdTypes()
     },
     updateExternalIdTypes(s?: LoadingState) {
-      this.updateData<ExternalId.Type>('/externalId/idTypes', 'externalIdTypes', undefined, s)
+      this.updateData<ExternalId.Type>('/externalId/idTypes', 'externalIdTypes', undefined, s, true)
     },
     updateActivityTypes(s?: LoadingState) {
-      this.updateData<Nds.ActivityType>('/nds/types', 'activityTypes', undefined, s)
+      this.updateData<Nds.ActivityType>('/nds/types', 'activityTypes', undefined, s, true)
     },
     updateDisciplines(s?: LoadingState) {
       this.updateData<Discipline>('/disciplines', 'disciplines', 'disciplines', s)

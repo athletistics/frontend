@@ -27,9 +27,19 @@
       </LabeledText>
       <LoadingBtn v-if="data.id && !data.withLogin" disabled>{{ $t("page.user.createLogin") }}</LoadingBtn>
       <LoadingBtn v-if="data.userState==USER_STATE_INITIAL" disabled>{{ $t("page.user.sendInit") }}</LoadingBtn>
+
+
+      <LoadingBtn v-if="isMe && !userStore.hasStravaToken" style="background-color: #FC4C02" class="!p-0"
+                  @click="redirectToStrava" :loading="stravaState">
+        <img src="../assets/strava/btn_strava_connectwith_orange.svg" class="inline">
+      </LoadingBtn>
+      <LabeledText v-if="isMe && userStore.hasStravaToken" :state="dataState" label="page.user.strava">
+        {{ $t('page.user.stravaActive') }}, <a @click="revokeStrava" class="cursor-pointer"
+                                               style="color: #FC4C02">{{ $t('page.user.disconnectStrava') }}</a>
+      </LabeledText>
     </div>
 
-    <div class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3" v-if="authStore.is2FaOk">
       <LoadingBtn v-if="canManageUsers() && externalIds.length < dataStore.externalIdTypes.length"
                   @click="setExternalIdModalVisibility(true)">{{ $t('page.user.addExternalId') }}
       </LoadingBtn>
@@ -68,7 +78,6 @@
 import {defineComponent} from "vue";
 import axios from "axios";
 import User, {USER_STATE_INITIAL,} from "../types/User";
-import Const from "../plugins/Constants";
 import {useAuthStore} from "../stores/auth";
 import {useDataStore} from "../stores/data";
 import {useToastStore} from "../stores/toast";
@@ -85,6 +94,8 @@ import ResultLimitComparison from "../components/results/ResultLimitComparison.v
 import LoadingBtn from "../components/button/LoadingBtn.vue";
 import {useMyUserStore} from "../stores/user";
 import ExternalIdModal from "../components/user/ExternalIdModal.vue";
+import Const from '../plugins/Constants'
+import LoadingState from "../types/LoadingState";
 
 export default defineComponent({
   name: "Athlete",
@@ -99,13 +110,15 @@ export default defineComponent({
     const dataStore = useDataStore()
     const toastStore = useToastStore()
     const userStore = useMyUserStore()
+    const stravaConnectLink = `${Const.STRAVA_AUTHORIZE}?client_id=${Const.STRAVA_CLIENT_ID}&response_type=code&redirect_uri=${Const.STRAVA_REDIRECT}/me?${Const.STRAVA_REDIRECT_QUERY}`
 
-    return {authStore, toastStore, dataStore, userStore, USER_STATE_INITIAL}
+    return {authStore, toastStore, dataStore, userStore, USER_STATE_INITIAL, stravaConnectLink}
   },
   data() {
     return {
       data: {} as User,
       dataState: NaN as LoadingStates,
+      stravaState: {state: NaN} as LoadingState,
       bests: [] as Result.Data[],
       results: [] as Result.Data[],
       resultsState: NaN as LoadingStates,
@@ -198,6 +211,8 @@ export default defineComponent({
       })
     },
     getExternalIds() {
+      if (!this.authStore.is2FaOk) return
+
       axios.request({
         url: `/externalId/user?internalId=${this.userId}`,
         method: 'get',
@@ -208,6 +223,45 @@ export default defineComponent({
       }).then(response => {
         this.externalIds = response.data
       }).catch(response => this.toastStore.addToastFromAxiosError(response))
+    },
+    redirectToStrava() {
+      window.open(this.stravaConnectLink, '_self')
+    },
+    connectStrava() {
+      if (this.$route.query.error) {
+        this.toastStore.addErrorToast("Access to Strava denied")
+      }
+      if (!this.$route.query.code) return
+
+      this.stravaState.state = LoadingStates.Loading
+      axios.request({
+        url: '?code=' + this.$route.query.code, method: 'post', baseURL: Const.STRAVA_API_URL,
+        headers: {'Authorization': 'Bearer ' + this.authStore.token}
+      }).then(() => {
+        this.stravaState.state = LoadingStates.Loaded
+        this.userStore.updateStrava()
+        this.toastStore.addSuccessToast()
+        this.$router.push('/me') // reset query params
+      }).catch(error => {
+        this.stravaState.state = LoadingStates.Error
+        this.toastStore.addToastFromAxiosError(error)
+        this.$router.push('/me') // reset query params
+      })
+    },
+    revokeStrava() {
+      axios.request({
+        url: `/`,
+        method: 'delete',
+        baseURL: Const.STRAVA_API_URL,
+        headers: {
+          'Authorization': 'Bearer ' + this.authStore.token
+        }
+      })
+          .then(response => {
+            this.userStore.updateStrava()
+            this.toastStore.addSuccessToast()
+          })
+          .catch(response => this.toastStore.addToastFromAxiosError(response))
     },
     loadData() {
       this.getBests()
@@ -224,6 +278,7 @@ export default defineComponent({
   },
   mounted() {
     this.loadData()
+    this.connectStrava()
   }
 })
 </script>

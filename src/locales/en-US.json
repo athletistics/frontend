@@ -73,7 +73,10 @@
       },
       "createLogin": "Create login (not implemented)",
       "sendInit": "Resend init (not implemented)",
-      "addExternalId": "Add external ID"
+      "addExternalId": "Add external ID",
+      "strava": "Strava connection",
+      "stravaActive": "Connected",
+      "disconnectStrava": "click to disconnect"
     },
     "elevate": {
       "title": {
