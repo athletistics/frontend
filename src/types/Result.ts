@@ -26,6 +26,15 @@ declare namespace Result {
     rank?: string
   }
 
+  interface Import {
+    id: number
+    name: string,
+    distance: number,
+    moving_time: number,
+    start_date_local: Date,
+    discipline_id?: string,
+  }
+
   interface Static {
     id: number,
     value: string,

@@ -29,10 +29,11 @@ import {faBars} from "@fortawesome/free-solid-svg-icons/faBars"
 import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus"
 import {faXmark} from "@fortawesome/free-solid-svg-icons/faXmark"
 import {faLockOpen} from "@fortawesome/free-solid-svg-icons/faLockOpen"
+import {faFileImport} from "@fortawesome/free-solid-svg-icons/faFileImport"
 import {faEllipsisVertical} from "@fortawesome/free-solid-svg-icons/faEllipsisVertical"
 import {faArrowRightFromBracket} from "@fortawesome/free-solid-svg-icons/faArrowRightFromBracket"
 
-library.add(faBars, faXmark, faArrowRightFromBracket, faLockOpen, faPlus, faEllipsisVertical)
+library.add(faBars, faXmark, faArrowRightFromBracket, faLockOpen, faPlus, faEllipsisVertical, faFileImport)
 
 import App from './App.vue'
 import router from './router'

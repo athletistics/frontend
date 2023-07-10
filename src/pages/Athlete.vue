@@ -63,14 +63,18 @@
   <ResultLimitComparison :results="bests"/>
 
   <div class="py-5">&nbsp;</div>
-  <TitleWithBtnPlus @btn-click="setModalVisibility(true)" :btn-visible="canManageResults() || !$route.params.id">
-    {{ $t(`page.${pref}.title.results`) }}
-  </TitleWithBtnPlus>
+
+  <div class="flex items-center">
+    <h1 class="grow">{{ $t(`page.${pref}.title.results`) }}</h1>
+    <BtnResultImport v-if="isMe && userStore.hasStravaToken" @click="setResultImportModalVisibility(true)" class="mr-2"/>
+    <BtnPlus v-if="canManageResults() || !$route.params.id" @click="setModalVisibility(true)"/>
+  </div>
 
   <ResultList :results="results" :show-user="false" :state="resultsState"></ResultList>
 
   <ModalResult ref="modal" :is-personal="isMe" :user="data"></ModalResult>
   <ExternalIdModal :internal-id="userId" :existing-ids="externalIds" @created="getExternalIds()" ref="externalIdModal"/>
+  <ModalResultImport ref="importModal" @created="getResults"/>
 
 </template>
 
@@ -96,10 +100,16 @@ import {useMyUserStore} from "../stores/user";
 import ExternalIdModal from "../components/user/ExternalIdModal.vue";
 import Const from '../plugins/Constants'
 import LoadingState from "../types/LoadingState";
+import BtnPlus from "../components/button/BtnPlus.vue";
+import BtnStravaImport from "../components/button/BtnResultImport.vue";
+import ModalResultImport from "../components/modals/ModalResultImport.vue";
 
 export default defineComponent({
   name: "Athlete",
   components: {
+    ModalResultImport,
+    BtnResultImport: BtnStravaImport,
+    BtnPlus,
     ExternalIdModal,
     LoadingBtn,
     ResultLimitComparison,
@@ -148,6 +158,9 @@ export default defineComponent({
     },
     setExternalIdModalVisibility(visible: boolean) {
       (this.$refs.externalIdModal as any).setVisibility(visible)
+    },
+    setResultImportModalVisibility(visible: boolean) {
+      (this.$refs.importModal as any).setVisibility(visible)
     },
     getResults() {
       const url = this.isMe ? "/me/results" : `/results?userId=${this.userId}`

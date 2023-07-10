@@ -125,6 +125,11 @@
     }
   },
   "comp": {
+    "import": {
+      "selectActivities": "Select activities",
+      "addResults": "Verify and add",
+      "unsuccessful": "Some results could not be stored. Verify their values and try again."
+    },
     "nav": {
       "logout": "Logout"
     },
@@ -167,7 +172,8 @@
       "confirm": "Confirm",
       "create": "Create",
       "add": "Add",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "next": "Next"
     },
     "event": {
       "outdoor": "Outdoor",
