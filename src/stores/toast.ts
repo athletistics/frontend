@@ -31,9 +31,9 @@ export const useToastStore = defineStore('toast', {
         },
         addToastFromAxiosError(error: AxiosError){
             this.addToast({
-                code: (error.response?.data as any).error ?? error.status,
+                code: (error?.response?.data as any)?.error ?? error?.status,
                 title: "Error while processing the request",
-                message: (error.response?.data as any).message ?? error.code,
+                message: (error?.response?.data as any)?.message ?? error?.code ?? error ?? "Unknown error",
                 color: "bg-red-600",
             })
         },
