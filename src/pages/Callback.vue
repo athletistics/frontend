@@ -10,20 +10,25 @@ import Const from "../plugins/Constants";
 import {useAuthStore} from "../stores/auth";
 import {useMyUserStore} from "../stores/user";
 import {useDataStore} from "../stores/data";
+import {useOidcStateStore} from "../stores/oidcState";
 
 export default defineComponent({
   setup() {
     const userStore = useMyUserStore();
     const authStore = useAuthStore();
     const dataStore = useDataStore();
+    const oidcStateStore = useOidcStateStore()
 
-    return {userStore, authStore, dataStore}
+    return {userStore, authStore, dataStore, oidcStateStore}
   },
   mounted() {
     let client = new OidcClient(authConfig)
     const router = this.$router
 
     client.processSigninResponse(window.location.href).then ((response) => {
+      if (response.state !== this.oidcStateStore.state) router.push('/?error=invalidState')
+      this.oidcStateStore.$reset()
+
       this.authStore.token = response.access_token
 
       this.userStore.updateFromServer()

@@ -13,31 +13,38 @@
     <ul v-on:click="closeNav()" v-if="authStore.token && $route.name !== 'index'" :class="navClasses" class="flex flex-1 bg-white md:flex-row flex-col
           max-md:w-full max-md:text-center max-md:absolute max-md:top-full max-md:shadow-lg main-transition">
       <li>
-        <router-link class="router-link" to="/home">{{$t('page.home.title')}}</router-link>
+        <router-link class="router-link" to="/home">{{ $t('page.home.title') }}</router-link>
       </li>
       <li v-if="clubVisible">
-        <router-link class="router-link" to="/club">{{$t('page.club.title.club')}}</router-link>
+        <router-link class="router-link" to="/club">{{ $t('page.club.title.club') }}</router-link>
       </li>
       <li v-if="athletesVisible">
-        <router-link class="router-link" to="/athletes">{{$t('page.athletes.title')}}</router-link>
+        <router-link class="router-link" to="/athletes">{{ $t('page.athletes.title') }}</router-link>
       </li>
       <li v-if="eventsVisible">
-        <router-link class="router-link" to="/events">{{$t('page.event.title')}}</router-link>
+        <router-link class="router-link" to="/events">{{ $t('page.event.title') }}</router-link>
       </li>
       <li v-if="resultsVisible">
-        <router-link class="router-link" to="/results">{{$t('page.results.title')}}</router-link>
+        <router-link class="router-link" to="/results">{{ $t('page.results.title') }}</router-link>
       </li>
       <li>
-        <router-link class="router-link" to="/references">{{$t('page.references.title')}}</router-link>
+        <router-link class="router-link" to="/references">{{ $t('page.references.title') }}</router-link>
       </li>
       <li class="flex-1"></li>
-      <li class="md:hidden"><hr></li>
-      <li v-if="elevateVisible">
-        <router-link class="router-link" to="/elevate"><span class="md:hidden">{{$t('page.elevate.title.nav')}}</span><font-awesome-icon class="ml-2" icon="fa-solid fa-lock-open"/></router-link>
+      <li class="md:hidden">
+        <hr>
       </li>
-      <li><router-link to="/me" class="router-link w-full">{{$t('page.me.title.account')}}</router-link></li>
+      <li v-if="elevateVisible">
+        <router-link class="router-link" to="/elevate"><span class="md:hidden">{{ $t('page.elevate.title.nav') }}</span>
+          <font-awesome-icon class="ml-2" icon="fa-solid fa-lock-open"/>
+        </router-link>
+      </li>
       <li>
-        <a href="#" class="router-link w-full" v-on:click="logout()"><span class="md:hidden">{{$t('comp.nav.logout')}}</span>
+        <router-link to="/me" class="router-link w-full">{{ $t('page.me.title.account') }}</router-link>
+      </li>
+      <li>
+        <a href="#" class="router-link w-full" v-on:click="logout()"><span
+            class="md:hidden">{{ $t('comp.nav.logout') }}</span>
           <font-awesome-icon class="ml-2" icon="fa-solid fa-arrow-right-from-bracket"/>
         </a>
       </li>
@@ -50,6 +57,8 @@ import {defineComponent} from "vue";
 import Const from "../plugins/Constants";
 import {useAuthStore} from "../stores/auth";
 import {useMyUserStore} from "../stores/user";
+import {OidcClient} from "oidc-client-ts";
+import authConfig from "../plugins/AuthConfig";
 
 export default defineComponent({
   name: "Nav",
@@ -66,34 +75,37 @@ export default defineComponent({
   },
   methods: {
     logout() {
-      this.authStore.$reset()
-      this.userStore.$reset()
-      this.$router.push('/')
+      let client = new OidcClient(authConfig)
+      client.createSignoutRequest({extraQueryParams: {client_id: authConfig.client_id}}).then((req) => {
+        this.authStore.$reset()
+        this.userStore.$reset()
+        window.location.href = req.url;
+      })
     },
     toggleNav() {
       this.navVisibility = !this.navVisibility
     },
-    closeNav(){
+    closeNav() {
       this.navVisibility = false
     }
   },
   computed: {
-    elevateVisible(){
+    elevateVisible() {
       return !this.authStore.is2FaOk && (this.userStore.hasRole(Const.ROLE_COACH) || this.userStore.hasRole(Const.ROLE_HEAD_COACH))
     },
-    clubVisible(){
+    clubVisible() {
       return this.isElevatedCoach
     },
-    athletesVisible(){
+    athletesVisible() {
       return this.isElevatedCoach
     },
-    eventsVisible(){
+    eventsVisible() {
       return this.isElevatedCoach || this.userStore.hasRole(Const.ROLE_ATHLETE)
     },
-    resultsVisible(){
+    resultsVisible() {
       return this.isElevatedCoach || this.userStore.hasRole(Const.ROLE_ATHLETE)
     },
-    isElevatedCoach(){
+    isElevatedCoach() {
       return this.authStore.is2FaOk && (this.userStore.hasRole(Const.ROLE_COACH) || this.userStore.hasRole(Const.ROLE_HEAD_COACH))
     },
     navClasses(): string {

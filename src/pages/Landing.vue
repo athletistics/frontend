@@ -22,9 +22,10 @@ import axios from "axios";
 import Const from './../plugins/Constants'
 import {defineComponent, PropType} from "vue";
 import authConfig from "../plugins/AuthConfig";
-import {OidcClient} from "oidc-client-ts";
+import {CreateSigninRequestArgs, OidcClient} from "oidc-client-ts";
 import {useAuthStore} from "../stores/auth";
 import LoadingBtn from "../components/button/LoadingBtn.vue";
+import {useOidcStateStore} from "../stores/oidcState";
 
 const stateDefault = 0
 const stateLoading = 1
@@ -41,15 +42,18 @@ export default defineComponent({
   },
   setup() {
     const authStore = useAuthStore()
+    const oidcStateStore = useOidcStateStore()
 
     return {
-      authStore, stateDefault, stateLoading, stateOK, stateExpired
+      authStore, oidcStateStore, stateDefault, stateLoading, stateOK, stateExpired
     }
   },
   methods: {
     login: function () {
-      let client = new OidcClient(authConfig)
-      client.createSigninRequest({state: {bar: 15}}).then(function (req) {
+      this.oidcStateStore.createState()
+      const options: CreateSigninRequestArgs = {state: this.oidcStateStore.state}
+      const client = new OidcClient(authConfig)
+      client.createSigninRequest(options).then(function (req) {
         window.location.href = req.url;
       })
     }
