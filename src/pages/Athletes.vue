@@ -1,8 +1,14 @@
 <template>
   <TitleWithBtnPlus :btn-visible="canManageUsers()" @btn-click="setVisibility(true)">{{ $t('page.athletes.title') }}
   </TitleWithBtnPlus>
-
   <UserList :state="athletesState" :users="athletes"/>
+
+  <div class="py-4"></div>
+
+  <TitleWithBtnPlus :btn-visible="canManageUsers()" @btn-click="setExternalVisibility(true)">
+    {{ $t('page.athletes.titleExternal') }}
+  </TitleWithBtnPlus>
+  <UserList :state="externalAthletesState" :users="externalAthletes"/>
 
   <Modal ref="modal" classes="xl:max-w-5xl sm:h-auto h-5/6">
     <h3>{{ $t('page.athletes.create') }}</h3>
@@ -64,7 +70,7 @@
       </div>
 
       <div class="flex">
-        <Switch v-model="newAthlete.withLogin">{{$t('glob.user.withLogin')}} {{newAthlete.withLogin}}</Switch>
+        <Switch v-model="newAthlete.withLogin">{{ $t('glob.user.withLogin') }} {{ newAthlete.withLogin }}</Switch>
       </div>
     </form>
 
@@ -111,6 +117,7 @@
     </template>
 
   </Modal>
+  <UserRedeemShareCodeModal ref="externalModal" @created="loadAthletes"/>
 </template>
 
 <script lang="ts">
@@ -131,9 +138,10 @@ import LoadingBtn from "../components/button/LoadingBtn.vue";
 import LoadingState from "../types/LoadingState";
 import Switch from "../components/form/Switch.vue";
 import {useMyUserStore} from "../stores/user";
+import UserRedeemShareCodeModal from "../components/user/UserRedeemShareCodeModal.vue";
 
 export default defineComponent({
-  components: {Switch, LoadingBtn, TitleWithBtnPlus, UserList, Modal},
+  components: {UserRedeemShareCodeModal, Switch, LoadingBtn, TitleWithBtnPlus, UserList, Modal},
   setup: function () {
     const authStore = useAuthStore()
     const toastStore = useToastStore()
@@ -145,7 +153,9 @@ export default defineComponent({
   data() {
     return {
       athletes: [] as User[],
+      externalAthletes: [] as User[],
       athletesState: NaN as LoadingStates,
+      externalAthletesState: NaN as LoadingStates,
       newAthlete: {} as User,
       createState: {state: NaN} as LoadingState
     }
@@ -160,21 +170,29 @@ export default defineComponent({
 
       if (!visible) this.newAthlete = {} as User
     },
+    setExternalVisibility(visible: boolean) {
+      (this.$refs.externalModal as any).setVisibility(visible)
+    },
     loadAthletes() {
       this.athletesState = LoadingStates.Loading
+      this.externalAthletesState = LoadingStates.Loading
+      this.athletes = [] as User[]
+      this.externalAthletes = [] as User[]
+
       axios.request({
-        url: "/users",
-        method: 'get',
+        url: "/users?separated=true", method: 'get',
         baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        }
+        headers: {'Authorization': 'Bearer ' + this.authStore.token}
       }).then(response => {
-        this.athletes = response.data
-        this.athletesState = response.data ? LoadingStates.Loaded : LoadingStates.Empty
+        this.athletes = response.data.owned
+        this.externalAthletes = response.data.shared
+
+        this.athletesState = this.athletes?.length ? LoadingStates.Loaded : LoadingStates.Empty
+        this.externalAthletesState = this.externalAthletes?.length ? LoadingStates.Loaded : LoadingStates.Empty
       }).catch(error => {
         this.toastStore.addToastFromAxiosError(error)
         this.athletesState = LoadingStates.Error
+        this.externalAthletesState = LoadingStates.Error
       })
     },
     createUser() {

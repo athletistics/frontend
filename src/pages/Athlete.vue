@@ -25,27 +25,33 @@
       <LabeledText :state="dataState" label="glob.user.nationality" :text="data.nationality?.name"/>
       <LabeledText :state="dataState" label="glob.user.loginState">{{ $t('glob.user.state.' + data.userState) }}
       </LabeledText>
-      <LoadingBtn v-if="data.id && !data.withLogin" disabled>{{ $t("page.user.createLogin") }}</LoadingBtn>
+
+      <!-- Strava connection -->
       <LoadingBtn v-if="data.userState==USER_STATE_INITIAL" disabled>{{ $t("page.user.sendInit") }}</LoadingBtn>
-
-
-      <LoadingBtn v-if="isMe && !userStore.hasStravaToken" style="background-color: #FC4C02" class="!p-0"
-                  @click="redirectToStrava" :loading="stravaState">
-        <img src="../assets/strava/btn_strava_connectwith_orange.svg" class="inline">
-      </LoadingBtn>
       <LabeledText v-if="isMe && userStore.hasStravaToken" :state="dataState" label="page.user.strava">
         {{ $t('page.user.stravaActive') }}, <a @click="revokeStrava" class="cursor-pointer"
                                                style="color: #FC4C02">{{ $t('page.user.disconnectStrava') }}</a>
       </LabeledText>
+      <LoadingBtn v-if="isMe && !userStore.hasStravaToken" style="background-color: #FC4C02" class="!p-0"
+                  @click="redirectToStrava" :loading="stravaState">
+        <img src="../assets/strava/btn_strava_connectwith_orange.svg" class="inline">
+      </LoadingBtn>
     </div>
 
-    <div class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3" v-if="authStore.is2FaOk">
-      <LoadingBtn v-if="canManageUsers() && externalIds.length < dataStore.externalIdTypes.length"
-                  @click="setExternalIdModalVisibility(true)">{{ $t('page.user.addExternalId') }}
-      </LoadingBtn>
+    <!-- External IDs -->
+    <div class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3" v-if="externalIds?.length">
       <LabeledText v-for="e in externalIds" i18n
                    :label="'data.' + dataStore.getExternalIdTypeById(e.externalIdTypeId)?.i18nName">{{ e.externalId }}
       </LabeledText>
+    </div>
+
+    <!-- Actions -->
+    <div class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3" v-if="userStore.user.clubId === data.clubId && !isMe">
+      <LoadingBtn v-if="canManageUsers() && externalIds.length < dataStore.externalIdTypes.length"
+                  @click="setExternalIdModalVisibility(true)">{{ $t('page.user.addExternalId') }}
+      </LoadingBtn>
+      <UserCreateShare v-if="canManageUsers()" :user="userId"/>
+      <LoadingBtn v-if="data.id && !data.withLogin" disabled>{{ $t("page.user.createLogin") }}</LoadingBtn>
     </div>
   </div>
 
@@ -66,7 +72,8 @@
 
   <div class="flex items-center">
     <h1 class="grow">{{ $t(`page.${pref}.title.results`) }}</h1>
-    <BtnResultImport v-if="isMe && userStore.hasStravaToken" @click="setResultImportModalVisibility(true)" class="mr-2"/>
+    <BtnResultImport v-if="isMe && userStore.hasStravaToken" @click="setResultImportModalVisibility(true)"
+                     class="mr-2"/>
     <BtnPlus v-if="canManageResults() || !$route.params.id" @click="setModalVisibility(true)"/>
   </div>
 
@@ -103,10 +110,12 @@ import LoadingState from "../types/LoadingState";
 import BtnPlus from "../components/button/BtnPlus.vue";
 import BtnStravaImport from "../components/button/BtnResultImport.vue";
 import ModalResultImport from "../components/modals/ModalResultImport.vue";
+import UserCreateShare from "../components/user/UserCreateShare.vue";
 
 export default defineComponent({
   name: "Athlete",
   components: {
+    UserCreateShare,
     ModalResultImport,
     BtnResultImport: BtnStravaImport,
     BtnPlus,
