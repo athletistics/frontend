@@ -70,6 +70,7 @@ import {Nds} from "../../types/Nds";
 export default defineComponent({
   name: "ActivityModal",
   components: {LabeledText, LoadingBtn, Modal},
+  emits: ['created'],
   setup() {
     const authStore = useAuthStore()
     const toastStore = useToastStore()

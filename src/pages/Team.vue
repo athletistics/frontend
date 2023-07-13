@@ -80,7 +80,7 @@
     </form>
   </Modal>
 
-  <ActivityModal ref="activity"/>
+  <ActivityModal ref="activity" @created="getActivities"/>
 
 </template>
 
