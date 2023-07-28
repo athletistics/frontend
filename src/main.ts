@@ -1,10 +1,16 @@
 import {createApp} from 'vue'
 
-import {createPinia} from 'pinia'
-import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-
 import './style.css'
 import './assets/fonts/ArgentumNovus/ArgentumNovus.css'
+
+import PrimeVue from 'primevue/config'
+import AutoComplete from "primevue/autocomplete"
+import InputText from "primevue/inputtext";
+import InputNumber from "primevue/inputnumber";
+import "primevue/resources/themes/mira/theme.css";
+
+import {createPinia} from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 // i18n
 import {createI18n} from 'vue-i18n'
@@ -37,12 +43,17 @@ library.add(faBars, faXmark, faArrowRightFromBracket, faLockOpen, faPlus, faElli
 
 import App from './App.vue'
 import router from './router'
+
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
 
 createApp(App)
   .component('font-awesome-icon', FontAwesomeIcon)
+  .component('AutoComplete', AutoComplete)
+  .component('InputText', InputText)
+  .component('InputNumber', InputNumber)
+  .use(PrimeVue)
   .use(pinia)
   .use(i18n)
   .use(router)

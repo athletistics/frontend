@@ -1,37 +1,34 @@
 <template>
   <Modal ref="modal">
-    <form class="space-y-4 with-label">
+    <form class="space-y-6 with-label">
       <h3 v-if="isPersonal">{{ $t('comp.result.createTraining') }}</h3>
       <h3 v-else>{{ $t('comp.result.create') }}</h3>
 
       <hr>
 
-      <div>
-        <label>{{ $t('glob.result.value') }}</label>
-        <input v-model="newResult.value" required>
-      </div>
+      <span class="p-float-label p-fluid">
+        <InputNumber id="value" v-model="newResult.value" inputId="minmaxfraction" :maxFractionDigits="2" :min="0"/>
+        <label for="value">{{ $t('glob.result.value') }}</label>
+      </span>
 
-      <div>
-        <label>{{ $t('glob.result.wind') }}</label>
-        <input v-model="newResult.wind" required>
-      </div>
+      <span class="p-float-label p-fluid">
+        <InputNumber id="wind" v-model="newResult.wind" inputId="minmaxfraction" :maxFractionDigits="1"/>
+        <label for="wind">{{ $t('glob.result.wind') }}</label>
+      </span>
 
-      <div>
-        <label>{{ $t('glob.result.rank') }}</label>
-        <input v-model="newResult.rank" required>
-      </div>
+      <span class="p-float-label p-fluid">
+        <InputNumber id="rank" v-model="newResult.rank"/>
+        <label for="rank">{{ $t('glob.result.rank') }}</label>
+      </span>
 
-      <div v-if="!isPersonal">
-        <label>{{ $t('glob.user.name') }}</label>
-        <select v-model="newResult.userId" :disabled="!!user">
-          <option v-for="u in dataStore.users" :value="u.id">{{ u.lastName }} {{ u.firstName }}</option>
-        </select>
-      </div>
+      <AutoCompleteUser v-model="newResult.userId" v-if="!isPersonal" :disabled="!!user"/>
 
       <div>
         <label>{{ $t('glob.discipline.name') }}</label>
         <select v-model="newResult.disciplineId">
-          <option v-for="d in dataStore.disciplines" :value="d.id">{{ d.i18nName ? $t('data.' + d.i18nName) : d.customName }}</option>
+          <option v-for="d in dataStore.disciplines" :value="d.id">
+            {{ d.i18nName ? $t('data.' + d.i18nName) : d.customName }}
+          </option>
         </select>
       </div>
 
@@ -66,10 +63,11 @@ import User from "../../types/User";
 import LoadingBtn from "../button/LoadingBtn.vue";
 import LoadingState from "../../types/LoadingState";
 import {LoadingStates} from "../../types/LoadingStates";
+import AutoCompleteUser from "../form/input/AutoCompleteUser.vue";
 
 export default defineComponent({
   name: "ModalResult",
-  components: {LoadingBtn, Modal},
+  components: {AutoCompleteUser, LoadingBtn, Modal},
   props: {
     result: {type: Object as PropType<Result.Data | undefined>, default: undefined},
     user: {type: Object as PropType<User | undefined>, default: undefined},
@@ -105,6 +103,8 @@ export default defineComponent({
       if (this.event) this.newResult.eventId = this.event.id
     },
     createResult() {
+      console.log(this.newResult)
+      return
       this.createState.state = LoadingStates.Loading
       const url = this.isPersonal ? "/me/results" : "/results"
 
