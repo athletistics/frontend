@@ -5,7 +5,7 @@
       <p class="text-xl font-argentum mt-5">{{ result.userLastName }} {{ result.userFirstName }}</p>
     </div>
     <div v-else>
-      <p class="text-xl font-bold font-argentum">{{ $te('data.' + result.disciplineName) ? $t('data.' + result.disciplineName) : result.disciplineName }}</p>
+      <p class="text-xl font-bold font-argentum">{{ te('data.' + result.disciplineName) ? $t('data.' + result.disciplineName) : result.disciplineName }}</p>
       <p class="text-xl font-argentum">{{ formattedValue }} <span
           v-if="result.wind">({{ $t('glob.result.wind') }}: {{ result.wind }})</span></p>
     </div>
@@ -19,12 +19,14 @@
 import {defineComponent, PropType} from 'vue'
 import {formatResult} from "../../plugins/Helper";
 import {useDataStore} from "../../stores/data";
+import {useI18n} from "vue-i18n";
 
 export default defineComponent({
   name: "Card",
   setup() {
     const dataStore = useDataStore()
-    return {dataStore}
+    const {te} = useI18n()
+    return {dataStore, te}
   },
   props: {
     result: {type: Object as PropType<Result.Data>, required: true},

@@ -3,7 +3,7 @@
     <SimpleTableRow v-for="r in results">
       <SimpleTableCell v-if="showUser">{{ r.userLastName }} {{ r.userFirstName }}</SimpleTableCell>
       <SimpleTableCell v-if="showDisciplines" class="table-cell">{{
-          $te('data.' + r.disciplineName) ? $t('data.' + r.disciplineName) : r.disciplineName
+          te('data.' + r.disciplineName) ? $t('data.' + r.disciplineName) : r.disciplineName
         }}</SimpleTableCell>
       <SimpleTableCell>{{ getFormattedValue(r) }}</SimpleTableCell>
       <SimpleTableCell v-if="showEvent">{{ r.eventName }} - {{
@@ -25,13 +25,15 @@ import ListStates from "../list/TableStates.vue";
 import SimpleTable from "../list/SimpleTable.vue";
 import SimpleTableRow from "../list/SimpleTableRow.vue";
 import SimpleTableCell from "../list/SimpleTableCell.vue";
+import {useI18n} from "vue-i18n";
 
 export default defineComponent({
   name: "ResultTable",
   components: {SimpleTableCell, SimpleTableRow, SimpleTable, ListStates},
   setup() {
     const dataStore = useDataStore()
-    return {dataStore}
+    const {te} = useI18n()
+    return {dataStore, te}
   },
   props: {
     results: {type: Array as PropType<Result.Data[]>, required: true},

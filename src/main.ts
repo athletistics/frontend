@@ -7,6 +7,7 @@ import PrimeVue from 'primevue/config'
 import AutoComplete from "primevue/autocomplete"
 import InputText from "primevue/inputtext";
 import InputNumber from "primevue/inputnumber";
+import Dialog from "primevue/dialog";
 import "primevue/resources/themes/mira/theme.css";
 
 import {createPinia} from 'pinia'
@@ -20,6 +21,7 @@ import deCH from './locales/de-CH.json'
 type MessageSchema = typeof enUS
 
 const i18n = createI18n<MessageSchema, 'en-US' | 'de-CH'>({
+  legacy: false,
   locale: 'en-US',
   fallbackLocale: 'en-US',
   messages: {
@@ -53,6 +55,7 @@ createApp(App)
   .component('AutoComplete', AutoComplete)
   .component('InputText', InputText)
   .component('InputNumber', InputNumber)
+  .component('Dialog', Dialog)
   .use(PrimeVue)
   .use(pinia)
   .use(i18n)

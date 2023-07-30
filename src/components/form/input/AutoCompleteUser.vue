@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {useDataStore} from "../../../stores/data";
-import {ref} from "vue";
+import {Ref, ref} from "vue";
 import User from "../../../types/User";
 
 // data
-const filteredUsers = ref([])
-const value = undefined
+const filteredUsers: Ref<User[]> = ref([])
+const value: Ref<User | undefined> = ref()
 
-const users = useDataStore().users
+const users: User[] = useDataStore().users
 
 const props = defineProps({
   modelValue: {type: String, default: ''},
@@ -15,14 +15,14 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 
-const search = (event) => {
-  if (!event.query.trim().length) {
-    filteredUsers.value = users
-  } else {
+const search = (event: any) => {
+  if (event.query?.trim()?.length) {
     filteredUsers.value = users.filter(u => {
       return u.firstName.toLowerCase().startsWith(event.query.toLowerCase()) ||
           u.lastName.toLowerCase().startsWith(event.query.toLowerCase())
     })
+  } else {
+    filteredUsers.value = users.filter(_ => true)
   }
 }
 const optionLabel = (selectedUser: User) => {
@@ -33,13 +33,10 @@ const optionLabel = (selectedUser: User) => {
 <template>
   <span class="p-float-label p-fluid">
     <AutoComplete inputId="user" :suggestions="filteredUsers" @complete="search"
-                  dropdown forceSelection dataKey="id" :optionLabel="optionLabel" :disabled="disabled"
+                  dropdown forceSelection :optionLabel="optionLabel" :disabled="disabled"
 
-                  :modelValue="value"
-                  @update:modelValue="newVal => {
-                    value = newVal
-                    $emit('update:modelValue', newVal?.id)
-                  }">
+                  v-model="value"
+                  @update:modelValue="(newVal: User) => $emit('update:modelValue', newVal?.id)">
       <template #empty>
         <div class="p-autocomplete-item">Nothing to see</div>
       </template>

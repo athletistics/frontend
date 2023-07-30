@@ -1,58 +1,52 @@
 <template>
-  <Modal ref="modal">
-    <form class="space-y-6 with-label">
-      <h3 v-if="isPersonal">{{ $t('comp.result.createTraining') }}</h3>
-      <h3 v-else>{{ $t('comp.result.create') }}</h3>
-
-      <hr>
+  <Dialog v-model:visible="visible" modal class="w-full sm:max-w-sm">
+    <Form class="space-y-8 " :validation-schema="schema" @submit="createResult" @invalid-submit="console.log('noo')">
 
       <span class="p-float-label p-fluid">
-        <InputNumber id="value" v-model="newResult.value" inputId="minmaxfraction" :maxFractionDigits="2" :min="0"/>
+        <InputNumber name="value" id="value" v-model="newResult.value" :inputClass="{'p-invalid': valueErr}"
+                     inputId="minmaxfraction" :maxFractionDigits="3" :min="0"/>
         <label for="value">{{ $t('glob.result.value') }}</label>
       </span>
 
       <span class="p-float-label p-fluid">
-        <InputNumber id="wind" v-model="newResult.wind" inputId="minmaxfraction" :maxFractionDigits="1"/>
+        <InputNumber name="wind" id="wind" v-model="newResult.wind" inputId="minmaxfraction" :maxFractionDigits="1"/>
         <label for="wind">{{ $t('glob.result.wind') }}</label>
       </span>
 
       <span class="p-float-label p-fluid">
-        <InputNumber id="rank" v-model="newResult.rank"/>
+        <InputText name="rank" id="rank" v-model="newResult.rank"/>
         <label for="rank">{{ $t('glob.result.rank') }}</label>
       </span>
 
-      <AutoCompleteUser v-model="newResult.userId" v-if="!isPersonal" :disabled="!!user"/>
+      <AutoCompleteUser name="user" v-model="newResult.userId" v-if="!isPersonal" :disabled="!!user"/>
 
-      <div>
-        <label>{{ $t('glob.discipline.name') }}</label>
-        <select v-model="newResult.disciplineId">
-          <option v-for="d in dataStore.disciplines" :value="d.id">
-            {{ d.i18nName ? $t('data.' + d.i18nName) : d.customName }}
-          </option>
-        </select>
-      </div>
+      <AutoCompleteDiscipline name="discipline" v-model="newResult.disciplineId" />
 
-      <div>
-        <label>{{ $t('glob.event.name') }}</label>
-        <select v-model="newResult.eventId" :disabled="!!event">
-          <option v-for="e in filteredEvents" :value="e.id">{{ e.name }}, {{ e.place }} ({{ e.date }})</option>
-        </select>
-      </div>
+      <AutoCompleteEvent name="event" v-model="newResult.eventId" :disabled="!!event" />
 
-      <hr>
+      <LoadingBtn full outlined visual-type="primary" :loading="createState" type="submit">
+        {{ $t('glob.btn.add') }}
+      </LoadingBtn>
+    </Form>
+
+    <template #header>
+      <h3 v-if="isPersonal">{{ $t('comp.result.createTraining') }}</h3>
+      <h3 v-else>{{ $t('comp.result.create') }}</h3>
+    </template>
+
+    <template #footer>
       <div class="grid sm:grid-cols-2 gap-4">
         <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createResult">
           {{ $t('glob.btn.add') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
       </div>
-    </form>
-  </Modal>
+    </template>
+  </Dialog>
 </template>
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import Modal from "./Modal.vue";
 import axios from "axios";
 import Const from "../../plugins/Constants";
 import {useAuthStore} from "../../stores/auth";
@@ -64,25 +58,42 @@ import LoadingBtn from "../button/LoadingBtn.vue";
 import LoadingState from "../../types/LoadingState";
 import {LoadingStates} from "../../types/LoadingStates";
 import AutoCompleteUser from "../form/input/AutoCompleteUser.vue";
+import AutoCompleteDiscipline from "../form/input/AutoCompleteDiscipline.vue";
+import AutoCompleteEvent from "../form/input/AutoCompleteEvent.vue";
+import Dialog from "primevue/dialog";
+import {Form, useField} from 'vee-validate'
+import * as yup from 'yup';
 
 export default defineComponent({
   name: "ModalResult",
-  components: {AutoCompleteUser, LoadingBtn, Modal},
+  components: {Form, Dialog, AutoCompleteEvent, AutoCompleteDiscipline, AutoCompleteUser, LoadingBtn},
   props: {
     result: {type: Object as PropType<Result.Data | undefined>, default: undefined},
     user: {type: Object as PropType<User | undefined>, default: undefined},
     event: {type: Object as PropType<Event | undefined>, default: undefined},
     isPersonal: {type: Boolean, default: true}
   },
-  setup() {
+  setup: function () {
     const authStore = useAuthStore()
     const dataStore = useDataStore()
     const toastStore = useToastStore()
 
-    return {authStore, toastStore, dataStore}
+    const {errorMessage: valueErr} = useField('value')
+
+    const schema = yup.object().shape({
+      value: yup.number().required(),
+      // wind: yup.number().optional(),
+      // rank: yup.string().optional(),
+      // user: yup.string().required(),
+      // discipline: yup.string().required(),
+      // event: yup.string().required(),
+    })
+
+    return {authStore, toastStore, dataStore, schema, valueErr}
   },
   data() {
     return {
+      visible: false as boolean,
       events: [] as Event[],
       newResult: {} as Result.RequestBody,
       createState: {state: NaN} as LoadingState
@@ -96,13 +107,14 @@ export default defineComponent({
   },
   methods: {
     setVisibility(visible: boolean) {
-      (this.$refs.modal as any).setVisibility(visible)
+      this.visible = visible
       this.newResult = {} as Result.RequestBody
 
       if (this.user) this.newResult.userId = this.user.id
       if (this.event) this.newResult.eventId = this.event.id
     },
-    createResult() {
+    createResult(values) {
+      console.log(values)
       console.log(this.newResult)
       return
       this.createState.state = LoadingStates.Loading

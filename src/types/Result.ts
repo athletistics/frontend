@@ -2,7 +2,7 @@ declare namespace Result {
   interface RequestBody {
     id?: number,
     value: number,
-    rank?: number
+    rank?: string
     wind?: number,
     disciplineId: string,
     userId?: string,

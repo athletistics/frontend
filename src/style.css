@@ -131,3 +131,7 @@ form.with-label input:not([type=checkbox]), div.with-label input:not([type=check
 .white-rounded {
     @apply bg-white shadow-lg rounded-xl
 }
+
+.p-dialog-mask {
+    @apply backdrop-blur
+}
