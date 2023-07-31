@@ -11,7 +11,8 @@ const users: User[] = useDataStore().users
 
 const props = defineProps({
   modelValue: {type: String, default: ''},
-  disabled: {type: Boolean, default: false}
+  disabled: {type: Boolean, default: false},
+  inputClass: {type: Object, default: {}}
 })
 const emit = defineEmits(['update:modelValue'])
 
@@ -32,7 +33,7 @@ const optionLabel = (selectedUser: User) => {
 
 <template>
   <span class="p-float-label p-fluid">
-    <AutoComplete inputId="user" :suggestions="filteredUsers" @complete="search"
+    <AutoComplete inputId="user" :suggestions="filteredUsers" @complete="search" :class="inputClass"
                   dropdown forceSelection :optionLabel="optionLabel" :disabled="disabled"
 
                   v-model="value"

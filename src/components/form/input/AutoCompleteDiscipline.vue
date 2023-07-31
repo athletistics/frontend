@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useDataStore} from "../../../stores/data";
-import {Ref, ref} from "vue";
+import {onMounted, Ref, ref, watch} from "vue";
 import Discipline from "../../../types/Discipline";
 import {useI18n} from "vue-i18n";
 
@@ -11,7 +11,8 @@ const disciplines: Discipline[] = useDataStore().disciplines
 
 const props = defineProps({
   modelValue: {type: String, default: ''},
-  disabled: {type: Boolean, default: false}
+  disabled: {type: Boolean, default: false},
+  inputClass: {type: Object, default: {}}
 })
 const emit = defineEmits(['update:modelValue'])
 const {t} = useI18n()
@@ -33,7 +34,7 @@ const optionLabel = (selectedUser: Discipline) => {
 
 <template>
   <span class="p-float-label p-fluid">
-    <AutoComplete inputId="user" :suggestions="filteredDisciplines" @complete="search"
+    <AutoComplete inputId="user" :suggestions="filteredDisciplines" @complete="search" :class="inputClass"
                   dropdown forceSelection :optionLabel="optionLabel" :disabled="disabled"
 
                   v-model="value"

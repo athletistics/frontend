@@ -1,33 +1,34 @@
 <template>
-  <Dialog v-model:visible="visible" modal class="w-full sm:max-w-sm">
-    <Form class="space-y-8 " :validation-schema="schema" @submit="createResult" @invalid-submit="console.log('noo')">
+  <Dialog v-model:visible="visible" modal class="w-11/12 sm:max-w-sm">
+    <form class="space-y-8" ref="resultForm">
 
       <span class="p-float-label p-fluid">
-        <InputNumber name="value" id="value" v-model="newResult.value" :inputClass="{'p-invalid': valueErr}"
-                     inputId="minmaxfraction" :maxFractionDigits="3" :min="0"/>
+        <InputNumber id="value" v-model="newResult.value" :class="{'p-invalid': errors.value}"
+                     inputId="minmaxfraction" :maxFractionDigits="3" :min="0" :max="99999.999"/>
         <label for="value">{{ $t('glob.result.value') }}</label>
       </span>
 
       <span class="p-float-label p-fluid">
-        <InputNumber name="wind" id="wind" v-model="newResult.wind" inputId="minmaxfraction" :maxFractionDigits="1"/>
+        <InputNumber id="wind" v-model="newResult.wind" :class="{'p-invalid': errors.wind}"
+                     inputId="minmaxfraction" :maxFractionDigits="1" :min="-9.9" :max="9.9"/>
+        <pre>{{errors.wind}}</pre>
         <label for="wind">{{ $t('glob.result.wind') }}</label>
       </span>
 
       <span class="p-float-label p-fluid">
-        <InputText name="rank" id="rank" v-model="newResult.rank"/>
+        <InputText id="rank" v-model="newResult.rank" :class="{'p-invalid': errors.rank}"/>
         <label for="rank">{{ $t('glob.result.rank') }}</label>
       </span>
 
-      <AutoCompleteUser name="user" v-model="newResult.userId" v-if="!isPersonal" :disabled="!!user"/>
+      <AutoCompleteUser id="userId" v-model="newResult.userId" v-if="!isPersonal" :disabled="!!user"
+                        :inputClass="{'p-invalid': errors.userId}"/>
 
-      <AutoCompleteDiscipline name="discipline" v-model="newResult.disciplineId" />
+      <AutoCompleteDiscipline id="disciplineId" v-model="newResult.disciplineId"
+                              :inputClass="{'p-invalid': errors.disciplineId}"/>
 
-      <AutoCompleteEvent name="event" v-model="newResult.eventId" :disabled="!!event" />
-
-      <LoadingBtn full outlined visual-type="primary" :loading="createState" type="submit">
-        {{ $t('glob.btn.add') }}
-      </LoadingBtn>
-    </Form>
+      <AutoCompleteEvent id="eventId" v-model="newResult.eventId" :disabled="!!event"
+                         :inputClass="{'p-invalid': errors.eventId}" :isPersonal="isPersonal"/>
+    </form>
 
     <template #header>
       <h3 v-if="isPersonal">{{ $t('comp.result.createTraining') }}</h3>
@@ -36,7 +37,7 @@
 
     <template #footer>
       <div class="grid sm:grid-cols-2 gap-4">
-        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createResult">
+        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createResult" :disabled="!meta.valid">
           {{ $t('glob.btn.add') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
@@ -45,8 +46,8 @@
   </Dialog>
 </template>
 
-<script lang="ts">
-import {defineComponent, PropType} from 'vue'
+<script setup lang="ts">
+import {computed, defineComponent, onMounted, PropType, reactive, ref} from 'vue'
 import axios from "axios";
 import Const from "../../plugins/Constants";
 import {useAuthStore} from "../../stores/auth";
@@ -61,103 +62,100 @@ import AutoCompleteUser from "../form/input/AutoCompleteUser.vue";
 import AutoCompleteDiscipline from "../form/input/AutoCompleteDiscipline.vue";
 import AutoCompleteEvent from "../form/input/AutoCompleteEvent.vue";
 import Dialog from "primevue/dialog";
-import {Form, useField} from 'vee-validate'
+import {useField, useForm} from 'vee-validate'
 import * as yup from 'yup';
 
-export default defineComponent({
-  name: "ModalResult",
-  components: {Form, Dialog, AutoCompleteEvent, AutoCompleteDiscipline, AutoCompleteUser, LoadingBtn},
-  props: {
-    result: {type: Object as PropType<Result.Data | undefined>, default: undefined},
-    user: {type: Object as PropType<User | undefined>, default: undefined},
-    event: {type: Object as PropType<Event | undefined>, default: undefined},
-    isPersonal: {type: Boolean, default: true}
-  },
-  setup: function () {
-    const authStore = useAuthStore()
-    const dataStore = useDataStore()
-    const toastStore = useToastStore()
+const emits = defineEmits(['created'])
+const props = defineProps({
+  result: {type: Object as PropType<Result.Data | undefined>, default: undefined},
+  user: {type: Object as PropType<User | undefined>, default: undefined},
+  event: {type: Object as PropType<Event | undefined>, default: undefined},
+  isPersonal: {type: Boolean, default: true}
+})
 
-    const {errorMessage: valueErr} = useField('value')
-
-    const schema = yup.object().shape({
-      value: yup.number().required(),
-      // wind: yup.number().optional(),
-      // rank: yup.string().optional(),
-      // user: yup.string().required(),
-      // discipline: yup.string().required(),
-      // event: yup.string().required(),
-    })
-
-    return {authStore, toastStore, dataStore, schema, valueErr}
-  },
-  data() {
-    return {
-      visible: false as boolean,
-      events: [] as Event[],
-      newResult: {} as Result.RequestBody,
-      createState: {state: NaN} as LoadingState
-    }
-  },
-  computed: {
-    filteredEvents() {
-      if (!this.isPersonal) return this.events
-      return this.events.filter(e => e.eventTypeId === 4)
-    }
-  },
-  methods: {
-    setVisibility(visible: boolean) {
-      this.visible = visible
-      this.newResult = {} as Result.RequestBody
-
-      if (this.user) this.newResult.userId = this.user.id
-      if (this.event) this.newResult.eventId = this.event.id
-    },
-    createResult(values) {
-      console.log(values)
-      console.log(this.newResult)
-      return
-      this.createState.state = LoadingStates.Loading
-      const url = this.isPersonal ? "/me/results" : "/results"
-
-      if (this.isPersonal) {
-        delete (this.newResult.userId)
-      }
-
-      axios.request({
-        url,
-        method: 'post',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        },
-        data: this.newResult,
-      }).then(response => {
-        this.createState.state = LoadingStates.Loaded
-        this.toastStore.addSuccessToast()
-        this.$emit('created')
-        this.setVisibility(false)
-      }).catch(response => {
-        this.createState.state = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(response)
-      })
-    },
-    getEvents() {
-      axios.request({
-        url: "/events",
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        }
-      }).then(response => {
-        this.events = response.data
-      }).catch(response => this.toastStore.addToastFromAxiosError(response))
-    },
-  },
-  mounted() {
-    this.getEvents()
+const components =
+  {
+    Dialog, AutoCompleteEvent, AutoCompleteDiscipline, AutoCompleteUser, LoadingBtn
   }
+
+// --------------
+// import stores
+// --------------
+const authStore = useAuthStore()
+const dataStore = useDataStore()
+const toastStore = useToastStore()
+
+
+// -----------------------------------
+// form validation and API interaction
+// -----------------------------------
+const schema = yup.object({
+  value: yup.number().required().positive(),
+  wind: yup.number().nullable(),
+  rank: yup.string(),
+  disciplineId: yup.string().required().uuid(),
+  userId: yup.string().required(),
+  eventId: yup.string().required().uuid(),
+})
+
+const {
+  handleSubmit, resetForm, errors, useFieldModel, setValues, meta
+} = useForm<Result.RequestBody>({validationSchema: schema})
+const newResult = reactive({
+  value: useFieldModel('value'),
+  wind: useFieldModel('wind'),
+  rank: useFieldModel('rank'),
+  disciplineId: useFieldModel('disciplineId'),
+  eventId: useFieldModel('eventId'),
+  userId: useFieldModel('userId'),
+})
+
+const createState = reactive<LoadingState>({state: NaN})
+const createResult = handleSubmit(_ => {
+  createState.state = LoadingStates.Loading
+  const url = props.isPersonal ? "/me/results" : "/results"
+
+  if (props.isPersonal) {
+    delete (newResult.userId)
+  }
+
+  axios.request({
+    url,
+    method: 'post',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
+    },
+    data: newResult,
+  }).then(response => {
+    createState.state = LoadingStates.Loaded
+    toastStore.addSuccessToast()
+    emits('created')
+    setVisibility(false)
+  }).catch(response => {
+    createState.state = LoadingStates.Error
+    toastStore.addToastFromAxiosError(response)
+  })
+})
+
+
+// -------------------
+// modal management
+// -------------------
+const visible = ref(false)
+const setVisibility = (val: boolean) => {
+  visible.value = val
+  resetForm()
+
+  if (props.user) setValues({userId: props.user.id})
+  if (props.event) setValues({eventId: props.event.id})
+
+  createState.state = NaN
+}
+
+
+defineExpose({
+  setVisibility,
 })
 </script>
 
