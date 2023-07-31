@@ -4,14 +4,14 @@
 
       <span class="p-float-label p-fluid">
         <InputNumber id="value" v-model="newResult.value" :class="{'p-invalid': errors.value}"
-                     inputId="minmaxfraction" :maxFractionDigits="3" :min="0" :max="99999.999"/>
+                     inputId="minmaxfraction" :maxFractionDigits="3" :min="0" :max="99999.999"
+                     v-tooltip="errors.value"/>
         <label for="value">{{ $t('glob.result.value') }}</label>
       </span>
 
       <span class="p-float-label p-fluid">
         <InputNumber id="wind" v-model="newResult.wind" :class="{'p-invalid': errors.wind}"
                      inputId="minmaxfraction" :maxFractionDigits="1" :min="-9.9" :max="9.9"/>
-        <pre>{{errors.wind}}</pre>
         <label for="wind">{{ $t('glob.result.wind') }}</label>
       </span>
 
@@ -21,13 +21,13 @@
       </span>
 
       <AutoCompleteUser id="userId" v-model="newResult.userId" v-if="!isPersonal" :disabled="!!user"
-                        :inputClass="{'p-invalid': errors.userId}"/>
+                        :inputClass="{'p-invalid': errors.userId}" v-tooltip="errors.userId"/>
 
       <AutoCompleteDiscipline id="disciplineId" v-model="newResult.disciplineId"
-                              :inputClass="{'p-invalid': errors.disciplineId}"/>
+                              :inputClass="{'p-invalid': errors.disciplineId}" v-tooltip="errors.disciplineId"/>
 
       <AutoCompleteEvent id="eventId" v-model="newResult.eventId" :disabled="!!event"
-                         :inputClass="{'p-invalid': errors.eventId}" :isPersonal="isPersonal"/>
+                         :inputClass="{'p-invalid': errors.eventId}" :isPersonal="isPersonal" v-tooltip="errors.eventId"/>
     </form>
 
     <template #header>
@@ -105,9 +105,9 @@ const newResult = reactive({
   value: useFieldModel('value'),
   wind: useFieldModel('wind'),
   rank: useFieldModel('rank'),
-  disciplineId: useFieldModel('disciplineId'),
-  eventId: useFieldModel('eventId'),
-  userId: useFieldModel('userId'),
+  disciplineId: useFieldModel('discipline'),
+  eventId: useFieldModel('event'),
+  userId: useFieldModel('user'),
 })
 
 const createState = reactive<LoadingState>({state: NaN})

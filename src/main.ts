@@ -8,6 +8,7 @@ import AutoComplete from "primevue/autocomplete"
 import InputText from "primevue/inputtext";
 import InputNumber from "primevue/inputnumber";
 import Dialog from "primevue/dialog";
+import Tooltip from 'primevue/tooltip'
 import "primevue/resources/themes/mira/theme.css";
 
 import {createPinia} from 'pinia'
@@ -56,6 +57,7 @@ createApp(App)
   .component('InputText', InputText)
   .component('InputNumber', InputNumber)
   .component('Dialog', Dialog)
+  .directive('Tooltip', Tooltip)
   .use(PrimeVue)
   .use(pinia)
   .use(i18n)
