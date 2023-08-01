@@ -1,6 +1,7 @@
-import {acceptHMRUpdate, defineStore} from 'pinia'
-import Toast from "../types/Toast";
 import {AxiosError} from "axios";
+import {acceptHMRUpdate, defineStore} from 'pinia'
+
+import Toast from "@/types/Toast";
 
 interface State {
     toasts: Toast[]

@@ -51,27 +51,31 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
-import LabeledText from "../components/LabeledText.vue";
-import {LoadingStates} from "../types/LoadingStates";
-import SimpleTable from "../components/list/SimpleTable.vue";
-import SimpleTableRow from "../components/list/SimpleTableRow.vue";
-import SimpleTableCell from "../components/list/SimpleTableCell.vue";
-import LoadingBtn from "../components/button/LoadingBtn.vue";
-import AttendanceModal from "../components/nds/AttendanceModal.vue";
-import {useDataStore} from "../stores/data";
-import InstanceModal from "../components/nds/InstanceModal.vue";
 import axios from "axios";
-import Const from "../plugins/Constants";
-import {useAuthStore} from "../stores/auth";
-import {canManageActivityInstances} from "../plugins/AccessControl";
-import BtnMenu from "../components/button/BtnMenu.vue";
-import BtnMenuEntry from "../components/button/BtnMenuEntry.vue";
-import {useToastStore} from "../stores/toast";
-import User from "../types/User";
-import {Nds} from "../types/Nds";
-import LoadingState from "../types/LoadingState";
+import {defineComponent} from 'vue'
+
+import User from "@/types/User";
+import {Nds} from "@/types/Nds";
+
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useToastStore} from "@/stores/toast";
+
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import Const from "@/plugins/Constants";
+import {canManageActivityInstances} from "@/plugins/AccessControl";
+
+import BtnMenu from "@/components/button/BtnMenu.vue";
+import LabeledText from "@/components/LabeledText.vue";
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import SimpleTable from "@/components/list/SimpleTable.vue";
+import InstanceModal from "@/components/nds/InstanceModal.vue";
+import BtnMenuEntry from "@/components/button/BtnMenuEntry.vue";
+import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import AttendanceModal from "@/components/nds/AttendanceModal.vue";
+import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
+import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
 
 export default defineComponent({
   name: "Activity",

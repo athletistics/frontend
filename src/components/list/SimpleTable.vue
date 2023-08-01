@@ -1,7 +1,7 @@
 <script lang="ts">
 import TableStates from "./TableStates.vue";
 import {defineComponent, PropType} from "vue";
-import {LoadingStates} from "../../types/LoadingStates";
+import {LoadingStates} from "@/types/LoadingStates";
 
 export default defineComponent({
   components: {TableStates},

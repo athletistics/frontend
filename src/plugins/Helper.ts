@@ -1,5 +1,5 @@
 import moment, {duration} from "moment/moment";
-import Discipline from "../types/Discipline";
+import Discipline from "@/types/Discipline";
 
 export function formatResult(value: string, discipline: Discipline | undefined): string {
   if (!discipline) return value

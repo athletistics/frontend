@@ -6,7 +6,7 @@
 
   <div class="py-5">&nbsp;</div>
 
-  <TitleWithBtnPlus @btn-click="setTeamPopupVisibility(true)" :btn-visible="canManageTeam()">
+  <TitleWithBtnPlus @btn-click="($refs.modal as any).setVisibility(true)" :btn-visible="canManageTeam()">
     {{ $t('page.club.title.teams') }}
   </TitleWithBtnPlus>
 
@@ -59,25 +59,28 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import Club from "../types/Club";
-import Team from "../types/Team";
 import axios from "axios";
-import Const from "../plugins/Constants"
-import Modal from "../components/modals/Modal.vue";
-import {useAuthStore} from "../stores/auth";
-import {useMyUserStore} from "../stores/user";
-import {useDataStore} from "../stores/data";
-import Discipline from "../types/Discipline";
-import {useToastStore} from "../stores/toast";
-import BtnPlus from "../components/button/BtnPlus.vue";
-import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
-import SimpleListEntry from "../components/list/SimpleListEntry.vue";
-import SimpleList from "../components/list/SimpleList.vue";
-import {LoadingStates} from "../types/LoadingStates";
-import {canManageDiscipline, canManageTeam} from "../plugins/AccessControl";
-import LoadingState from "../types/LoadingState";
-import LoadingBtn from "../components/button/LoadingBtn.vue";
-import DialogTeamCreate from "../components/modals/DialogTeamCreate.vue";
+
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useMyUserStore} from "@/stores/user";
+import {useToastStore} from "@/stores/toast";
+
+import Club from "@/types/Club";
+import Team from "@/types/Team";
+import Discipline from "@/types/Discipline";
+import LoadingState from "@/types/LoadingState";
+import Const from "@/plugins/Constants"
+import {LoadingStates} from "@/types/LoadingStates";
+import {canManageDiscipline, canManageTeam} from "@/plugins/AccessControl";
+
+import Modal from "@/components/modals/Modal.vue";
+import BtnPlus from "@/components/button/BtnPlus.vue";
+import SimpleList from "@/components/list/SimpleList.vue";
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import SimpleListEntry from "@/components/list/SimpleListEntry.vue";
+import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import DialogTeamCreate from "@/components/modals/DialogTeamCreate.vue";
 
 export default defineComponent({
   components: {DialogTeamCreate, LoadingBtn, SimpleList, SimpleListEntry, TitleWithBtnPlus, BtnPlus, Modal},

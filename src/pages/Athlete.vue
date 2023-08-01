@@ -86,31 +86,33 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
 import axios from "axios";
-import User, {USER_STATE_INITIAL,} from "../types/User";
-import {useAuthStore} from "../stores/auth";
-import {useDataStore} from "../stores/data";
-import {useToastStore} from "../stores/toast";
-import {LoadingStates} from "../types/LoadingStates";
+import {defineComponent} from "vue";
 
-import LabeledText from "../components/LabeledText.vue";
-import ResultCard from "../components/results/ResultCard.vue";
-import ModalResult from "../components/modals/ModalResult.vue";
-import ResultList from "../components/results/ResultTable.vue";
-import ResultEvolution from "../components/results/ResultEvolution.vue";
-import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
-import {canManageResults, canManageUsers} from "../plugins/AccessControl";
-import ResultLimitComparison from "../components/results/ResultLimitComparison.vue";
-import LoadingBtn from "../components/button/LoadingBtn.vue";
-import {useMyUserStore} from "../stores/user";
-import ExternalIdModal from "../components/user/ExternalIdModal.vue";
-import Const from '../plugins/Constants'
-import LoadingState from "../types/LoadingState";
-import BtnPlus from "../components/button/BtnPlus.vue";
-import BtnStravaImport from "../components/button/BtnResultImport.vue";
-import ModalResultImport from "../components/modals/ModalResultImport.vue";
-import UserCreateShare from "../components/user/UserCreateShare.vue";
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useToastStore} from "@/stores/toast";
+import {useMyUserStore} from "@/stores/user";
+
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import User, {USER_STATE_INITIAL,} from "@/types/User";
+import Const from '@/plugins/Constants'
+import {canManageResults, canManageUsers} from "@/plugins/AccessControl";
+
+import BtnPlus from "@/components/button/BtnPlus.vue";
+import LabeledText from "@/components/LabeledText.vue";
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import ResultCard from "@/components/results/ResultCard.vue";
+import ModalResult from "@/components/modals/ModalResult.vue";
+import ResultList from "@/components/results/ResultTable.vue";
+import ExternalIdModal from "@/components/user/ExternalIdModal.vue";
+import UserCreateShare from "@/components/user/UserCreateShare.vue";
+import BtnStravaImport from "@/components/button/BtnResultImport.vue";
+import ResultEvolution from "@/components/results/ResultEvolution.vue";
+import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import ModalResultImport from "@/components/modals/ModalResultImport.vue";
+import ResultLimitComparison from "@/components/results/ResultLimitComparison.vue";
 
 export default defineComponent({
   name: "Athlete",

@@ -38,13 +38,15 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import SimpleTable from "../components/list/SimpleTable.vue";
-import SimpleTableRow from "../components/list/SimpleTableRow.vue";
-import {useDataStore} from "../stores/data";
-import Discipline from "../types/Discipline";
-import SimpleTableCell from "../components/list/SimpleTableCell.vue";
-import {formatResult} from "../plugins/Helper";
-import {LoadingStates} from "../types/LoadingStates";
+import {useDataStore} from "@/stores/data";
+
+import Discipline from "@/types/Discipline";
+import {LoadingStates} from "@/types/LoadingStates";
+import {formatResult} from "@/plugins/Helper";
+
+import SimpleTable from "@/components/list/SimpleTable.vue";
+import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
 
 export default defineComponent({
   name: "References",

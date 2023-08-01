@@ -16,10 +16,11 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from 'vue'
-import {formatResult} from "../../plugins/Helper";
-import {useDataStore} from "../../stores/data";
 import {useI18n} from "vue-i18n";
+import {defineComponent, PropType} from 'vue'
+
+import {formatResult} from "@/plugins/Helper";
+import {useDataStore} from "@/stores/data";
 
 export default defineComponent({
   name: "Card",

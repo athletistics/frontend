@@ -14,17 +14,20 @@
 
 <script lang="ts">
 
-import {defineComponent} from "vue";
-import SimpleTable from "../components/list/SimpleTable.vue";
-import {LoadingStates} from "../types/LoadingStates";
 import axios from "axios";
-import Const from "../plugins/Constants";
-import {useAuthStore} from "../stores/auth";
-import User from "../types/User";
-import {useToastStore} from "../stores/toast";
-import SimpleTableRow from "../components/list/SimpleTableRow.vue";
-import SimpleTableCell from "../components/list/SimpleTableCell.vue";
-import {useMyUserStore} from "../stores/user";
+import {defineComponent} from "vue";
+
+import {useAuthStore} from "@/stores/auth";
+import {useToastStore} from "@/stores/toast";
+import {useMyUserStore} from "@/stores/user";
+
+import User from "@/types/User";
+import {LoadingStates} from "@/types/LoadingStates";
+import Const from "@/plugins/Constants";
+
+import SimpleTable from "@/components/list/SimpleTable.vue";
+import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
 
 export default defineComponent({
   components: {SimpleTableCell, SimpleTableRow, SimpleTable},

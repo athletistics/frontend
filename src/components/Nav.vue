@@ -54,11 +54,13 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import Const from "../plugins/Constants";
-import {useAuthStore} from "../stores/auth";
-import {useMyUserStore} from "../stores/user";
 import {OidcClient} from "oidc-client-ts";
-import authConfig from "../plugins/AuthConfig";
+
+import {useAuthStore} from "@/stores/auth";
+import {useMyUserStore} from "@/stores/user";
+
+import Const from "@/plugins/Constants";
+import authConfig from "@/plugins/AuthConfig";
 
 export default defineComponent({
   name: "Nav",

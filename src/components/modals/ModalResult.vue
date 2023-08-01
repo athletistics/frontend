@@ -47,22 +47,24 @@
 </template>
 
 <script setup lang="ts">
-import {PropType, reactive, ref} from 'vue'
 import axios from "axios";
-import Const from "../../plugins/Constants";
-import {useAuthStore} from "../../stores/auth";
-import {useToastStore} from "../../stores/toast";
-import Event from "../../types/Event";
-import User from "../../types/User";
-import LoadingBtn from "../button/LoadingBtn.vue";
-import LoadingState from "../../types/LoadingState";
-import {LoadingStates} from "../../types/LoadingStates";
-import AutoCompleteUser from "../form/input/AutoCompleteUser.vue";
-import AutoCompleteDiscipline from "../form/input/AutoCompleteDiscipline.vue";
-import AutoCompleteEvent from "../form/input/AutoCompleteEvent.vue";
+import * as yup from 'yup';
 import Dialog from "primevue/dialog";
 import {useForm} from 'vee-validate'
-import * as yup from 'yup';
+import {PropType, reactive, ref} from 'vue'
+
+import {useAuthStore} from "@/stores/auth";
+import {useToastStore} from "@/stores/toast";
+
+import User from "@/types/User";
+import Event from "@/types/Event";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import Const from "@/plugins/Constants";
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import AutoCompleteUser from "@/components/form/input/AutoCompleteUser.vue";
+import AutoCompleteEvent from "@/components/form/input/AutoCompleteEvent.vue";
+import AutoCompleteDiscipline from "@/components/form/input/AutoCompleteDiscipline.vue";
 
 const emits = defineEmits(['created'])
 const props = defineProps({

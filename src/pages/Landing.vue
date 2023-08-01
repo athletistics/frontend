@@ -19,13 +19,16 @@
 
 <script lang="ts">
 import axios from "axios";
-import Const from './../plugins/Constants'
-import {defineComponent, PropType} from "vue";
-import authConfig from "../plugins/AuthConfig";
+import {defineComponent} from "vue";
 import {CreateSigninRequestArgs, OidcClient} from "oidc-client-ts";
-import {useAuthStore} from "../stores/auth";
-import LoadingBtn from "../components/button/LoadingBtn.vue";
-import {useOidcStateStore} from "../stores/oidcState";
+
+import {useAuthStore} from "@/stores/auth";
+import {useOidcStateStore} from "@/stores/oidcState";
+
+import Const from '@/plugins/Constants'
+import authConfig from "@/plugins/AuthConfig";
+
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
 
 const stateDefault = 0
 const stateLoading = 1

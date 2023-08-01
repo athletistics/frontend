@@ -1,18 +1,20 @@
-import {acceptHMRUpdate, defineStore} from 'pinia'
-import Discipline from "../types/Discipline";
 import axios from "axios";
-import Const from "../plugins/Constants";
+import {acceptHMRUpdate, defineStore} from 'pinia'
+
 import {useAuthStore} from "./auth";
-import User from "../types/User";
-import Category from "../types/Category";
-import Event from "../types/Event";
-import EventType from "../types/EventType";
-import Language from "../types/Language";
-import LoadingState from "../types/LoadingState";
-import {LoadingStates} from "../types/LoadingStates";
-import Indexable from "../types/Indexable";
-import Country from "../types/Country";
-import {Nds} from "../types/Nds";
+
+import User from "@/types/User";
+import {Nds} from "@/types/Nds";
+import Event from "@/types/Event";
+import Country from "@/types/Country";
+import Category from "@/types/Category";
+import Language from "@/types/Language";
+import EventType from "@/types/EventType";
+import Indexable from "@/types/Indexable";
+import Discipline from "@/types/Discipline";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import Const from "@/plugins/Constants";
 
 interface State {
   externalIdTypes: ExternalId.Type[]

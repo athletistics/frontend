@@ -121,24 +121,26 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
 import axios from "axios";
-import Const from "../plugins/Constants"
-import Modal from "../components/modals/Modal.vue";
-import User from "../types/User";
-import moment from "moment/moment";
-import {useAuthStore} from "../stores/auth";
-import UserList from "../components/user/UserList.vue";
-import {LoadingStates} from "../types/LoadingStates";
-import {useToastStore} from "../stores/toast";
-import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
-import {useDataStore} from "../stores/data";
-import {canManageUsers} from "../plugins/AccessControl";
-import LoadingBtn from "../components/button/LoadingBtn.vue";
-import LoadingState from "../types/LoadingState";
-import Switch from "../components/form/Switch.vue";
-import {useMyUserStore} from "../stores/user";
-import UserRedeemShareCodeModal from "../components/user/UserRedeemShareCodeModal.vue";
+import {defineComponent} from "vue";
+
+import {useAuthStore} from "@/stores/auth";
+import {useToastStore} from "@/stores/toast";
+import {useDataStore} from "@/stores/data";
+import {useMyUserStore} from "@/stores/user";
+
+import User from "@/types/User";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import Const from "@/plugins/Constants"
+import {canManageUsers} from "@/plugins/AccessControl";
+
+import Modal from "@/components/modals/Modal.vue";
+import Switch from "@/components/form/Switch.vue";
+import UserList from "@/components/user/UserList.vue";
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import UserRedeemShareCodeModal from "@/components/user/UserRedeemShareCodeModal.vue";
 
 export default defineComponent({
   components: {UserRedeemShareCodeModal, Switch, LoadingBtn, TitleWithBtnPlus, UserList, Modal},

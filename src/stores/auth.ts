@@ -1,6 +1,6 @@
 import {acceptHMRUpdate, defineStore} from 'pinia'
 import axios, {AxiosResponse} from "axios";
-import Const from "../plugins/Constants";
+import Const from "@/plugins/Constants";
 import {useMyUserStore} from "./user";
 
 interface State {

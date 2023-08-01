@@ -1,7 +1,7 @@
 <script lang="ts">
 import {ButtonHTMLAttributes, defineComponent, PropType} from 'vue'
-import LoadingState from "../../types/LoadingState";
-import {LoadingStates} from "../../types/LoadingStates";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
 
 export default defineComponent({
   name: "LoadingBtn",

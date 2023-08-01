@@ -1,7 +1,7 @@
 <script lang="ts">
 import SimpleListLoading from "./SimpleListLoading.vue";
 import {defineComponent, PropType} from "vue";
-import {LoadingStates} from "../../types/LoadingStates";
+import {LoadingStates} from "@/types/LoadingStates";
 import SimpleListEntry from "./SimpleListEntry.vue";
 
 export default defineComponent({

@@ -1,7 +1,8 @@
-import {acceptHMRUpdate, defineStore} from 'pinia'
-import User from "../types/User";
 import axios from "axios";
-import Const from "../plugins/Constants";
+import {acceptHMRUpdate, defineStore} from 'pinia'
+
+import User from "@/types/User";
+import Const from "@/plugins/Constants";
 import {useAuthStore} from "./auth";
 
 interface State {

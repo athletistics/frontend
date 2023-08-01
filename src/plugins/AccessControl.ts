@@ -1,5 +1,5 @@
-import {useMyUserStore} from "../stores/user";
-import {useAuthStore} from "../stores/auth";
+import {useAuthStore} from "@/stores/auth";
+import {useMyUserStore} from "@/stores/user";
 
 const coach = "coach"
 const headCoach = "head_coach"

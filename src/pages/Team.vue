@@ -85,26 +85,29 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
-import Team from "../types/Team";
 import axios from "axios";
-import Const from "../plugins/Constants"
+import {defineComponent} from "vue";
+
+import {useAuthStore} from "@/stores/auth";
+import {useToastStore} from "@/stores/toast";
+
+import {Nds} from "@/types/Nds";
 import User from "../types/User";
-import {useAuthStore} from "../stores/auth";
-import Modal from "../components/modals/Modal.vue";
-import {useToastStore} from "../stores/toast";
-import SimpleList from "../components/list/SimpleList.vue";
-import SimpleListEntry from "../components/list/SimpleListEntry.vue";
-import {LoadingStates} from "../types/LoadingStates";
-import {canManageActivities, canManageTeam} from "../plugins/AccessControl";
-import LoadingBtn from "../components/button/LoadingBtn.vue";
+import Team from "../types/Team";
+import {LoadingStates} from "@/types/LoadingStates";
+import Const from "../plugins/Constants"
+import {canManageActivities, canManageTeam} from "@/plugins/AccessControl";
+
 import LoadingState from "../types/LoadingState";
-import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
+import Modal from "../components/modals/Modal.vue";
+import SimpleList from "../components/list/SimpleList.vue";
+import LoadingBtn from "../components/button/LoadingBtn.vue";
 import SimpleTable from "../components/list/SimpleTable.vue";
+import ActivityModal from "../components/nds/ActivityModal.vue";
 import SimpleTableRow from "../components/list/SimpleTableRow.vue";
 import SimpleTableCell from "../components/list/SimpleTableCell.vue";
-import ActivityModal from "../components/nds/ActivityModal.vue";
-import {Nds} from "../types/Nds";
+import SimpleListEntry from "../components/list/SimpleListEntry.vue";
+import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
 
 export default defineComponent({
   components: {

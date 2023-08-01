@@ -7,16 +7,18 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
-import {useAuthStore} from "../stores/auth";
-import {useToastStore} from "../stores/toast";
-import ModalResult from "../components/modals/ModalResult.vue";
 import axios from "axios";
-import Const from "../plugins/Constants";
-import ResultTable from "../components/results/ResultTable.vue";
-import {LoadingStates} from "../types/LoadingStates";
-import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
-import {canManageResults} from "../plugins/AccessControl";
+import {defineComponent} from "vue";
+
+import {useAuthStore} from "@/stores/auth";
+import {useToastStore} from "@/stores/toast";
+import {LoadingStates} from "@/types/LoadingStates";
+import {canManageResults} from "@/plugins/AccessControl";
+import Const from "@/plugins/Constants";
+
+import ModalResult from "@/components/modals/ModalResult.vue";
+import ResultTable from "@/components/results/ResultTable.vue";
+import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
 
 export default defineComponent({
   name: "Results",

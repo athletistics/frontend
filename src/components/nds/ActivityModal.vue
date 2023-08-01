@@ -55,17 +55,19 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-import Modal from "../modals/Modal.vue";
-import LoadingBtn from "../button/LoadingBtn.vue";
-import LabeledText from "../LabeledText.vue";
-import LoadingState from "../../types/LoadingState";
-import {LoadingStates} from "../../types/LoadingStates";
 import axios from "axios";
-import Const from "../../plugins/Constants";
-import {useToastStore} from "../../stores/toast";
-import {useAuthStore} from "../../stores/auth";
-import {Nds} from "../../types/Nds";
+import {defineComponent} from 'vue'
+
+import {useAuthStore} from "@/stores/auth";
+import {useToastStore} from "@/stores/toast";
+
+import {Nds} from "@/types/Nds";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import Const from "@/plugins/Constants";
+import Modal from "@/components/modals/Modal.vue";
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import LabeledText from "@/components/LabeledText.vue";
 
 export default defineComponent({
   name: "ActivityModal",

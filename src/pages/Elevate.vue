@@ -54,14 +54,17 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
 import axios from "axios";
-import Const from "../plugins/Constants";
-import {useAuthStore} from "../stores/auth";
-import {useToastStore} from "../stores/toast";
-import LoadingBtn from "../components/button/LoadingBtn.vue";
-import LoadingState from "../types/LoadingState";
-import {LoadingStates} from "../types/LoadingStates";
+import {defineComponent} from "vue";
+
+import {useAuthStore} from "@/stores/auth";
+import {useToastStore} from "@/stores/toast";
+
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import Const from "@/plugins/Constants";
+
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
 
 export default defineComponent({
   components: {LoadingBtn},

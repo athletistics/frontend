@@ -26,19 +26,21 @@
 
 <script setup lang="ts">
 
-import Dialog from "primevue/dialog";
-import LoadingBtn from "../button/LoadingBtn.vue";
-import {reactive, ref} from "vue";
-import LoadingState from "../../types/LoadingState";
-import {useForm} from "vee-validate";
-import Team from "../../types/Team";
-import {object, string} from 'yup';
-import {LoadingStates} from "../../types/LoadingStates";
 import axios from "axios";
-import Const from "../../plugins/Constants";
-import {useAuthStore} from "../../stores/auth";
-import {useToastStore} from "../../stores/toast";
-import {useMyUserStore} from "../../stores/user";
+import {reactive, ref} from "vue";
+import {object, string} from 'yup';
+import {useForm} from "vee-validate";
+import Dialog from "primevue/dialog";
+
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import Team from "@/types/Team";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import Const from "@/plugins/Constants";
+
+import {useAuthStore} from "@/stores/auth";
+import {useToastStore} from "@/stores/toast";
+import {useMyUserStore} from "@/stores/user";
 
 const emits = defineEmits(['success'])
 

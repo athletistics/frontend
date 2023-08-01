@@ -50,17 +50,19 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-import Modal from "../modals/Modal.vue";
-import LoadingBtn from "../button/LoadingBtn.vue";
-import LoadingState from "../../types/LoadingState";
-import {Nds} from "../../types/Nds";
-import {useDataStore} from "../../stores/data";
-import {LoadingStates} from "../../types/LoadingStates";
 import axios from "axios";
-import Const from "../../plugins/Constants";
-import {useAuthStore} from "../../stores/auth";
-import {useToastStore} from "../../stores/toast";
+import {defineComponent} from 'vue'
+
+import {useAuthStore} from "@/stores/auth";
+import {useToastStore} from "@/stores/toast";
+
+import Const from "@/plugins/Constants";
+import {Nds} from "@/types/Nds";
+import {useDataStore} from "@/stores/data";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import Modal from "@/components/modals/Modal.vue";
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
 
 export default defineComponent({
   name: "InstanceModal",

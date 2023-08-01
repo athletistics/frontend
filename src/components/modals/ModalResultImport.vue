@@ -72,19 +72,21 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-import Modal from "./Modal.vue";
-import LoadingState from "../../types/LoadingState";
-import {LoadingStates} from "../../types/LoadingStates";
-import Event from "../../types/Event";
 import axios from "axios";
-import Const from "../../plugins/Constants";
-import {useAuthStore} from "../../stores/auth";
-import {useToastStore} from "../../stores/toast";
-import LoadingBtn from "../button/LoadingBtn.vue";
-import SimpleList from "../list/SimpleList.vue";
-import SimpleListEntry from "../list/SimpleListEntry.vue";
-import {useDataStore} from "../../stores/data";
+import {defineComponent} from 'vue'
+
+import {useDataStore} from "@/stores/data";
+import {useAuthStore} from "@/stores/auth";
+import {useToastStore} from "@/stores/toast";
+
+import Event from "@/types/Event";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import Const from "@/plugins/Constants";
+import Modal from "./Modal.vue";
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import SimpleList from "@/components/list/SimpleList.vue";
+import SimpleListEntry from "@/components/list/SimpleListEntry.vue";
 
 export default defineComponent({
   name: "ModalResultImport",

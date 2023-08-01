@@ -1,6 +1,6 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import {LoadingStates} from "../../types/LoadingStates";
+import {LoadingStates} from "@/types/LoadingStates";
 
 export default defineComponent({
   name: "ListError",

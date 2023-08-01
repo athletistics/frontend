@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {useDataStore} from "../../../stores/data";
+import {useDataStore} from "@/stores/data";
 import {Ref, ref} from "vue";
-import User from "../../../types/User";
+import User from "@/types/User";
 
 // data
 const filteredUsers: Ref<User[]> = ref([])

@@ -17,15 +17,17 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from 'vue'
-import {LoadingStates} from "../../types/LoadingStates";
-import {formatResult} from "../../plugins/Helper";
-import {useDataStore} from "../../stores/data";
-import ListStates from "../list/TableStates.vue";
-import SimpleTable from "../list/SimpleTable.vue";
-import SimpleTableRow from "../list/SimpleTableRow.vue";
-import SimpleTableCell from "../list/SimpleTableCell.vue";
 import {useI18n} from "vue-i18n";
+import {defineComponent, PropType} from 'vue'
+
+import {useDataStore} from "@/stores/data";
+
+import {LoadingStates} from "@/types/LoadingStates";
+import {formatResult} from "@/plugins/Helper";
+import ListStates from "@/components/list/TableStates.vue";
+import SimpleTable from "@/components/list/SimpleTable.vue";
+import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
 
 export default defineComponent({
   name: "ResultTable",

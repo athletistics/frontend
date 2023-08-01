@@ -2,7 +2,9 @@
 import Toast from './Toast.vue'
 import {defineComponent} from "vue";
 import {mapState} from "pinia";
-import {useToastStore} from "../stores/toast";
+
+import {useToastStore} from "@/stores/toast";
+
 export default defineComponent({
   name: 'Toasts',
   components: { Toast },

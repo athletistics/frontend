@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {useDataStore} from "../../../stores/data";
-import {onMounted, Ref, ref, watch} from "vue";
-import Discipline from "../../../types/Discipline";
+import {useDataStore} from "@/stores/data";
+import {Ref, ref} from "vue";
+import Discipline from "@/types/Discipline";
 import {useI18n} from "vue-i18n";
 
 // data

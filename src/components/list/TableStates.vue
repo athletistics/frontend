@@ -3,7 +3,7 @@ import {defineComponent, PropType} from 'vue'
 import ListEmpty from "./TableEmpty.vue";
 import ListLoading from "./TableLoading.vue";
 import ListError from "./TableError.vue";
-import {LoadingStates} from "../../types/LoadingStates";
+import {LoadingStates} from "@/types/LoadingStates";
 
 export default defineComponent({
   name: "ListStates",

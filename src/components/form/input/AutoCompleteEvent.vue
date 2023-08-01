@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {useDataStore} from "../../../stores/data";
-import {computed, onMounted, Ref, ref} from "vue";
-import Event from "../../../types/Event";
+import {useDataStore} from "@/stores/data";
+import {onMounted, Ref, ref} from "vue";
+import Event from "@/types/Event";
 import {useI18n} from "vue-i18n";
 
 // data
@@ -22,11 +22,11 @@ const search = (event: any) => {
   if (event.query?.trim()?.length) {
     filteredEvents.value = events.filter(e => {
       return (
-        e.name.toLowerCase().startsWith(event.query.toLowerCase()) ||
-        e.place.toLowerCase().startsWith(event.query.toLowerCase())
+          e.name.toLowerCase().startsWith(event.query.toLowerCase()) ||
+          e.place.toLowerCase().startsWith(event.query.toLowerCase())
       ) && (
-        // shown only training events if an athlete adds a personal result
-        props.isPersonal ? e.eventTypeId === 4 : true
+          // shown only training events if an athlete adds a personal result
+          props.isPersonal ? e.eventTypeId === 4 : true
       )
     })
   } else {
@@ -38,7 +38,7 @@ const optionLabel = (selectedEvent: Event) => {
 }
 
 onMounted(() => {
-  if(props.modelValue) {
+  if (props.modelValue) {
     value.value = events.find(e => e.id === props.modelValue)
   }
 })

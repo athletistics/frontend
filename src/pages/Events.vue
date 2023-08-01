@@ -65,23 +65,25 @@
 </template>
 
 <script lang="ts">
-import Event from "../types/Event"
-import {defineComponent} from "vue";
 import axios from "axios";
-import Const from "../plugins/Constants";
-import {useToastStore} from "../stores/toast";
-import {useAuthStore} from "../stores/auth";
-import Modal from "../components/modals/Modal.vue";
-import moment from "moment";
-import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
-import SimpleTable from "../components/list/SimpleTable.vue";
-import SimpleTableRow from "../components/list/SimpleTableRow.vue";
-import SimpleTableCell from "../components/list/SimpleTableCell.vue";
-import {useDataStore} from "../stores/data";
-import {LoadingStates} from "../types/LoadingStates";
-import {canManageEvents} from "../plugins/AccessControl";
-import LoadingState from "../types/LoadingState";
-import LoadingBtn from "../components/button/LoadingBtn.vue";
+import {defineComponent} from "vue";
+
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useToastStore} from "@/stores/toast";
+
+import Event from "@/types/Event"
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import {canManageEvents} from "@/plugins/AccessControl";
+import Const from "@/plugins/Constants";
+
+import Modal from "@/components/modals/Modal.vue";
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import SimpleTable from "@/components/list/SimpleTable.vue";
+import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
+import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
 
 export default defineComponent({
   name: "Events",

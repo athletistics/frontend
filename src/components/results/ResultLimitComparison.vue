@@ -62,14 +62,15 @@ import {
 } from 'chart.js'
 import 'chartjs-adapter-moment';
 
-import {defineComponent, PropType, ref} from 'vue'
-import {useAuthStore} from "../../stores/auth";
-import {useDataStore} from "../../stores/data";
-import {useToastStore} from "../../stores/toast";
-import {formatResult} from "../../plugins/Helper";
-import LoadingState from "../../types/LoadingState";
-import Category from "../../types/Category";
-import {CHART_COLOR_TRANSPARENT, CHART_COLORS, transparentize} from "../../plugins/ChartUtils";
+import {defineComponent, PropType} from 'vue'
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useToastStore} from "@/stores/toast";
+
+import {formatResult} from "@/plugins/Helper";
+import {CHART_COLOR_TRANSPARENT, CHART_COLORS, transparentize} from "@/plugins/ChartUtils";
+import Category from "@/types/Category";
+import LoadingState from "@/types/LoadingState";
 
 ChartJS.register(Filler, Title, Tooltip, Legend, LineController, LineElement, PointElement, RadialLinearScale)
 export default defineComponent({

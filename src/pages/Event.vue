@@ -22,18 +22,21 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-import ResultTable from "../components/results/ResultTable.vue";
-import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
-import ModalResult from "../components/modals/ModalResult.vue";
-import {useAuthStore} from "../stores/auth";
-import {useToastStore} from "../stores/toast";
-import {LoadingStates} from "../types/LoadingStates";
-import {canManageResults} from "../plugins/AccessControl";
 import axios from "axios";
-import Const from "../plugins/Constants";
-import {useDataStore} from "../stores/data";
-import LabeledText from "../components/LabeledText.vue";
+import {defineComponent} from 'vue'
+
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useToastStore} from "@/stores/toast";
+
+import {LoadingStates} from "@/types/LoadingStates";
+import Const from "@/plugins/Constants";
+import {canManageResults} from "@/plugins/AccessControl";
+
+import LabeledText from "@/components/LabeledText.vue";
+import ModalResult from "@/components/modals/ModalResult.vue";
+import ResultTable from "@/components/results/ResultTable.vue";
+import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
 
 export default defineComponent({
   name: "Event",
