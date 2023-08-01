@@ -135,7 +135,7 @@ import {LoadingStates} from "@/types/LoadingStates";
 import Const from "@/plugins/Constants"
 import {canManageUsers} from "@/plugins/AccessControl";
 
-import Modal from "@/components/modals/Modal.vue";
+import Modal from "@/components/dialogs/Modal.vue";
 import Switch from "@/components/form/Switch.vue";
 import UserList from "@/components/user/UserList.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";

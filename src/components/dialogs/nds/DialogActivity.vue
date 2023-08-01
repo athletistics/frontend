@@ -1,37 +1,42 @@
 <template>
-  <Modal ref="modal">
+  <Modal ref="modal" classes="lg:max-w-5xl">
     <h3>{{ $t('page.activity.title.new') }}</h3>
-    <div class="with-label grid gap-4">
+    <div class="with-label grid lg:grid-cols-3 sm:grid-cols-2 gap-4">
 
       <div>
-        <label>{{ $t('page.activity.type') }}*</label>
-        <select v-model="newInstance.ndsActivityTypeId" required>
-          <option v-for="t in dataStore.activityTypes" :value="t.id" selected>{{ $t('data.' + t.i18nName) }}</option>
+        <label>{{ $t('page.activity.startDate') }}*</label>
+        <input v-model="newActivity.startDate" type="date" required>
+      </div>
+
+      <div>
+        <label>{{ $t('page.activity.endDate') }}*</label>
+        <input v-model="newActivity.endDate" type="date" required>
+      </div>
+
+      <div>
+        <label>{{ $t('page.activity.weekday') }}*</label>
+        <select v-model="newActivity.weekday" required>
+          <option v-for="(i) in 7" :value="i" selected>{{ $t('glob.weekday[' + i % 7 + ']') }}</option>
         </select>
       </div>
 
       <div>
-        <label>{{ $t('page.activity.date') }}*</label>
-        <input v-model="newInstance.date" type="date" required>
-      </div>
-
-      <div v-if="newInstance.ndsActivityTypeId === 1">
         <label>{{ $t('page.activity.startTime') }}*</label>
-        <input v-model="newInstance.startTime" type="time" required>
+        <input v-model="newActivity.startTime" type="time" required>
       </div>
 
-      <div v-if="newInstance.ndsActivityTypeId === 1">
+      <div>
         <label>{{ $t('page.activity.duration') }}*</label>
-        <select v-model="newInstance.duration" required>
+        <select v-model="newActivity.duration" required>
           <option :value="60" selected>60</option>
           <option :value="75" selected>75</option>
           <option :value="90" selected>90</option>
         </select>
       </div>
 
-      <div v-if="newInstance.ndsActivityTypeId === 1">
+      <div>
         <label>{{ $t('page.activity.place') }}*</label>
-        <input v-model="newInstance.place" required>
+        <input v-model="newActivity.place" required>
       </div>
 
     </div>
@@ -39,7 +44,7 @@
     <template #bottom>
       <hr>
       <div class="grid grid-cols-2 gap-4">
-        <LoadingBtn full outlined visual-type="primary" :loading="state" @click="createInstance()">
+        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createActivity()">
           {{ $t('glob.btn.create') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
@@ -56,54 +61,52 @@ import {defineComponent} from 'vue'
 import {useAuthStore} from "@/stores/auth";
 import {useToastStore} from "@/stores/toast";
 
-import Const from "@/plugins/Constants";
 import {Nds} from "@/types/Nds";
-import {useDataStore} from "@/stores/data";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
-import Modal from "@/components/modals/Modal.vue";
+import Const from "@/plugins/Constants";
+import Modal from "@/components/dialogs/Modal.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import LabeledText from "@/components/LabeledText.vue";
 
 export default defineComponent({
-  name: "InstanceModal",
-  components: {LoadingBtn, Modal},
-  emits: ['created'],
+  name: "ActivityModal",
+  components: {LabeledText, LoadingBtn, Modal},
   setup() {
-    const dataStore = useDataStore()
     const authStore = useAuthStore()
     const toastStore = useToastStore()
-    return {dataStore, authStore, toastStore}
+    return {authStore, toastStore}
   },
   data() {
     return {
-      newInstance: {} as Nds.ActivityInstanceReq,
-      state: {state: NaN} as LoadingState
+      newActivity: {} as Nds.ActivityReq,
+      createState: {state: NaN} as LoadingState
     }
   },
   methods: {
     setVisibility(visibility: boolean) {
       (this.$refs.modal as any).setVisibility(visibility)
-      this.newInstance = {} as Nds.ActivityInstanceReq
+      this.newActivity = {} as Nds.ActivityReq
     },
-    createInstance() {
-      this.state.state = LoadingStates.Loading
-      this.newInstance.ndsActivityId = typeof this.$route.params.id === 'string' ? this.$route.params.id : this.$route.params.id.join('')
+    createActivity() {
+      this.createState.state = LoadingStates.Loading
+      this.newActivity.teamId = typeof this.$route.params.id === 'string' ? this.$route.params.id : this.$route.params.id.join('')
 
       axios.request({
-        url: '/nds/activities/' + this.$route.params.id + '/instances',
+        url: '/nds/activities',
         method: 'post',
         baseURL: Const.API_URL,
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         },
-        data: this.newInstance,
+        data: this.newActivity,
       }).then(response => {
-        this.state.state = LoadingStates.Loaded
+        this.createState.state = LoadingStates.Loaded
         this.toastStore.addSuccessToast()
         this.$emit('created')
         this.setVisibility(false)
       }).catch(response => {
-        this.state.state = LoadingStates.Error
+        this.createState.state = LoadingStates.Error
         this.toastStore.addToastFromAxiosError(response)
       })
     }

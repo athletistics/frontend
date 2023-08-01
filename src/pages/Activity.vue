@@ -70,10 +70,10 @@ import BtnMenu from "@/components/button/BtnMenu.vue";
 import LabeledText from "@/components/LabeledText.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import SimpleTable from "@/components/list/SimpleTable.vue";
-import InstanceModal from "@/components/nds/InstanceModal.vue";
+import InstanceModal from "@/components/dialogs/nds/DialogInstance.vue";
 import BtnMenuEntry from "@/components/button/BtnMenuEntry.vue";
 import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
-import AttendanceModal from "@/components/nds/AttendanceModal.vue";
+import AttendanceModal from "@/components/dialogs/nds/DialogAttendance.vue";
 import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
 import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
 

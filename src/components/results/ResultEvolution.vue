@@ -100,7 +100,7 @@ import axios from "axios";
 import Const from "../../plugins/Constants";
 import {useToastStore} from "../../stores/toast";
 import Discipline from "../../types/Discipline";
-import Modal from "../modals/Modal.vue";
+import Modal from "@/components/dialogs/Modal.vue";
 import {CHART_COLORS, namedColor, transparentize} from "../../plugins/ChartUtils";
 import Category from "../../types/Category";
 import {canManageResults} from "../../plugins/AccessControl";

@@ -50,7 +50,7 @@ import User from "@/types/User";
 import {Nds} from "@/types/Nds";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
-import Modal from "@/components/modals/Modal.vue";
+import Modal from "@/components/dialogs/Modal.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 
 export default defineComponent({

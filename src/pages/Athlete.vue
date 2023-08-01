@@ -104,14 +104,14 @@ import BtnPlus from "@/components/button/BtnPlus.vue";
 import LabeledText from "@/components/LabeledText.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import ResultCard from "@/components/results/ResultCard.vue";
-import ModalResult from "@/components/modals/ModalResult.vue";
+import ModalResult from "@/components/dialogs/DialogResult.vue";
 import ResultList from "@/components/results/ResultTable.vue";
 import ExternalIdModal from "@/components/user/ExternalIdModal.vue";
 import UserCreateShare from "@/components/user/UserCreateShare.vue";
 import BtnStravaImport from "@/components/button/BtnResultImport.vue";
 import ResultEvolution from "@/components/results/ResultEvolution.vue";
 import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
-import ModalResultImport from "@/components/modals/ModalResultImport.vue";
+import ModalResultImport from "@/components/dialogs/DialogResultImport.vue";
 import ResultLimitComparison from "@/components/results/ResultLimitComparison.vue";
 
 export default defineComponent({

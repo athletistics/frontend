@@ -16,7 +16,7 @@ import {LoadingStates} from "@/types/LoadingStates";
 import {canManageResults} from "@/plugins/AccessControl";
 import Const from "@/plugins/Constants";
 
-import ModalResult from "@/components/modals/ModalResult.vue";
+import ModalResult from "@/components/dialogs/DialogResult.vue";
 import ResultTable from "@/components/results/ResultTable.vue";
 import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
 

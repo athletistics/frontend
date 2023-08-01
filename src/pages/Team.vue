@@ -99,11 +99,11 @@ import Const from "../plugins/Constants"
 import {canManageActivities, canManageTeam} from "@/plugins/AccessControl";
 
 import LoadingState from "../types/LoadingState";
-import Modal from "../components/modals/Modal.vue";
+import Modal from "@/components/dialogs/Modal.vue";
 import SimpleList from "../components/list/SimpleList.vue";
 import LoadingBtn from "../components/button/LoadingBtn.vue";
 import SimpleTable from "../components/list/SimpleTable.vue";
-import ActivityModal from "../components/nds/ActivityModal.vue";
+import ActivityModal from "@/components/dialogs/nds/DialogActivity.vue";
 import SimpleTableRow from "../components/list/SimpleTableRow.vue";
 import SimpleTableCell from "../components/list/SimpleTableCell.vue";
 import SimpleListEntry from "../components/list/SimpleListEntry.vue";

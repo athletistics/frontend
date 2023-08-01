@@ -29,7 +29,7 @@ import {useToastStore} from "@/stores/toast";
 import Const from "@/plugins/Constants";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
-import Modal from "@/components/modals/Modal.vue";
+import Modal from "@/components/dialogs/Modal.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 
 export default defineComponent({

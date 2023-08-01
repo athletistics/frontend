@@ -78,7 +78,7 @@ import {LoadingStates} from "@/types/LoadingStates";
 import {canManageEvents} from "@/plugins/AccessControl";
 import Const from "@/plugins/Constants";
 
-import Modal from "@/components/modals/Modal.vue";
+import Modal from "@/components/dialogs/Modal.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import SimpleTable from "@/components/list/SimpleTable.vue";
 import SimpleTableRow from "@/components/list/SimpleTableRow.vue";

@@ -74,13 +74,13 @@ import Const from "@/plugins/Constants"
 import {LoadingStates} from "@/types/LoadingStates";
 import {canManageDiscipline, canManageTeam} from "@/plugins/AccessControl";
 
-import Modal from "@/components/modals/Modal.vue";
+import Modal from "@/components/dialogs/Modal.vue";
 import BtnPlus from "@/components/button/BtnPlus.vue";
 import SimpleList from "@/components/list/SimpleList.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import SimpleListEntry from "@/components/list/SimpleListEntry.vue";
 import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
-import DialogTeamCreate from "@/components/modals/DialogTeamCreate.vue";
+import DialogTeamCreate from "@/components/dialogs/DialogTeamCreate.vue";
 
 export default defineComponent({
   components: {DialogTeamCreate, LoadingBtn, SimpleList, SimpleListEntry, TitleWithBtnPlus, BtnPlus, Modal},
