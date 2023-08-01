@@ -47,11 +47,10 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineComponent, onMounted, PropType, reactive, ref} from 'vue'
+import {PropType, reactive, ref} from 'vue'
 import axios from "axios";
 import Const from "../../plugins/Constants";
 import {useAuthStore} from "../../stores/auth";
-import {useDataStore} from "../../stores/data";
 import {useToastStore} from "../../stores/toast";
 import Event from "../../types/Event";
 import User from "../../types/User";
@@ -62,7 +61,7 @@ import AutoCompleteUser from "../form/input/AutoCompleteUser.vue";
 import AutoCompleteDiscipline from "../form/input/AutoCompleteDiscipline.vue";
 import AutoCompleteEvent from "../form/input/AutoCompleteEvent.vue";
 import Dialog from "primevue/dialog";
-import {useField, useForm} from 'vee-validate'
+import {useForm} from 'vee-validate'
 import * as yup from 'yup';
 
 const emits = defineEmits(['created'])
@@ -73,16 +72,10 @@ const props = defineProps({
   isPersonal: {type: Boolean, default: true}
 })
 
-const components =
-  {
-    Dialog, AutoCompleteEvent, AutoCompleteDiscipline, AutoCompleteUser, LoadingBtn
-  }
-
 // --------------
 // import stores
 // --------------
 const authStore = useAuthStore()
-const dataStore = useDataStore()
 const toastStore = useToastStore()
 
 
@@ -105,9 +98,9 @@ const newResult = reactive({
   value: useFieldModel('value'),
   wind: useFieldModel('wind'),
   rank: useFieldModel('rank'),
-  disciplineId: useFieldModel('discipline'),
-  eventId: useFieldModel('event'),
-  userId: useFieldModel('user'),
+  disciplineId: useFieldModel('disciplineId'),
+  eventId: useFieldModel('eventId'),
+  userId: useFieldModel('userId'),
 })
 
 const createState = reactive<LoadingState>({state: NaN})
