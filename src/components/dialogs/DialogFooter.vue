@@ -7,6 +7,8 @@
   </div>
 </template>
 
-<style scoped>
-
+<style>
+.p-dialog .p-dialog-footer button {
+  margin: 0
+}
 </style>

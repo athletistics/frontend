@@ -10,6 +10,8 @@
   </TitleWithBtnPlus>
   <UserList :state="externalAthletesState" :users="externalAthletes"/>
 
+  <DialogUserCreate ref="externalModal"/>
+
   <Modal ref="modal" classes="xl:max-w-5xl sm:h-auto h-5/6">
     <h3>{{ $t('page.athletes.create') }}</h3>
 
@@ -117,7 +119,7 @@
     </template>
 
   </Modal>
-  <UserRedeemShareCodeModal ref="externalModal" @created="loadAthletes"/>
+  <UserRedeemShareCodeModal ref="externalModal2" @created="loadAthletes"/>
 </template>
 
 <script lang="ts">
@@ -141,9 +143,10 @@ import UserList from "@/components/user/UserList.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
 import UserRedeemShareCodeModal from "@/components/user/UserRedeemShareCodeModal.vue";
+import DialogUserCreate from "@/components/dialogs/user/DialogUserCreate.vue";
 
 export default defineComponent({
-  components: {UserRedeemShareCodeModal, Switch, LoadingBtn, TitleWithBtnPlus, UserList, Modal},
+  components: {DialogUserCreate, UserRedeemShareCodeModal, Switch, LoadingBtn, TitleWithBtnPlus, UserList, Modal},
   setup: function () {
     const authStore = useAuthStore()
     const toastStore = useToastStore()

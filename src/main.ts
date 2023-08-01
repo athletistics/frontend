@@ -9,6 +9,9 @@ import InputText from "primevue/inputtext";
 import InputNumber from "primevue/inputnumber";
 import Dialog from "primevue/dialog";
 import Tooltip from 'primevue/tooltip'
+import Calendar from 'primevue/calendar';
+import Dropdown from 'primevue/dropdown';
+import InputSwitch from 'primevue/inputswitch';
 import "primevue/resources/themes/mira/theme.css";
 
 import {createPinia} from 'pinia'
@@ -57,6 +60,9 @@ createApp(App)
   .component('InputText', InputText)
   .component('InputNumber', InputNumber)
   .component('Dialog', Dialog)
+  .component('Calendar', Calendar)
+  .component('Dropdown', Dropdown)
+  .component('InputSwitch', InputSwitch)
   .directive('Tooltip', Tooltip)
   .use(PrimeVue)
   .use(pinia)
