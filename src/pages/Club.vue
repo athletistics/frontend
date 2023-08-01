@@ -26,24 +26,7 @@
     </SimpleListEntry>
   </SimpleList>
 
-  <Modal ref="modal">
-    <form class="space-y-4 with-label">
-      <h3>{{ $t('page.club.title.createTeam') }}</h3>
-      <hr>
-      <div>
-        <label>{{ $t('page.club.teamName') }}</label>
-        <input v-model="newTeam.name">
-      </div>
-      <hr>
-      <div class="grid md:grid-cols-2 gap-4">
-        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createTeam()">
-          {{ $t('glob.btn.save') }}
-        </LoadingBtn>
-        <LoadingBtn full outlined @click="setTeamPopupVisibility(false)">{{ $t('glob.btn.cancel') }}
-        </LoadingBtn>
-      </div>
-    </form>
-  </Modal>
+  <DialogTeamCreate ref="modal" @success="loadTeams"/>
 
   <Modal ref="modalDiscipline">
     <form class="space-y-4 with-label">
@@ -94,9 +77,10 @@ import {LoadingStates} from "../types/LoadingStates";
 import {canManageDiscipline, canManageTeam} from "../plugins/AccessControl";
 import LoadingState from "../types/LoadingState";
 import LoadingBtn from "../components/button/LoadingBtn.vue";
+import DialogTeamCreate from "../components/modals/DialogTeamCreate.vue";
 
 export default defineComponent({
-  components: {LoadingBtn, SimpleList, SimpleListEntry, TitleWithBtnPlus, BtnPlus, Modal},
+  components: {DialogTeamCreate, LoadingBtn, SimpleList, SimpleListEntry, TitleWithBtnPlus, BtnPlus, Modal},
   setup() {
     const authStore = useAuthStore()
     const userStore = useMyUserStore()
@@ -111,7 +95,6 @@ export default defineComponent({
       teams: [] as Team[],
       teamsState: NaN as LoadingStates,
       disciplineStateObj: {state: NaN} as LoadingState,
-      newTeam: {} as Team,
       newDiscipline: {} as Discipline,
       createState: {state: NaN} as LoadingState
     }
@@ -132,11 +115,6 @@ export default defineComponent({
   },
   methods: {
     canManageDiscipline, canManageTeam,
-    setTeamPopupVisibility(visible: boolean) {
-      (this.$refs.modal as any).setVisibility(visible)
-
-      if (!visible) this.newTeam = {} as Team
-    },
     setDisciplinePopupVisibility(visible: boolean) {
       (this.$refs.modalDiscipline as any).setVisibility(visible)
 
@@ -158,25 +136,6 @@ export default defineComponent({
         this.dataStore.updateDisciplines(this.disciplineStateObj)
         this.setDisciplinePopupVisibility(false)
         this.toastStore.addSuccessToast()
-      }).catch(error => {
-        this.createState.state = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(error)
-      })
-    },
-    createTeam() {
-      this.createState.state = LoadingStates.Loading
-      axios.request({
-        url: "/club/" + this.userStore.user.clubId + "/teams",
-        method: 'post',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        },
-        data: this.newTeam
-      }).then(() => {
-        this.createState.state = LoadingStates.Loaded
-        this.loadTeams()
-        this.setTeamPopupVisibility(false)
       }).catch(error => {
         this.createState.state = LoadingStates.Error
         this.toastStore.addToastFromAxiosError(error)
