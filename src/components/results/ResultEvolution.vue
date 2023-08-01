@@ -76,6 +76,7 @@
 </template>
 
 <script lang="ts">
+import axios from "axios";
 import {Line} from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -92,22 +93,23 @@ import {
   PointElement,
 } from 'chart.js'
 import 'chartjs-adapter-moment';
-
 import {defineComponent, PropType} from 'vue'
-import {useAuthStore} from "../../stores/auth";
-import {useDataStore} from "../../stores/data";
-import axios from "axios";
-import Const from "../../plugins/Constants";
-import {useToastStore} from "../../stores/toast";
-import Discipline from "../../types/Discipline";
+
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useToastStore} from "@/stores/toast";
+
+import Category from "@/types/Category";
+import Discipline from "@/types/Discipline";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import Const from "@/plugins/Constants";
+import {formatResult} from "@/plugins/Helper";
+import {canManageResults} from "@/plugins/AccessControl";
+import {CHART_COLORS, namedColor, transparentize} from "@/plugins/ChartUtils";
+
 import Modal from "@/components/dialogs/Modal.vue";
-import {CHART_COLORS, namedColor, transparentize} from "../../plugins/ChartUtils";
-import Category from "../../types/Category";
-import {canManageResults} from "../../plugins/AccessControl";
-import {formatResult} from "../../plugins/Helper";
-import LoadingBtn from "../button/LoadingBtn.vue";
-import LoadingState from "../../types/LoadingState";
-import {LoadingStates} from "../../types/LoadingStates";
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineController, LineElement, PointElement, TimeScale)
 export default defineComponent({
