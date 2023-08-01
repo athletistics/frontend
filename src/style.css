@@ -132,6 +132,24 @@ form.with-label input:not([type=checkbox]), div.with-label input:not([type=check
     @apply bg-white shadow-lg rounded-xl
 }
 
+/* --------------------- */
+/* Dialog customisations */
+/* --------------------- */
+
 .p-dialog-mask {
     @apply backdrop-blur
+}
+
+.p-dialog {
+    @apply w-11/12 sm:max-w-md
+}
+
+/* Delete padding in header and add it on content instead, resolving
+   visual issues with floating-label dialog content. */
+.p-dialog-header {
+    padding-bottom: 0 !important
+}
+
+.p-dialog-content {
+    padding-top: 1.5rem !important
 }

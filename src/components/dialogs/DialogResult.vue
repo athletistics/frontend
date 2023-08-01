@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model:visible="visible" modal class="w-11/12 sm:max-w-sm">
+  <Dialog v-model:visible="visible" modal>
     <form class="space-y-8" ref="resultForm">
 
       <span class="p-float-label p-fluid">
@@ -31,17 +31,17 @@
     </form>
 
     <template #header>
-      <h3 v-if="isPersonal">{{ $t('comp.result.createTraining') }}</h3>
-      <h3 v-else>{{ $t('comp.result.create') }}</h3>
+      <DialogTitle v-if="isPersonal">{{ $t('comp.result.createTraining') }}</DialogTitle>
+      <DialogTitle v-else>{{ $t('comp.result.create') }}</DialogTitle>
     </template>
 
     <template #footer>
-      <div class="grid sm:grid-cols-2 gap-4">
+      <DialogFooter>
         <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createResult" :disabled="!meta.valid">
           {{ $t('glob.btn.add') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
-      </div>
+      </DialogFooter>
     </template>
   </Dialog>
 </template>
@@ -65,6 +65,8 @@ import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import AutoCompleteUser from "@/components/form/input/AutoCompleteUser.vue";
 import AutoCompleteEvent from "@/components/form/input/AutoCompleteEvent.vue";
 import AutoCompleteDiscipline from "@/components/form/input/AutoCompleteDiscipline.vue";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import DialogFooter from "@/components/dialogs/DialogFooter.vue";
 
 const emits = defineEmits(['created'])
 const props = defineProps({

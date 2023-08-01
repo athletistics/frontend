@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model:visible="visible" modal class="w-11/12 sm:max-w-sm">
+  <Dialog v-model:visible="visible" modal>
     <form ref="teamCreateForm">
       <span class="p-float-label p-fluid">
         <InputText id="name" v-model="newTeam.name" :class="{'p-invalid': errors.name}" v-tooltip="errors.name"/>
@@ -8,18 +8,18 @@
     </form>
 
     <template #header>
-      <h3>{{ $t('page.club.title.createDiscipline') }}</h3>
+      <DialogTitle>{{ $t('page.club.title.createDiscipline') }}</DialogTitle>
     </template>
 
     <template #footer>
-      <div class="grid md:grid-cols-2 gap-4">
+      <DialogFooter>
         <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createTeam()">
           {{ $t('glob.btn.save') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">
           {{ $t('glob.btn.cancel') }}
         </LoadingBtn>
-      </div>
+      </DialogFooter>
     </template>
   </Dialog>
 </template>
@@ -41,6 +41,8 @@ import Const from "@/plugins/Constants";
 import {useAuthStore} from "@/stores/auth";
 import {useToastStore} from "@/stores/toast";
 import {useMyUserStore} from "@/stores/user";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import DialogFooter from "@/components/dialogs/DialogFooter.vue";
 
 const emits = defineEmits(['success'])
 
