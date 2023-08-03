@@ -134,14 +134,15 @@ import moment from "moment/moment";
 import {LoadingStates} from "@/types/LoadingStates";
 import axios from "axios";
 import Const from "@/plugins/Constants";
-import {useToastStore} from "@/stores/toast";
 import {useAuthStore} from "@/stores/auth";
 import {useMyUserStore} from "@/stores/user";
+import {fromAxiosError} from "@/plugins/ToastWriter";
+import {useToast} from "primevue/usetoast";
 
 const emits = defineEmits(['success'])
 
+const toast = useToast()
 const dataStore = useDataStore()
-const toastStore = useToastStore()
 const authStore = useAuthStore()
 const userStore = useMyUserStore()
 
@@ -218,7 +219,7 @@ const createUser = handleSubmit(_ => {
     setVisibility(false)
   }).catch((error) => {
     createState.state = LoadingStates.Error
-    toastStore.addToastFromAxiosError(error)
+    toast.add(fromAxiosError(error))
   })
 })
 

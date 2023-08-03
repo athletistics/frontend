@@ -1,11 +1,12 @@
 <template>
-  <TitleWithBtnPlus :btn-visible="canManageUsers()" @btn-click="setVisibility(true)">{{ $t('page.athletes.title') }}
+  <TitleWithBtnPlus :btn-visible="canManageUsers()" @btn-click="($refs.modal as any).setVisibility(true)">
+    {{ $t('page.athletes.title') }}
   </TitleWithBtnPlus>
   <UserList :state="athletesState" :users="athletes"/>
 
   <div class="py-4"></div>
 
-  <TitleWithBtnPlus :btn-visible="canManageUsers()" @btn-click="setExternalVisibility(true)">
+  <TitleWithBtnPlus :btn-visible="canManageUsers()" @btn-click="($refs.externalModal as any).setVisibility(true)">
     {{ $t('page.athletes.titleExternal') }}
   </TitleWithBtnPlus>
   <UserList :state="externalAthletesState" :users="externalAthletes"/>
@@ -15,85 +16,54 @@
   <UserRedeemShareCodeModal ref="externalModal" @created="loadAthletes"/>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import axios from "axios";
-import {defineComponent} from "vue";
+import {onMounted, ref} from "vue";
+import {useToast} from "primevue/usetoast";
 
 import {useAuthStore} from "@/stores/auth";
-import {useToastStore} from "@/stores/toast";
-import {useDataStore} from "@/stores/data";
-import {useMyUserStore} from "@/stores/user";
 
 import User from "@/types/User";
-import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
 import Const from "@/plugins/Constants"
 import {canManageUsers} from "@/plugins/AccessControl";
 
-import Modal from "@/components/dialogs/Modal.vue";
-import Switch from "@/components/form/Switch.vue";
 import UserList from "@/components/user/UserList.vue";
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
 import UserRedeemShareCodeModal from "@/components/user/UserRedeemShareCodeModal.vue";
 import DialogUserCreate from "@/components/dialogs/user/DialogUserCreate.vue";
+import {fromAxiosError} from "@/plugins/ToastWriter";
 
-export default defineComponent({
-  components: {DialogUserCreate, UserRedeemShareCodeModal, Switch, LoadingBtn, TitleWithBtnPlus, UserList, Modal},
-  setup: function () {
-    const authStore = useAuthStore()
-    const toastStore = useToastStore()
-    const dataStore = useDataStore()
-    const userStore = useMyUserStore()
+const toast = useToast()
+const authStore = useAuthStore()
 
-    return {authStore, toastStore, dataStore, userStore}
-  },
-  data() {
-    return {
-      athletes: [] as User[],
-      externalAthletes: [] as User[],
-      athletesState: NaN as LoadingStates,
-      externalAthletesState: NaN as LoadingStates,
-      newAthlete: {} as User,
-      createState: {state: NaN} as LoadingState
-    }
-  },
-  mounted() {
-    this.loadAthletes()
-  },
-  methods: {
-    canManageUsers,
-    setVisibility(visible: boolean) {
-      (this.$refs.modal as any).setVisibility(visible)
+const athletes = ref<User[]>([])
+const externalAthletes = ref<User[]>([])
+const athletesState = ref<LoadingStates>(NaN)
+const externalAthletesState = ref<LoadingStates>(NaN)
+const loadAthletes = () => {
+  athletesState.value = LoadingStates.Loading
+  externalAthletesState.value = LoadingStates.Loading
 
-      if (!visible) this.newAthlete = {} as User
-    },
-    setExternalVisibility(visible: boolean) {
-      (this.$refs.externalModal as any).setVisibility(visible)
-    },
-    loadAthletes() {
-      this.athletesState = LoadingStates.Loading
-      this.externalAthletesState = LoadingStates.Loading
-      this.athletes = [] as User[]
-      this.externalAthletes = [] as User[]
+  axios.request({
+    url: "/users?separated=true", method: 'get',
+    baseURL: Const.API_URL,
+    headers: {'Authorization': 'Bearer ' + authStore.token}
+  }).then(response => {
+    athletes.value = response.data.owned
+    externalAthletes.value = response.data.shared
 
-      axios.request({
-        url: "/users?separated=true", method: 'get',
-        baseURL: Const.API_URL,
-        headers: {'Authorization': 'Bearer ' + this.authStore.token}
-      }).then(response => {
-        this.athletes = response.data.owned
-        this.externalAthletes = response.data.shared
+    athletesState.value = athletes.value?.length ? LoadingStates.Loaded : LoadingStates.Empty
+    externalAthletesState.value = externalAthletes.value?.length ? LoadingStates.Loaded : LoadingStates.Empty
+  }).catch(error => {
+    toast.add(fromAxiosError(error))
+    athletesState.value = LoadingStates.Error
+    externalAthletesState.value = LoadingStates.Error
+  })
+}
 
-        this.athletesState = this.athletes?.length ? LoadingStates.Loaded : LoadingStates.Empty
-        this.externalAthletesState = this.externalAthletes?.length ? LoadingStates.Loaded : LoadingStates.Empty
-      }).catch(error => {
-        this.toastStore.addToastFromAxiosError(error)
-        this.athletesState = LoadingStates.Error
-        this.externalAthletesState = LoadingStates.Error
-      })
-    },
-  }
+onMounted(() => {
+  loadAthletes()
 })
 </script>
 

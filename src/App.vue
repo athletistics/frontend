@@ -13,7 +13,8 @@
       </div>
     </footer>
   </div>
-  <Toasts/>
+  <Toast />
+  <Toasts/> <!-- Legacy toast service, filed for removal -->
 </template>
 
 <script lang="ts">

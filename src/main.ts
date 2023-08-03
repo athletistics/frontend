@@ -13,6 +13,7 @@ import Calendar from 'primevue/calendar';
 import Dropdown from 'primevue/dropdown';
 import InputSwitch from 'primevue/inputswitch';
 import InputMask from 'primevue/inputmask';
+import ToastService from 'primevue/toastservice'
 import "primevue/resources/themes/mira/theme.css";
 
 import {createPinia} from 'pinia'
@@ -66,6 +67,7 @@ createApp(App)
   .component('InputSwitch', InputSwitch)
   .component('InputMask', InputMask)
   .directive('Tooltip', Tooltip)
+  .use(ToastService)
   .use(PrimeVue)
   .use(pinia)
   .use(i18n)
