@@ -1,6 +1,6 @@
 <template>
   <Dialog v-model:visible="visible" modal class="xl:max-w-5xl sm:max-w-none">
-    <form ref="userCreateForm">
+    <form ref="userCreateForm" validation-schema="schema">
 
       <div class="grid lg:grid-cols-3 sm:grid-cols-2 gap-y-8 gap-x-4">
 
@@ -17,9 +17,10 @@
         </span>
 
         <span class="p-float-label p-fluid">
-          <Calendar id="birthDate" v-model="newUser.birthDate" :class="{'p-invalid': errors.birthDate}"
-          :maxDate="new Date()"/>
+          <Calendar id="birthDate" v-model="newUser.birthDateObj" :class="{'p-invalid': errors.birthDate}"
+                    :maxDate="new Date()"/>
           <label for="birthDate">{{ $t('glob.user.birthdate') }}*</label>
+          <pre>{{ errors.birthDate }}</pre>
         </span>
 
         <span class="p-float-label p-fluid">
@@ -36,20 +37,20 @@
 
         <span class="p-float-label p-fluid">
           <Dropdown id="nationalityId" v-model="newUser.nationalityId" :class="{'p-invalid': errors.nationalityId}"
-                    :options="dataStore.countries" optionLabel="name" optionValuel="id"/>
+                    :options="dataStore.countries" optionLabel="name" optionValue="id"/>
           <label for="nationalityId">{{ $t('glob.user.nationality') }}*</label>
         </span>
 
         <span class="p-float-label p-fluid">
           <Dropdown id="languageId" v-model="newUser.languageId" :class="{'p-invalid': errors.languageId}"
-                    :options="dataStore.languages" optionLabel="short" optionValuel="id"/>
+                    :options="dataStore.languages" optionLabel="short" optionValue="id"/>
           <label for="languageId">{{ $t('glob.user.prefLang') }}*</label>
         </span>
 
         <span class="p-float-label p-fluid">
           <InputText id="primaryMail" v-model="newUser.primaryMail" :class="{'p-invalid': errors.primaryMail}"
                      v-tooltip="errors.primaryMail"/>
-          <label for="primaryMail">{{ $t('glob.user.primaryMail') }}{{newUser.withLogin ? '*' : ''}}</label>
+          <label for="primaryMail">{{ $t('glob.user.primaryMail') }}{{ withLogin ? '*' : '' }}</label>
         </span>
 
         <span class="p-float-label p-fluid">
@@ -60,7 +61,7 @@
 
         <!--        todo: couple with email requirement -->
         <span class="p-fluid flex items-center">
-          <InputSwitch id="withLogin" v-model="newUser.withLogin" :class="{'p-invalid': errors.withLogin}"/>
+          <InputSwitch id="withLogin" v-model="withLogin"/>
           <label for="withLogin" class="ml-2">{{ $t('glob.user.withLogin') }}</label>
         </span>
 
@@ -122,52 +123,103 @@ import Dialog from "primevue/dialog";
 import DialogTitle from "@/components/dialogs/DialogTitle.vue";
 import DialogFooter from "@/components/dialogs/DialogFooter.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import {reactive, ref} from "vue";
+import {computed, reactive, ref} from "vue";
 import {useForm} from "vee-validate";
-import {object, string, number, date} from "yup";
+import {toTypedSchema} from "@vee-validate/yup";
+import {object, string, number, date, addMethod} from "yup";
 import User from "@/types/User";
 import LoadingState from "@/types/LoadingState";
 import {useDataStore} from "@/stores/data";
+import moment from "moment/moment";
+import {LoadingStates} from "@/types/LoadingStates";
+import axios from "axios";
+import Const from "@/plugins/Constants";
+import {useToastStore} from "@/stores/toast";
+import {useAuthStore} from "@/stores/auth";
+import {useMyUserStore} from "@/stores/user";
+
+const emits = defineEmits(['success'])
 
 const dataStore = useDataStore()
+const toastStore = useToastStore()
+const authStore = useAuthStore()
+const userStore = useMyUserStore()
 
 const genderOptions = [{id: 2, name: 'Female'}, {id: 3, name: 'Male'}]
 
 // ---------------
 // API interaction
 // ---------------
+const withLogin = ref(false)
 const {handleSubmit, resetForm, errors, useFieldModel} = useForm<User>({
-  validationSchema: object({
+  validationSchema: computed(() => toTypedSchema(object({
     firstName: string().required(),
     lastName: string().required(),
     birthDate: date().required().max(new Date()),
     genderId: number().required(),
     languageId: number().required(),
     nationalityId: number().required(),
-    primaryMail: string().email(),
-  })
+    countryId: number().required(),
+    primaryMail: withLogin.value ? string().required().email() : string().email(),
+    oasi: string().test('has-valid-checksum', 'The OASI number is invalid', (value) => {
+      // verify the OASI number according to the EAN-13 specification
+      if (!value || value.charAt(value.length - 1) == '_') return true;
+      const check_digit = value.charAt(value.length - 1)
+      const digits = value.substring(0, value.length - 1).replaceAll('.', '')
+      let sum = 0
+      for (let i = 0; i < digits.length; i++) {
+        const d = parseInt(digits.charAt(i))
+        if (isNaN(d)) return false
+
+        sum += i % 2 === 0 ? d : 3 * d
+      }
+
+      const computed_digit = (sum % 10 === 0) ? 0 : 10 - (sum % 10)
+      return computed_digit === parseInt(check_digit)
+    })
+  })))
 })
 const newUser = reactive({
   firstName: useFieldModel('firstName'),
   lastName: useFieldModel('lastName'),
-  birthDate: useFieldModel('birthDate'),
+  birthDateObj: useFieldModel('birthDate'),
   genderId: useFieldModel('genderId'),
   languageId: useFieldModel('languageId'),
   nationalityId: useFieldModel('nationalityId'),
   oasi: useFieldModel('oasi'),
   primaryMail: useFieldModel('primaryMail'),
   primaryPhone: useFieldModel('primaryPhone'),
-  withLogin: useFieldModel('withLogin'),
   address: useFieldModel('address'),
   houseNumber: useFieldModel('houseNumber'),
   postCode: useFieldModel('postCode'),
   city: useFieldModel('city'),
   countryId: useFieldModel('countryId'),
+  birthDate: "",
+  clubId: "",
 })
 
 const createState = reactive<LoadingState>({state: NaN})
 const createUser = handleSubmit(_ => {
-  console.log(newUser)
+  newUser.clubId = userStore.user.clubId
+  newUser.birthDate = moment(newUser.birthDateObj).format('YYYY-MM-DD')
+
+  createState.state = LoadingStates.Loading
+  axios.request({
+    url: "/users",
+    method: 'post',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
+    },
+    data: newUser
+  }).then(() => {
+    createState.state = LoadingStates.Loaded
+    emits('success')
+    setVisibility(false)
+  }).catch((error) => {
+    createState.state = LoadingStates.Error
+    toastStore.addToastFromAxiosError(error)
+  })
 })
 
 // ----------------------------

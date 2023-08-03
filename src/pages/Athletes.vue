@@ -10,116 +10,9 @@
   </TitleWithBtnPlus>
   <UserList :state="externalAthletesState" :users="externalAthletes"/>
 
-  <DialogUserCreate ref="externalModal"/>
+  <DialogUserCreate ref="modal" @success="loadAthletes"/>
 
-  <Modal ref="modal" classes="xl:max-w-5xl sm:h-auto h-5/6">
-    <h3>{{ $t('page.athletes.create') }}</h3>
-
-    <form class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4 with-label mt-4">
-      <div>
-        <label>{{ $t('glob.user.firstName') }}*</label>
-        <input v-model="newAthlete.firstName" required>
-      </div>
-
-      <div>
-        <label>{{ $t('glob.user.lastName') }}*</label>
-        <input v-model="newAthlete.lastName" required>
-      </div>
-
-      <div>
-        <label>{{ $t('glob.user.birthdate') }}*</label>
-        <input type="date" v-model="newAthlete.birthDate" required>
-      </div>
-
-      <div>
-        <label>{{ $t('glob.user.gender') }}*</label>
-        <!-- todo: replace with data from server -->
-        <select v-model="newAthlete.genderId" required>
-          <option :value="1" selected>Unspecified</option>
-          <option :value="2" selected>Female</option>
-          <option :value="3" selected>Male</option>
-          <option :value="4" selected>Diverse</option>
-        </select>
-      </div>
-
-      <div>
-        <label>{{ $t('glob.user.oasi') }}</label>
-        <input v-model="newAthlete.oasi">
-      </div>
-
-      <div>
-        <label>{{ $t('glob.user.nationality') }}*</label>
-        <select v-model="newAthlete.nationalityId" required>
-          <option v-for="d in dataStore.countries" :value="d.id">{{ d.name }}</option>
-        </select>
-      </div>
-
-      <div>
-        <label>{{ $t('glob.user.prefLang') }}*</label>
-        <select v-model="newAthlete.languageId" required>
-          <option v-for="l in dataStore.languages" :value="l.id">{{ l.short }}</option>
-        </select>
-      </div>
-
-      <div>
-        <label>{{ $t('glob.user.primaryMail') }}</label>
-        <input v-model="newAthlete.primaryMail">
-      </div>
-
-      <div>
-        <label>{{ $t('glob.user.primaryPhone') }}</label>
-        <input v-model="newAthlete.primaryPhone">
-      </div>
-
-      <div class="flex">
-        <Switch v-model="newAthlete.withLogin">{{ $t('glob.user.withLogin') }} {{ newAthlete.withLogin }}</Switch>
-      </div>
-    </form>
-
-    <hr class="mt-4">
-
-    <form class="grid lg:grid-cols-3 sm:grid-cols-2 gap-4 with-label mt-4">
-      <div>
-        <label>{{ $t('glob.user.address') }}</label>
-        <input v-model="newAthlete.address">
-      </div>
-
-      <div>
-        <label>{{ $t('glob.user.houseNumber') }}</label>
-        <input v-model="newAthlete.address">
-      </div>
-
-      <div>
-        <label>{{ $t('glob.user.postCode') }}*</label>
-        <input v-model="newAthlete.postCode" required>
-      </div>
-
-      <div>
-        <label>{{ $t('glob.user.city') }}*</label>
-        <input v-model="newAthlete.city" required>
-      </div>
-
-      <div>
-        <label>{{ $t('glob.user.country') }}*</label>
-        <select v-model="newAthlete.countryId" required>
-          <option v-for="c in dataStore.countries" :value="c.id">{{ c.name }}</option>
-        </select>
-      </div>
-
-    </form>
-
-    <template #bottom>
-      <hr>
-      <div class="grid sm:grid-cols-2 gap-4">
-        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createUser()">
-          {{ $t('glob.btn.create') }}
-        </LoadingBtn>
-        <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
-      </div>
-    </template>
-
-  </Modal>
-  <UserRedeemShareCodeModal ref="externalModal2" @created="loadAthletes"/>
+  <UserRedeemShareCodeModal ref="externalModal" @created="loadAthletes"/>
 </template>
 
 <script lang="ts">
@@ -198,26 +91,6 @@ export default defineComponent({
         this.toastStore.addToastFromAxiosError(error)
         this.athletesState = LoadingStates.Error
         this.externalAthletesState = LoadingStates.Error
-      })
-    },
-    createUser() {
-      this.newAthlete.clubId = this.userStore.user.clubId
-      this.createState.state = LoadingStates.Loading
-      axios.request({
-        url: "/users",
-        method: 'post',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        },
-        data: this.newAthlete
-      }).then(() => {
-        this.createState.state = LoadingStates.Loaded
-        this.loadAthletes()
-        this.setVisibility(false)
-      }).catch((error) => {
-        this.createState.state = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(error)
       })
     },
   }
