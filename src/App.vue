@@ -14,7 +14,7 @@
     </footer>
   </div>
   <Toast />
-  <Toasts/> <!-- Legacy toast service, filed for removal -->
+  <Toasts/> <!-- TODO: Legacy toast service, filed for removal -->
 </template>
 
 <script lang="ts">

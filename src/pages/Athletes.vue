@@ -30,7 +30,7 @@ import {canManageUsers} from "@/plugins/AccessControl";
 
 import UserList from "@/components/user/UserList.vue";
 import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
-import UserRedeemShareCodeModal from "@/components/user/UserRedeemShareCodeModal.vue";
+import UserRedeemShareCodeModal from "@/components/dialogs/user/DialogUserRedeemShareCode.vue";
 import DialogUserCreate from "@/components/dialogs/user/DialogUserCreate.vue";
 import {fromAxiosError} from "@/plugins/ToastWriter";
 

@@ -1,6 +1,6 @@
 <template>
   <Dialog v-model:visible="visible" modal class="xl:max-w-5xl sm:max-w-none">
-    <form ref="userCreateForm" validation-schema="schema">
+    <form ref="userCreateForm">
 
       <div class="grid lg:grid-cols-3 sm:grid-cols-2 gap-y-8 gap-x-4">
 
