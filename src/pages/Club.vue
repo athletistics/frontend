@@ -80,7 +80,7 @@ import SimpleList from "@/components/list/SimpleList.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import SimpleListEntry from "@/components/list/SimpleListEntry.vue";
 import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
-import DialogTeamCreate from "@/components/dialogs/DialogTeamCreate.vue";
+import DialogTeamCreate from "@/components/dialogs/club/DialogTeamCreate.vue";
 
 export default defineComponent({
   components: {DialogTeamCreate, LoadingBtn, SimpleList, SimpleListEntry, TitleWithBtnPlus, BtnPlus, Modal},

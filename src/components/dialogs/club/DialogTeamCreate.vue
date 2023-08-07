@@ -8,7 +8,7 @@
     </form>
 
     <template #header>
-      <DialogTitle>{{ $t('page.club.title.createDiscipline') }}</DialogTitle>
+      <DialogTitle>{{ $t('page.club.title.createTeam') }}</DialogTitle>
     </template>
 
     <template #footer>

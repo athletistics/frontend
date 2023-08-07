@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useDataStore} from "@/stores/data";
-import {Ref, ref} from "vue";
+import {Ref, ref, onMounted} from "vue";
 import User from "@/types/User";
 
 // data
@@ -29,6 +29,12 @@ const search = (event: any) => {
 const optionLabel = (selectedUser: User) => {
   return `${selectedUser.lastName} ${selectedUser.firstName}`
 }
+
+onMounted(() => {
+  if (props.modelValue) {
+    value.value = users.find(u => u.id === props.modelValue)
+  }
+})
 </script>
 
 <template>
