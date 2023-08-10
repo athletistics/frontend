@@ -1,6 +1,6 @@
 <template>
   <Dialog v-model:visible="visible" modal>
-    <form ref="teamCreateForm">
+    <form class="space-y-8 with-label">
       <span class="p-float-label p-fluid">
         <InputText id="name" v-model="newTeam.name" :class="{'p-invalid': errors.name}" v-tooltip="errors.name"/>
         <label for="name">{{ $t('page.club.teamName') }}</label>

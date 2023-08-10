@@ -1,116 +1,159 @@
 <template>
-  <Modal ref="modal" classes="lg:max-w-5xl">
-    <h3>{{ $t('page.activity.title.new') }}</h3>
-    <div class="with-label grid lg:grid-cols-3 sm:grid-cols-2 gap-4">
+  <Dialog v-model:visible="visible" modal>
+    <form ref="activityCreateForm">
+      <div class="space-y-8">
 
-      <div>
-        <label>{{ $t('page.activity.startDate') }}*</label>
-        <input v-model="newActivity.startDate" type="date" required>
+        <span class="p-float-label p-fluid">
+          <Calendar id="startDate" selectionMode="range" :manualInput="false"
+                    v-model="newActivity.dates" :class="{'p-invalid': errors.dates}"/>
+          <label for="startDate">{{ $t('page.activity.startDate') }}*</label>
+        </span>
+
+        <span class="p-float-label p-fluid">
+          <Dropdown id="weekday" v-model="newActivity.weekday" :options="weekdays">
+            <template #option="weekday">
+              {{ $t('glob.weekday[' + weekday.option % 7 + ']') }}
+            </template>
+            <template #value="weekday">
+              {{ weekday.value ? $t('glob.weekday[' + weekday.value % 7 + ']') : "&nbsp;" }}
+            </template>
+          </Dropdown>
+          <label for="weekday">{{ $t('page.activity.weekday') }}*</label>
+        </span>
+
+        <span class="p-float-label p-fluid">
+          <Calendar id="startTimeObj" v-model="newActivity.startTimeObj" :class="{'p-invalid': errors.startTimeObj}"
+                    timeOnly/>
+          <label for="startTimeObj">{{ $t('page.activity.startTime') }}*</label>
+        </span>
+
+        <span class="p-float-label p-fluid">
+          <Dropdown id="duration" v-model="newActivity.duration" :options="durations"/>
+          <label for="duration">{{ $t('page.activity.duration') }}*</label>
+        </span>
+
+        <span class="p-float-label p-fluid">
+          <InputText id="place" v-model="newActivity.place" :class="{'p-invalid': errors.place}"/>
+          <label for="place">{{ $t('page.activity.place') }}*</label>
+        </span>
+
+        <pre>{{ errors }}</pre>
+
       </div>
+    </form>
 
-      <div>
-        <label>{{ $t('page.activity.endDate') }}*</label>
-        <input v-model="newActivity.endDate" type="date" required>
-      </div>
+    <template #header>
+      <DialogTitle>{{ $t('page.activity.title.new') }}</DialogTitle>
+    </template>
 
-      <div>
-        <label>{{ $t('page.activity.weekday') }}*</label>
-        <select v-model="newActivity.weekday" required>
-          <option v-for="(i) in 7" :value="i" selected>{{ $t('glob.weekday[' + i % 7 + ']') }}</option>
-        </select>
-      </div>
-
-      <div>
-        <label>{{ $t('page.activity.startTime') }}*</label>
-        <input v-model="newActivity.startTime" type="time" required>
-      </div>
-
-      <div>
-        <label>{{ $t('page.activity.duration') }}*</label>
-        <select v-model="newActivity.duration" required>
-          <option :value="60" selected>60</option>
-          <option :value="75" selected>75</option>
-          <option :value="90" selected>90</option>
-        </select>
-      </div>
-
-      <div>
-        <label>{{ $t('page.activity.place') }}*</label>
-        <input v-model="newActivity.place" required>
-      </div>
-
-    </div>
-
-    <template #bottom>
-      <hr>
-      <div class="grid grid-cols-2 gap-4">
-        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createActivity()">
+    <template #footer>
+      <DialogFooter>
+        <LoadingBtn full outlined visual-type="primary"
+                    :loading="createState" @click="createActivity()" :disabled="!meta.valid">
           {{ $t('glob.btn.create') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
-      </div>
+      </DialogFooter>
     </template>
+  </Dialog>
+  <Modal ref="modal" classes="lg:max-w-5xl">
 
   </Modal>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import axios from "axios";
-import {defineComponent} from 'vue'
+import {reactive, ref} from 'vue'
 
 import {useAuthStore} from "@/stores/auth";
-import {useToastStore} from "@/stores/toast";
 
-import {Nds} from "@/types/Nds";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
 import Const from "@/plugins/Constants";
 import Modal from "@/components/dialogs/Modal.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import LabeledText from "@/components/LabeledText.vue";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import DialogFooter from "@/components/dialogs/DialogFooter.vue";
+import {useToast} from "primevue/usetoast";
+import {useRoute} from "vue-router";
+import {fromAxiosError} from "@/plugins/ToastWriter";
+import {useForm} from "vee-validate";
+import {date, number, object, string, array} from "yup";
+import {toTypedSchema} from "@vee-validate/yup";
+import moment from "moment/moment";
 
-export default defineComponent({
-  name: "ActivityModal",
-  components: {LabeledText, LoadingBtn, Modal},
-  setup() {
-    const authStore = useAuthStore()
-    const toastStore = useToastStore()
-    return {authStore, toastStore}
-  },
-  data() {
-    return {
-      newActivity: {} as Nds.ActivityReq,
-      createState: {state: NaN} as LoadingState
-    }
-  },
-  methods: {
-    setVisibility(visibility: boolean) {
-      (this.$refs.modal as any).setVisibility(visibility)
-      this.newActivity = {} as Nds.ActivityReq
-    },
-    createActivity() {
-      this.createState.state = LoadingStates.Loading
-      this.newActivity.teamId = typeof this.$route.params.id === 'string' ? this.$route.params.id : this.$route.params.id.join('')
+const emits = defineEmits(['success'])
 
-      axios.request({
-        url: '/nds/activities',
-        method: 'post',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        },
-        data: this.newActivity,
-      }).then(response => {
-        this.createState.state = LoadingStates.Loaded
-        this.toastStore.addSuccessToast()
-        this.$emit('created')
-        this.setVisibility(false)
-      }).catch(response => {
-        this.createState.state = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(response)
-      })
-    }
+// data
+const authStore = useAuthStore()
+const toast = useToast()
+const route = useRoute()
+const durations = [60, 75, 90]
+const weekdays = [1, 2, 3, 4, 5, 6, 0]
+
+// ---------------
+// API interaction
+// ---------------
+const {handleSubmit, resetForm, errors, useFieldModel, meta} = useForm({
+  validationSchema: toTypedSchema(object({
+    dates: array().length(2),
+    startTimeObj: date().required(),
+    duration: number().required(),
+    weekday: number().required().max(6).min(0),
+    place: string().required(),
+  }))
+})
+const newActivity = reactive({
+  dates: useFieldModel('dates'),
+  startDate: "",
+  endDate: "",
+  startTimeObj: useFieldModel('startTimeObj'),
+  startTime: ref<string>(),
+  duration: useFieldModel('duration'),
+  weekday: useFieldModel('weekday'),
+  place: useFieldModel('place'),
+  teamId: "",
+})
+const createState = reactive<LoadingState>({state: NaN})
+const createActivity = handleSubmit(() => {
+  createState.state = LoadingStates.Loading
+  newActivity.teamId = typeof route.params.id === 'string' ? route.params.id : route.params.id.join('')
+
+  // correctly format time and date
+  if (newActivity.dates) {
+    newActivity.startDate = moment(newActivity.dates[0]).format('YYYY-MM-DD')
+    newActivity.endDate = moment(newActivity.dates[1]).format('YYYY-MM-DD')
   }
+  newActivity.startTime = moment(newActivity.startTimeObj).format('HH:mm')
+
+  axios.request({
+    url: '/nds/activities',
+    method: 'post',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
+    },
+    data: newActivity,
+  }).then(response => {
+    createState.state = LoadingStates.Loaded
+    toast.add({summary: "Success", severity: "success"})
+    emits('success')
+    setVisibility(false)
+  }).catch(response => {
+    createState.state = LoadingStates.Error
+    toast.add(fromAxiosError(response))
+  })
+})
+
+
+const visible = ref(false)
+const setVisibility = (val: boolean) => {
+  visible.value = val
+  resetForm()
+}
+
+defineExpose({
+  setVisibility
 })
 </script>
 

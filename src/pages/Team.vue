@@ -1,13 +1,13 @@
 <template>
-  <h1>{{ team.name }}&nbsp;</h1>
+  <h1>{{ team?.name }}&nbsp;</h1>
 
 
   <div class="grid md:grid-cols-3 grid-cols-2 gap-4" v-if="canManageTeam() && !editMode">
-    <LoadingBtn full outlined visual-type="primary" @click="setModalVisibility(true, false)">{{
+    <LoadingBtn full outlined visual-type="primary" @click="showAddPart( false)">{{
         $t('page.team.addPart')
       }}
     </LoadingBtn>
-    <LoadingBtn full outlined visual-type="primary" @click="setModalVisibility(true, true)">{{
+    <LoadingBtn full outlined visual-type="primary" @click="showAddPart( true)">{{
         $t('page.team.addCoach')
       }}
     </LoadingBtn>
@@ -27,7 +27,7 @@
   </div>
 
 
-  <h2>{{$t('page.team.title.coaches')}}</h2>
+  <h2>{{ $t('page.team.title.coaches') }}</h2>
   <SimpleList :state="state">
     <SimpleListEntry v-for="p in participantCoaches" :to="'/athletes/' + p.id" :enabled="!editMode">
       <input v-if="editMode" class="mr-2" :id="p.id" :value="p.id" type="checkbox" v-model="usersToRemove">
@@ -35,7 +35,7 @@
     </SimpleListEntry>
   </SimpleList>
 
-  <h2>{{$t('page.team.title.athletes')}}</h2>
+  <h2>{{ $t('page.team.title.athletes') }}</h2>
   <SimpleList :state="state">
     <SimpleListEntry v-for="p in participantAthletes" :to="'/athletes/' + p.id" :enabled="!editMode">
       <input v-if="editMode" class="mr-2" :id="p.id" :value="p.id" type="checkbox" v-model="usersToRemove">
@@ -61,32 +61,16 @@
     </SimpleTableRow>
   </SimpleTable>
 
-  <Modal ref="modal">
-    <form class="space-y-4 with-label">
-      <h3>{{ asCoach ? $t('page.team.addCoachTitle') : $t('page.team.addPartTitle') }}</h3>
-      <hr>
-      <div v-for="u in filteredUsers" class="flex hover:bg-main cursor-pointer">
-        <input class="mr-2 cursor-pointer" :id="u.id" :value="u.id" type="checkbox" v-model="usersToAdd">
-        <label class="flex-grow py-3 cursor-pointer" :for="u.id">{{ u.lastName }} {{ u.firstName }}</label>
-      </div>
-      <hr>
-      <div class="grid sm:grid-cols-2 gap-4">
-        <LoadingBtn full outlined visual-type="primary" :loading="addState" @click="addToTeam()">{{
-            $t('glob.btn.add')
-          }}
-        </LoadingBtn>
-        <LoadingBtn full outlined @click="setModalVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
-      </div>
-    </form>
-  </Modal>
+  <DialogTeamAddPart ref="dialogAddPart" @success="getParticipants"
+                     :asCoach="asCoach" :athletes="participantAthletes" :coaches="participantCoaches"/>
 
-  <ActivityModal ref="activity"/>
+  <ActivityModal ref="activity" @success="getActivities"/>
 
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import axios from "axios";
-import {defineComponent} from "vue";
+import {defineComponent, onMounted, reactive, ref} from "vue";
 
 import {useAuthStore} from "@/stores/auth";
 import {useToastStore} from "@/stores/toast";
@@ -108,171 +92,123 @@ import SimpleTableRow from "../components/list/SimpleTableRow.vue";
 import SimpleTableCell from "../components/list/SimpleTableCell.vue";
 import SimpleListEntry from "../components/list/SimpleListEntry.vue";
 import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
+import DialogTeamAddPart from "@/components/dialogs/club/DialogTeamAddPart.vue";
+import {useToast} from "primevue/usetoast";
+import {fromAxiosError} from "@/plugins/ToastWriter";
+import {useRoute} from "vue-router";
 
-export default defineComponent({
-  components: {
-    ActivityModal,
-    SimpleTableCell,
-    SimpleTableRow, SimpleTable, TitleWithBtnPlus, LoadingBtn, SimpleListEntry, Modal, SimpleList
-  },
-  setup() {
-    const authStore = useAuthStore()
-    const toastStore = useToastStore()
+// Data loading
+const authStore = useAuthStore()
+const toast = useToast()
+const route = useRoute()
 
-    return {authStore, toastStore}
-  },
-  data() {
-    return {
-      asCoach: false as boolean,
-      team: {} as Team,
-      users: [] as User[],
-      participantCoaches: [] as User[],
-      participantAthletes: [] as User[],
-      state: NaN as LoadingStates,
-      stateActivities: NaN as LoadingStates,
-      editMode: false as boolean,
-      activities: [] as Nds.Activity[],
-      usersToAdd: [] as string[],
-      usersToRemove: [] as string[],
-      addState: {state: NaN} as LoadingState,
-      removeState: {state: NaN} as LoadingState
-    }
-  },
-  computed: {
-    filteredUsers(): User[] {
-      const users = []
-      for (let i = 0; i < this.users.length; i++) {
-        if (this.participantAthletes.some(p => p.id === this.users[i].id)) continue
-        if (this.participantCoaches.some(p => p.id === this.users[i].id)) continue
-        users.push(this.users[i])
-      }
-      return users
-    }
-  },
-  methods: {
-    canManageActivities,
-    canManageTeam,
-    setModalVisibility(visible: boolean, asCoach?: boolean) {
-      (this.$refs.modal as any).setVisibility(visible)
-      this.asCoach = !!asCoach
-    },
-    setActivityModalVisibility(visible: boolean) {
-      (this.$refs.activity as any).setVisibility(visible)
-    },
-    setSelectable(selectable: boolean) {
-      this.editMode = selectable
-      this.usersToRemove = []
-    },
-    addToTeam() {
-      this.addState.state = LoadingStates.Loading
-      axios.request({
-        url: "/teams/" + this.$route.params.id + "/participants",
-        method: 'post',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        },
-        data: this.usersToAdd.map(id => {
-          return {userId: id, isCoach: this.asCoach}
-        })
-      }).then(() => {
-        this.addState.state = LoadingStates.Loaded
-        this.setModalVisibility(false)
-        this.getParticipants()
-        this.usersToAdd = []
-        this.toastStore.addToast({title: "Success", color: "bg-primary"})
-      }).catch(error => {
-        this.addState.state = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(error)
-      })
-    },
-    removeFromTeam() {
-      this.removeState.state = LoadingStates.Loading
-      axios.request({
-        url: "/teams/" + this.$route.params.id + "/participants",
-        method: 'delete',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        },
-        data: this.usersToRemove.map(id => {
-          return {userId: id}
-        })
-      }).then(() => {
-        this.removeState.state = LoadingStates.Loaded
-        this.editMode = false
-        this.getParticipants()
-        this.usersToRemove = []
-      }).catch(error => {
-        this.removeState.state = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(error)
-      })
-    },
-    getAthletes() {
-      axios.request({
-        url: "/users",
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        }
-      }).then(response => {
-        this.users = response.data
-      })
-    },
-    getParticipants() {
-      this.participantAthletes = [] as User[]
-      this.participantCoaches = [] as User[]
-      this.state = LoadingStates.Loading
+// Manage participant addition dialog visibility
+const asCoach = ref<boolean>(false)
+const dialogAddPart = ref(null)
+const showAddPart = (val: boolean) => {
+  asCoach.value = val;
+  (dialogAddPart.value as any).setVisibility(true)
+}
 
-      axios.request({
-        url: "/teams/" + this.$route.params.id + "/participants",
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        }
-      }).then(response => {
-        this.state = response.data.athletes.length ? LoadingStates.Loaded : LoadingStates.Empty
-        this.participantAthletes = response.data.athletes
-        this.participantCoaches = response.data.coaches
-      }).catch(() => {
-        this.state = LoadingStates.Error
-      })
+// Manage activity creation dialog visibility
+const activity = ref(null)
+const setActivityModalVisibility = (visible: boolean) => {
+  (activity.value as any).setVisibility(visible)
+}
+
+// Manage removal of athletes/coaches from the team
+const editMode = ref(false)
+const usersToRemove = ref<string[]>([])
+const removeState = reactive<LoadingState>({state: NaN})
+const removeFromTeam = () => {
+  removeState.state = LoadingStates.Loading
+  axios.request({
+    url: "/teams/" + route.params.id + "/participants",
+    method: 'delete',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
     },
-    getActivities() {
-      this.stateActivities = LoadingStates.Loading
-      axios.request({
-        url: "/nds/activities?teamId=" + this.$route.params.id,
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        }
-      }).then(response => {
-        this.activities = response.data
-        this.stateActivities = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
-      }).catch(e => {
-        this.stateActivities = LoadingStates.Error
-      })
-    }
-  },
-  mounted() {
-    axios.request({
-      url: "/teams/" + this.$route.params.id,
-      method: 'get',
-      baseURL: Const.API_URL,
-      headers: {
-        'Authorization': 'Bearer ' + this.authStore.token
-      }
-    }).then(response => {
-      this.team = response.data
+    data: usersToRemove.value.map(id => {
+      return {userId: id}
     })
+  }).then(() => {
+    removeState.state = LoadingStates.Loaded
+    editMode.value = false
+    getParticipants()
+    usersToRemove.value = []
+  }).catch(error => {
+    removeState.state = LoadingStates.Error
+    toast.add(fromAxiosError(error))
+  })
+}
 
-    this.getAthletes()
-    this.getActivities()
-    this.getParticipants()
-  }
+
+const setSelectable = (selectable: boolean) => {
+  editMode.value = selectable
+  usersToRemove.value = []
+}
+
+
+const state = ref<LoadingStates>()
+const participantCoaches = ref<User[]>()
+const participantAthletes = ref<User[]>()
+const getParticipants = () => {
+  participantAthletes.value = [] as User[]
+  participantCoaches.value = [] as User[]
+  state.value = LoadingStates.Loading
+
+  axios.request({
+    url: "/teams/" + route.params.id + "/participants",
+    method: 'get',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
+    }
+  }).then(response => {
+    state.value = response.data.athletes.length ? LoadingStates.Loaded : LoadingStates.Empty
+    participantAthletes.value = response.data.athletes
+    participantCoaches.value = response.data.coaches
+  }).catch(() => {
+    state.value = LoadingStates.Error
+  })
+}
+
+
+const stateActivities = ref<LoadingStates>()
+const activities = ref<Nds.Activity[]>()
+const getActivities = () => {
+  stateActivities.value = LoadingStates.Loading
+  axios.request({
+    url: "/nds/activities?teamId=" + route.params.id,
+    method: 'get',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
+    }
+  }).then(response => {
+    activities.value = response.data
+    stateActivities.value = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
+  }).catch(e => {
+    stateActivities.value = LoadingStates.Error
+  })
+}
+
+const team = ref<Team>()
+onMounted(() => {
+  axios.request({
+    url: "/teams/" + route.params.id,
+    method: 'get',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
+    }
+  }).then(response => {
+    team.value = response.data
+  })
+
+  getActivities()
+  getParticipants()
 })
 </script>
 

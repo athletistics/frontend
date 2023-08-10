@@ -59,7 +59,6 @@
           <label for="primaryPhone">{{ $t('glob.user.primaryPhone') }}</label>
         </span>
 
-        <!--        todo: couple with email requirement -->
         <span class="p-fluid flex items-center">
           <InputSwitch id="withLogin" v-model="withLogin"/>
           <label for="withLogin" class="ml-2">{{ $t('glob.user.withLogin') }}</label>
