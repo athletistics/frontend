@@ -18,7 +18,7 @@
 
         <span class="p-float-label p-fluid">
           <Calendar id="birthDate" v-model="newUser.birthDateObj" :class="{'p-invalid': errors.birthDate}"
-                    :maxDate="new Date()"/>
+                    :maxDate="new Date()" :showOnFocus="false" showIcon/>
           <label for="birthDate">{{ $t('glob.user.birthdate') }}*</label>
           <pre>{{ errors.birthDate }}</pre>
         </span>

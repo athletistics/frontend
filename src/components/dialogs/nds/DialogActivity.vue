@@ -23,7 +23,7 @@
 
         <span class="p-float-label p-fluid">
           <Calendar id="startTimeObj" v-model="newActivity.startTimeObj" :class="{'p-invalid': errors.startTimeObj}"
-                    timeOnly/>
+                    timeOnly :showOnFocus="false" showIcon/>
           <label for="startTimeObj">{{ $t('page.activity.startTime') }}*</label>
         </span>
 
@@ -36,8 +36,6 @@
           <InputText id="place" v-model="newActivity.place" :class="{'p-invalid': errors.place}"/>
           <label for="place">{{ $t('page.activity.place') }}*</label>
         </span>
-
-        <pre>{{ errors }}</pre>
 
       </div>
     </form>
