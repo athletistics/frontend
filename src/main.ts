@@ -14,6 +14,7 @@ import Dropdown from 'primevue/dropdown';
 import InputSwitch from 'primevue/inputswitch';
 import InputMask from 'primevue/inputmask';
 import Listbox from 'primevue/listbox'
+import Checkbox from "primevue/checkbox";
 import ToastService from 'primevue/toastservice';
 import "primevue/resources/themes/mira/theme.css";
 
@@ -68,6 +69,7 @@ createApp(App)
   .component('InputSwitch', InputSwitch)
   .component('InputMask', InputMask)
   .component('Listbox', Listbox)
+  .component('Checkbox', Checkbox)
   .directive('Tooltip', Tooltip)
   .use(ToastService)
   .use(PrimeVue)

@@ -70,10 +70,9 @@
 
 <script setup lang="ts">
 import axios from "axios";
-import {defineComponent, onMounted, reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 
 import {useAuthStore} from "@/stores/auth";
-import {useToastStore} from "@/stores/toast";
 
 import {Nds} from "@/types/Nds";
 import User from "../types/User";
@@ -83,7 +82,6 @@ import Const from "../plugins/Constants"
 import {canManageActivities, canManageTeam} from "@/plugins/AccessControl";
 
 import LoadingState from "../types/LoadingState";
-import Modal from "@/components/dialogs/Modal.vue";
 import SimpleList from "../components/list/SimpleList.vue";
 import LoadingBtn from "../components/button/LoadingBtn.vue";
 import SimpleTable from "../components/list/SimpleTable.vue";
