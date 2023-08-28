@@ -17,32 +17,30 @@
 </template>
 
 <script lang="ts">
-import {useI18n} from "vue-i18n";
 import {defineComponent, PropType} from 'vue'
+import {useI18n} from "vue-i18n";
 
-import {useDataStore} from "@/stores/data";
-
-import {LoadingStates} from "@/types/LoadingStates";
-import {formatResult} from "@/plugins/Helper";
-import ListStates from "@/components/list/TableStates.vue";
 import SimpleTable from "@/components/list/SimpleTable.vue";
-import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
 import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
+import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import {formatResult} from "@/plugins/Helper";
+import {useDataStore} from "@/stores/data";
+import {LoadingStates} from "@/types/LoadingStates";
 
 export default defineComponent({
   name: "ResultTable",
-  components: {SimpleTableCell, SimpleTableRow, SimpleTable, ListStates},
-  setup() {
-    const dataStore = useDataStore()
-    const {te} = useI18n()
-    return {dataStore, te}
-  },
+  components: {SimpleTableCell, SimpleTableRow, SimpleTable},
   props: {
     results: {type: Array as PropType<Result.Data[]>, required: true},
     showDisciplines: {type: Boolean, default: true},
     showUser: {type: Boolean, default: true},
     showEvent: {type: Boolean, default: true},
     state: {type: Number as PropType<LoadingStates>, default: LoadingStates.Loaded, required: false}
+  },
+  setup() {
+    const dataStore = useDataStore()
+    const {te} = useI18n()
+    return {dataStore, te}
   },
   computed: {
     headers() {
@@ -59,7 +57,6 @@ export default defineComponent({
       return LoadingStates
     },
     getFormattedValue() {
-      this.dataStore.maps.disciplines?.size
       return (result: Result.Data) => {
         return formatResult(result.value, this.dataStore.getDisciplineById(result.disciplineId))
       }

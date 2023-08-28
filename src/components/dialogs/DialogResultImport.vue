@@ -6,7 +6,7 @@
       <div class="pt-4">
         <SimpleList :state="activityState">
           <SimpleListEntry v-for="a in activities">
-            <input type="checkbox" :value="a.id" v-model="selectedActivityIds">{{ a.name }} ({{
+            <input v-model="selectedActivityIds" type="checkbox" :value="a.id">{{ a.name }} ({{
               $d(a.start_date_local)
             }}) - Dist: {{ a.distance }}, Time:
             {{ a.moving_time }}
@@ -15,8 +15,8 @@
       </div>
 
       <div class="grid grid-cols-2  gap-4 pt-4">
-        <LoadingBtn @click="setVisibility(false)" outlined>{{ $t('glob.btn.cancel') }}</LoadingBtn>
-        <LoadingBtn @click="selectActivities()" outlined visual-type="primary" :disabled="!selectedActivityIds.length">
+        <LoadingBtn outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
+        <LoadingBtn outlined visual-type="primary" :disabled="!selectedActivityIds.length" @click="selectActivities()">
           {{
             $t('glob.btn.next')
           }}
@@ -60,9 +60,10 @@
       </SimpleList>
 
       <div class="grid grid-cols-2  gap-4 pt-4">
-        <LoadingBtn @click="setVisibility(false)" outlined>{{ $t('glob.btn.cancel') }}</LoadingBtn>
-        <LoadingBtn @click="storeResults" :loading="createState" outlined visual-type="primary"
-                    :disabled="!selectedEventId">{{
+        <LoadingBtn outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
+        <LoadingBtn
+:loading="createState" outlined visual-type="primary" :disabled="!selectedEventId"
+                    @click="storeResults">{{
             $t('glob.btn.save')
           }}
         </LoadingBtn>
@@ -72,24 +73,25 @@
 </template>
 
 <script lang="ts">
-import axios from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {defineComponent} from 'vue'
 
-import {useDataStore} from "@/stores/data";
-import {useAuthStore} from "@/stores/auth";
-import {useToastStore} from "@/stores/toast";
-
-import Event from "@/types/Event";
-import LoadingState from "@/types/LoadingState";
-import {LoadingStates} from "@/types/LoadingStates";
-import Const from "@/plugins/Constants";
-import Modal from "./Modal.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import SimpleList from "@/components/list/SimpleList.vue";
 import SimpleListEntry from "@/components/list/SimpleListEntry.vue";
+import Const from "@/plugins/Constants";
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useToastStore} from "@/stores/toast";
+import Event from "@/types/Event";
+import IntDialog from "@/types/IntDialog";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+
+import Modal from "./Modal.vue";
 
 export default defineComponent({
-  name: "ModalResultImport",
+  name: "DialogResultImport",
   components: {SimpleListEntry, SimpleList, LoadingBtn, Modal},
   emits: ['created'],
   setup() {
@@ -119,13 +121,16 @@ export default defineComponent({
       return this.events.filter(e => e.eventTypeId === 4)
     }
   },
+  mounted() {
+    this.getEvents()
+  },
   methods: {
     selectActivities() {
       this.selectedActivities = this.activities.filter(a => this.selectedActivityIds.indexOf(a.id) >= 0)
       this.isSelectionView = false
     },
     setVisibility(visible: boolean) {
-      (this.$refs.modal as any).setVisibility(visible)
+      (this.$refs.modal as IntDialog).setVisibility(visible)
       if (visible) this.loadActivities()
       this.isSelectionView = true
       this.activities = [] as Result.Import[]
@@ -136,10 +141,10 @@ export default defineComponent({
       axios.request({
         url: '/activities', method: 'get', baseURL: Const.STRAVA_API_URL,
         headers: {'Authorization': 'Bearer ' + this.authStore.token},
-      }).then(response => {
+      }).then((response: AxiosResponse<Result.Import[], any>) => {
         this.activityState = LoadingStates.Loaded
         this.activities = response.data
-      }).catch(response => {
+      }).catch((response: AxiosError) => {
         this.activityState = LoadingStates.Error
         this.toastStore.addToastFromAxiosError(response)
       })
@@ -152,9 +157,9 @@ export default defineComponent({
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         }
-      }).then(response => {
+      }).then((response: AxiosResponse<Event[], any>) => {
         this.events = response.data
-      }).catch(response => this.toastStore.addToastFromAxiosError(response))
+      }).catch((response: AxiosError) => this.toastStore.addToastFromAxiosError(response))
     },
     storeResults() {
       if (!this.selectedEventId) return
@@ -210,9 +215,6 @@ export default defineComponent({
         }
       }
     }
-  },
-  mounted() {
-    this.getEvents()
   }
 })
 </script>

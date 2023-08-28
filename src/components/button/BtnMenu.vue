@@ -1,14 +1,17 @@
 <template>
   <div class="relative inline-block">
-    <button @click="toggleMenu" ref="menuBtn"
-            class="rounded-full hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-200 h-8 w-8 flex items-center main-transition duration-75">
+    <button
+ref="menuBtn" class="rounded-full hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-200 h-8 w-8 flex items-center main-transition duration-75"
+            @click="toggleMenu">
       <font-awesome-icon icon="fa-ellipsis-vertical" class="mx-auto" size="1x"/>
     </button>
 
     <Teleport to="body">
-      <div @click.stop="handleClickOutside" class="absolute w-full h-full top-0 left-0"
-           :class="{'invisible': !isMenuOpen}">
-        <div ref="menu" class="relative z-10 bg-slate-100 rounded-md shadow-xl overflow-hidden w-fit"
+      <div
+class="absolute w-full h-full top-0 left-0" :class="{'invisible': !isMenuOpen}"
+           @click.stop="handleClickOutside">
+        <div
+ref="menu" class="relative z-10 bg-slate-100 rounded-md shadow-xl overflow-hidden w-fit"
              :style="style">
           <slot/>
         </div>
@@ -31,19 +34,25 @@ export default defineComponent({
       style: {top: "", left: ""}
     };
   },
+  mounted() {
+    window.addEventListener('resize', this.handleResize);
+  },
+  unmounted() {
+    window.removeEventListener('resize', this.handleResize);
+  },
   methods: {
     updatePosition() {
-      let el = this.$refs.menuBtn as any
+      let el: HTMLElement | null | undefined = this.$refs.menuBtn as HTMLElement
 
       const btnHeight = el.clientHeight
-      const menuWidth = (this.$refs.menu as any).clientWidth
+      const menuWidth = (this.$refs.menu as HTMLElement).clientWidth
       this.style.left = Math.min(el.getBoundingClientRect().right, window.innerWidth) - menuWidth + 'px'
 
       // iterate through all parents to get the absolute distance from the top of the page
       let top = 0
       do {
         top += el.offsetTop || 0;
-        el = el.offsetParent;
+        el = el.offsetParent?.parentElement;
       } while (el);
 
       this.style.top = top + btnHeight + 'px'
@@ -58,12 +67,6 @@ export default defineComponent({
     handleResize() {
       this.updatePosition()
     }
-  },
-  mounted() {
-    window.addEventListener('resize', this.handleResize);
-  },
-  unmounted() {
-    window.removeEventListener('resize', this.handleResize);
   }
 })
 </script>

@@ -1,5 +1,6 @@
 <script lang="ts">
 import {ButtonHTMLAttributes, defineComponent, PropType} from 'vue'
+
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
 
@@ -9,9 +10,9 @@ export default defineComponent({
     disabled: {type: Boolean as PropType<boolean>, required: false, default: false},
     full: {type: Boolean as PropType<boolean>, required: false, default: false},
     outlined: {type: Boolean as PropType<boolean>, required: false, default: false},
-    loading: {type: Object as PropType<LoadingState>, required: false, default: {state: LoadingStates.Loaded}},
+    loading: {type: Object as PropType<LoadingState>, required: false, default() {return {state: LoadingStates.Loaded}}},
     type: {type: String as PropType<ButtonHTMLAttributes['type']>, required: false, default: "button"},
-    visualType: {type: String as PropType<string>, required: false}
+    visualType: {type: String as PropType<string>, required: false, default: ""}
   },
   computed: {
     isDisabled() {
@@ -21,7 +22,7 @@ export default defineComponent({
       return this.loading.state === LoadingStates.Loading
     },
     classes() {
-      let additionalClasses = []
+      const additionalClasses = []
       if (this.isDisabled) additionalClasses.push("cursor-not-allowed")
       if (this.full) additionalClasses.push("w-full", "text-center")
 
@@ -49,7 +50,8 @@ export default defineComponent({
   <button :type="type" class="main-transition p-3 rounded-full font-semibold block" :class="classes" :disabled="isDisabled" data-testid="loadingbtn-container">
     <svg v-if="isLoading" class="animate-spin h-5 w-5 mr-3 inline" viewBox="0 0 24 24" data-testid="loadingbtn-svg">
       <path d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity=".25"/>
-      <path fill="#ffffff"
+      <path
+fill="#ffffff"
             d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z"/>
     </svg>
     <slot></slot>

@@ -12,22 +12,25 @@
       </span>
 
       <span class="p-float-label p-fluid">
-        <Calendar id="dateObj" v-model="newEvent.dateObj" :class="{'p-invalid': errors.dateObj}"
-                  :showOnFocus="false" showIcon/>
+        <Calendar
+id="dateObj" v-model="newEvent.dateObj" :class="{'p-invalid': errors.dateObj}"
+                  :show-on-focus="false" show-icon/>
         <label for="dateObj">{{ t('glob.event.date') }}*</label>
       </span>
 
 
       <span class="p-float-label p-fluid">
-        <Dropdown id="eventTypeId" v-model="newEvent.eventTypeId" :class="{'p-invalid': errors.eventTypeId}"
-                  :options="dataStore.eventTypes" optionValue="id" :optionLabel="(data) => t('data.' + data.i18nName)"
+        <Dropdown
+id="eventTypeId" v-model="newEvent.eventTypeId" :class="{'p-invalid': errors.eventTypeId}"
+                  :options="dataStore.eventTypes" option-value="id" :option-label="(data) => t('data.' + data.i18nName)"
         />
         <label for="eventTypeId">{{ t('glob.event.type') }}*</label>
       </span>
 
       <span class="p-float-label p-fluid">
-        <Dropdown id="isOutdoor" v-model="newEvent.isOutdoor" :class="{'p-invalid': errors.isOutdoor}"
-                  :options="seasons" optionValue="val" optionLabel="label"
+        <Dropdown
+id="isOutdoor" v-model="newEvent.isOutdoor" :class="{'p-invalid': errors.isOutdoor}"
+                  :options="seasons" option-value="val" option-label="label"
         />
         <label for="isOutdoor">{{ t('glob.event.season') }}*</label>
       </span>
@@ -59,23 +62,23 @@
 
 <script setup lang="ts">
 
-import {LoadingStates} from "@/types/LoadingStates";
-import axios from "axios";
-import Const from "@/plugins/Constants";
-import {useAuthStore} from "@/stores/auth";
+import axios, {AxiosError} from "axios";
+import moment from "moment";
 import {useToast} from "primevue/usetoast";
-import {reactive, ref} from "vue";
-import LoadingState from "@/types/LoadingState";
-import Event from "@/types/Event"
-import {fromAxiosError} from "@/plugins/ToastWriter";
 import {useForm} from "vee-validate";
-import {boolean, date, number, object, string} from "yup";
+import {reactive, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import {boolean, date, number, object, string} from "yup";
+
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import DialogFooter from "@/components/dialogs/DialogFooter.vue";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import Const from "@/plugins/Constants";
+import {fromAxiosError} from "@/plugins/ToastWriter";
+import {useAuthStore} from "@/stores/auth";
 import {useDataStore} from "@/stores/data";
-import moment from "moment";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
 
 const emits = defineEmits(['success'])
 const {t} = useI18n()
@@ -109,9 +112,9 @@ const newEvent = reactive({
 })
 
 const createState = reactive<LoadingState>({state: NaN})
-const createEvent = handleSubmit(_ => {
+const createEvent = handleSubmit(() => {
   createState.state = LoadingStates.Loading
-  newEvent.date = moment(newEvent.dateObj).format('YYYY-MM-DD')
+  newEvent.date = moment(newEvent.dateObj as Date).format('YYYY-MM-DD')
 
   axios.request({
     url: "/events",
@@ -126,7 +129,7 @@ const createEvent = handleSubmit(_ => {
     setVisibility(false)
     toast.add({summary: "Success", life: 5000})
     emits('success')
-  }).catch(error => {
+  }).catch((error: AxiosError) => {
     createState.state = LoadingStates.Error
     toast.add(fromAxiosError(error))
   })
@@ -136,7 +139,7 @@ const createEvent = handleSubmit(_ => {
 // dialog visibility management
 // ----------------------------
 const visible = ref(false)
-const setVisibility = (val: boolean) => {
+const setVisibility = (val: boolean) : void => {
   visible.value = val
 
   resetForm()

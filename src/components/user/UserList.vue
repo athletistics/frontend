@@ -10,16 +10,15 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
 
-import User from "@/types/User";
-import {LoadingStates} from "@/types/LoadingStates";
-import ListStates from "@/components/list/TableStates.vue";
 import SimpleTable from "@/components/list/SimpleTable.vue";
-import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
 import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
+import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import {LoadingStates} from "@/types/LoadingStates";
+import User from "@/types/User";
 
 export default defineComponent({
   name: "UserList",
-  components: {SimpleTableCell, SimpleTableRow, SimpleTable, ListStates},
+  components: {SimpleTableCell, SimpleTableRow, SimpleTable},
   props: {
     users: {type: Array as PropType<User[]>, required: true},
     state: {type: Number as PropType<LoadingStates>, required: true},
@@ -32,7 +31,7 @@ export default defineComponent({
       return new Date(d)
     },
     toUser(id: string) {
-      this.$router.push("/athletes/" + id)
+      void this.$router.push("/athletes/" + id)
     }
   }
 })

@@ -17,22 +17,20 @@
 </template>
 
 <script setup lang="ts">
-import axios from "axios";
-import {onMounted, ref} from "vue";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {useToast} from "primevue/usetoast";
+import {onMounted, ref} from "vue";
 
-import {useAuthStore} from "@/stores/auth";
-
-import User from "@/types/User";
-import {LoadingStates} from "@/types/LoadingStates";
-import Const from "@/plugins/Constants"
-import {canManageUsers} from "@/plugins/AccessControl";
-
-import UserList from "@/components/user/UserList.vue";
-import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
-import UserRedeemShareCodeModal from "@/components/dialogs/user/DialogUserRedeemShareCode.vue";
 import DialogUserCreate from "@/components/dialogs/user/DialogUserCreate.vue";
+import UserRedeemShareCodeModal from "@/components/dialogs/user/DialogUserRedeemShareCode.vue";
+import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import UserList from "@/components/user/UserList.vue";
+import {canManageUsers} from "@/plugins/AccessControl";
+import Const from "@/plugins/Constants"
 import {fromAxiosError} from "@/plugins/ToastWriter";
+import {useAuthStore} from "@/stores/auth";
+import {LoadingStates} from "@/types/LoadingStates";
+import User from "@/types/User";
 
 const toast = useToast()
 const authStore = useAuthStore()
@@ -41,7 +39,7 @@ const athletes = ref<User[]>([])
 const externalAthletes = ref<User[]>([])
 const athletesState = ref<LoadingStates>(NaN)
 const externalAthletesState = ref<LoadingStates>(NaN)
-const loadAthletes = () => {
+const loadAthletes = () : void => {
   athletesState.value = LoadingStates.Loading
   externalAthletesState.value = LoadingStates.Loading
 
@@ -49,13 +47,13 @@ const loadAthletes = () => {
     url: "/users?separated=true", method: 'get',
     baseURL: Const.API_URL,
     headers: {'Authorization': 'Bearer ' + authStore.token}
-  }).then(response => {
+  }).then((response: AxiosResponse<{ owned: User[], shared: User[] }, any>) => {
     athletes.value = response.data.owned
     externalAthletes.value = response.data.shared
 
     athletesState.value = athletes.value?.length ? LoadingStates.Loaded : LoadingStates.Empty
     externalAthletesState.value = externalAthletes.value?.length ? LoadingStates.Loaded : LoadingStates.Empty
-  }).catch(error => {
+  }).catch((error: AxiosError) => {
     toast.add(fromAxiosError(error))
     athletesState.value = LoadingStates.Error
     externalAthletesState.value = LoadingStates.Error

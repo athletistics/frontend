@@ -1,17 +1,19 @@
 <template>
   <Dialog v-model:visible="visible" modal>
-    <form class="space-y-8" ref="resultForm">
+    <form ref="resultForm" class="space-y-8">
 
       <span class="p-float-label p-fluid">
-        <InputNumber id="value" v-model="newResult.value" :class="{'p-invalid': errors.value}"
-                     inputId="minmaxfraction" :maxFractionDigits="3" :min="0" :max="99999.999"
-                     v-tooltip="errors.value"/>
+        <InputNumber
+id="value" v-model="newResult.value" v-tooltip="errors.value"
+                     :class="{'p-invalid': errors.value}" input-id="minmaxfraction" :max-fraction-digits="3" :min="0"
+                     :max="99999.999"/>
         <label for="value">{{ $t('glob.result.value') }}</label>
       </span>
 
       <span class="p-float-label p-fluid">
-        <InputNumber id="wind" v-model="newResult.wind" :class="{'p-invalid': errors.wind}"
-                     inputId="minmaxfraction" :maxFractionDigits="1" :min="-9.9" :max="9.9"/>
+        <InputNumber
+id="wind" v-model="newResult.wind" :class="{'p-invalid': errors.wind}"
+                     input-id="minmaxfraction" :max-fraction-digits="1" :min="-9.9" :max="9.9"/>
         <label for="wind">{{ $t('glob.result.wind') }}</label>
       </span>
 
@@ -20,14 +22,17 @@
         <label for="rank">{{ $t('glob.result.rank') }}</label>
       </span>
 
-      <AutoCompleteUser id="userId" v-model="newResult.userId" v-if="!isPersonal" :disabled="!!user"
-                        :inputClass="{'p-invalid': errors.userId}" v-tooltip="errors.userId"/>
+      <AutoCompleteUser
+v-if="!isPersonal" id="userId" v-model="newResult.userId" v-tooltip="errors.userId"
+                        :disabled="!!user" :input-class="{'p-invalid': errors.userId}"/>
 
-      <AutoCompleteDiscipline id="disciplineId" v-model="newResult.disciplineId"
-                              :inputClass="{'p-invalid': errors.disciplineId}" v-tooltip="errors.disciplineId"/>
+      <AutoCompleteDiscipline
+id="disciplineId" v-model="newResult.disciplineId"
+                              v-tooltip="errors.disciplineId" :input-class="{'p-invalid': errors.disciplineId}"/>
 
-      <AutoCompleteEvent id="eventId" v-model="newResult.eventId" :disabled="!!event"
-                         :inputClass="{'p-invalid': errors.eventId}" :isPersonal="isPersonal" v-tooltip="errors.eventId"/>
+      <AutoCompleteEvent
+id="eventId" v-model="newResult.eventId" v-tooltip="errors.eventId"
+                         :disabled="!!event" :input-class="{'p-invalid': errors.eventId}" :is-personal="isPersonal"/>
     </form>
 
     <template #header>
@@ -37,7 +42,7 @@
 
     <template #footer>
       <DialogFooter>
-        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createResult" :disabled="!meta.valid">
+        <LoadingBtn full outlined visual-type="primary" :loading="createState" :disabled="!meta.valid" @click="createResult">
           {{ $t('glob.btn.add') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
@@ -47,26 +52,25 @@
 </template>
 
 <script setup lang="ts">
-import axios from "axios";
-import * as yup from 'yup';
+import axios, {AxiosError} from "axios";
 import Dialog from "primevue/dialog";
 import {useForm} from 'vee-validate'
 import {PropType, reactive, ref} from 'vue'
+import * as yup from 'yup';
 
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import DialogFooter from "@/components/dialogs/DialogFooter.vue";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import AutoCompleteDiscipline from "@/components/form/input/AutoCompleteDiscipline.vue";
+import AutoCompleteEvent from "@/components/form/input/AutoCompleteEvent.vue";
+import AutoCompleteUser from "@/components/form/input/AutoCompleteUser.vue";
+import Const from "@/plugins/Constants";
 import {useAuthStore} from "@/stores/auth";
 import {useToastStore} from "@/stores/toast";
-
-import User from "@/types/User";
 import Event from "@/types/Event";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
-import Const from "@/plugins/Constants";
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import AutoCompleteUser from "@/components/form/input/AutoCompleteUser.vue";
-import AutoCompleteEvent from "@/components/form/input/AutoCompleteEvent.vue";
-import AutoCompleteDiscipline from "@/components/form/input/AutoCompleteDiscipline.vue";
-import DialogTitle from "@/components/dialogs/DialogTitle.vue";
-import DialogFooter from "@/components/dialogs/DialogFooter.vue";
+import User from "@/types/User";
 
 const emits = defineEmits(['created'])
 const props = defineProps({
@@ -108,7 +112,7 @@ const newResult = reactive({
 })
 
 const createState = reactive<LoadingState>({state: NaN})
-const createResult = handleSubmit(_ => {
+const createResult = handleSubmit(() => {
   createState.state = LoadingStates.Loading
   const url = props.isPersonal ? "/me/results" : "/results"
 
@@ -124,12 +128,12 @@ const createResult = handleSubmit(_ => {
       'Authorization': 'Bearer ' + authStore.token
     },
     data: newResult,
-  }).then(response => {
+  }).then(() => {
     createState.state = LoadingStates.Loaded
     toastStore.addSuccessToast()
     emits('created')
     setVisibility(false)
-  }).catch(response => {
+  }).catch((response: AxiosError) => {
     createState.state = LoadingStates.Error
     toastStore.addToastFromAxiosError(response)
   })
@@ -140,7 +144,7 @@ const createResult = handleSubmit(_ => {
 // modal management
 // -------------------
 const visible = ref(false)
-const setVisibility = (val: boolean) => {
+const setVisibility = (val: boolean) : void => {
   visible.value = val
   resetForm()
 

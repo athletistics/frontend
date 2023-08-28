@@ -19,7 +19,7 @@
         <label>{{ $t('page.references.ageCat') }}</label>
         <div class="flex">
           <select v-model="ageCategory">
-            <option v-for="[k, v] in filteredCategories" :value="k">{{ k }}</option>
+            <option v-for="[k] in filteredCategories" :value="k">{{ k }}</option>
           </select>
         </div>
       </div>
@@ -38,15 +38,14 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {useDataStore} from "@/stores/data";
-
-import Discipline from "@/types/Discipline";
-import {LoadingStates} from "@/types/LoadingStates";
-import {formatResult} from "@/plugins/Helper";
 
 import SimpleTable from "@/components/list/SimpleTable.vue";
-import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
 import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
+import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import {formatResult} from "@/plugins/Helper";
+import {useDataStore} from "@/stores/data";
+import Discipline from "@/types/Discipline";
+import {LoadingStates} from "@/types/LoadingStates";
 
 export default defineComponent({
   name: "References",
@@ -58,20 +57,12 @@ export default defineComponent({
   data() {
     return {
       ageCategory: "" as string,
-      typeId: NaN as number,
+      typeId: NaN ,
       state: LoadingStates.Empty as LoadingStates
     }
   },
-  mounted() {
-    this.typeId = this.dataStore.staticResultTypes[0].id
-  },
   computed: {
     values() {
-      if (!this.filteredCategories?.get(this.ageCategory)?.size) {
-        this.state = LoadingStates.Empty
-        return
-      }
-
       const results = [] as { discipline: Discipline, m: string, w: string }[]
       const catM = this.filteredCategories?.get(this.ageCategory)?.get('M')
       const catW = this.filteredCategories?.get(this.ageCategory)?.get('W')
@@ -88,8 +79,6 @@ export default defineComponent({
           w: valW ? formatResult(valW.value, d) : "-",
         })
       })
-
-      this.state = results.length ? LoadingStates.Loaded : LoadingStates.Empty
 
       return results
     },
@@ -112,6 +101,19 @@ export default defineComponent({
 
       return catMap
     }
+  },
+  watch: {
+    filteredCategories(newValue: Map<string, Map<string, string>>) {
+      if (!newValue?.get(this.ageCategory)?.size) {
+        this.state = LoadingStates.Empty
+      }
+    },
+    values(newValues: { discipline: Discipline, m: string, w: string }[]){
+      this.state = newValues.length ? LoadingStates.Loaded : LoadingStates.Empty
+    }
+  },
+  mounted() {
+    this.typeId = this.dataStore.staticResultTypes[0].id
   }
 })
 </script>

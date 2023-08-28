@@ -6,7 +6,7 @@
 
   <div class="py-5">&nbsp;</div>
 
-  <TitleWithBtnPlus @btn-click="($refs.createTeam as any).setVisibility(true)" :btn-visible="canManageTeam()">
+  <TitleWithBtnPlus :btn-visible="canManageTeam()" @btn-click="($refs.createTeam as any).setVisibility(true)">
     {{ $t('page.club.title.teams') }}
   </TitleWithBtnPlus>
 
@@ -16,8 +16,9 @@
 
   <div class="py-5">&nbsp;</div>
 
-  <TitleWithBtnPlus @btn-click="($refs.createDiscipline as any).setVisibility(true)"
-                    :btn-visible="canManageDiscipline()">{{
+  <TitleWithBtnPlus
+:btn-visible="canManageDiscipline()"
+                    @btn-click="($refs.createDiscipline as any).setVisibility(true)">{{
       $t('page.club.title.disciplines')
     }}
   </TitleWithBtnPlus>
@@ -34,25 +35,23 @@
 </template>
 
 <script setup lang="ts">
+import axios, {AxiosResponse} from "axios";
 import {onMounted, reactive, ref} from "vue";
-import axios from "axios";
 
-import {useAuthStore} from "@/stores/auth";
-import {useDataStore} from "@/stores/data";
-import {useMyUserStore} from "@/stores/user";
-
-import Club from "@/types/Club";
-import Team from "@/types/Team";
-import LoadingState from "@/types/LoadingState";
-import Const from "@/plugins/Constants"
-import {LoadingStates} from "@/types/LoadingStates";
-import {canManageDiscipline, canManageTeam} from "@/plugins/AccessControl";
-
+import DialogDisciplineCreate from "@/components/dialogs/club/DialogDisciplineCreate.vue";
+import DialogTeamCreate from "@/components/dialogs/club/DialogTeamCreate.vue";
 import SimpleList from "@/components/list/SimpleList.vue";
 import SimpleListEntry from "@/components/list/SimpleListEntry.vue";
 import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
-import DialogTeamCreate from "@/components/dialogs/club/DialogTeamCreate.vue";
-import DialogDisciplineCreate from "@/components/dialogs/club/DialogDisciplineCreate.vue";
+import {canManageDiscipline, canManageTeam} from "@/plugins/AccessControl";
+import Const from "@/plugins/Constants"
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useMyUserStore} from "@/stores/user";
+import Club from "@/types/Club";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import Team from "@/types/Team";
 
 const authStore = useAuthStore()
 const userStore = useMyUserStore()
@@ -60,14 +59,14 @@ const dataStore = useDataStore()
 
 
 const disciplineStateObj = reactive<LoadingState>({state: NaN})
-const loadDisciplines = () => {
+const loadDisciplines = () : void=> {
   dataStore.updateDisciplines(disciplineStateObj)
 }
 
 
 const teams = ref<Team[]>()
 const teamsState = ref<LoadingStates>()
-const loadTeams = () => {
+const loadTeams = () : void => {
   teamsState.value = LoadingStates.Loading
   axios.request({
     url: "/club/" + userStore.user.clubId + "/teams",
@@ -76,7 +75,7 @@ const loadTeams = () => {
     headers: {
       'Authorization': 'Bearer ' + authStore.token
     }
-  }).then(response => {
+  }).then((response: AxiosResponse<Team[], any>) => {
     teamsState.value = response.data.length ? LoadingStates.Loaded : LoadingStates.Empty
     teams.value = response.data
   }).catch(() => {
@@ -94,9 +93,9 @@ onMounted(() => {
     headers: {
       'Authorization': 'Bearer ' + authStore.token
     }
-  }).then(response => {
+  }).then((response: AxiosResponse<Club, any>) => {
     club.value = response.data
-  })
+  }).catch(() => console.log('unable to load clubs'))
 
   loadTeams()
 })

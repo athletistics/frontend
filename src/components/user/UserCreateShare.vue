@@ -6,8 +6,8 @@
 
       <label for="code">{{ $t('comp.shareUser.description') }}</label>
       <div class="p-inputgroup flex-1">
-        <InputText id="code" disabled v-model="code.code"/>
-        <Button icon="pi pi-copy" @click="copyCode" severity="secondary" />
+        <InputText id="code" v-model="code.code" disabled/>
+        <Button icon="pi pi-copy" severity="secondary" @click="copyCode"/>
       </div>
 
     </form>
@@ -29,20 +29,19 @@
 </template>
 
 <script setup lang="ts">
-import axios from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
+import Button from "primevue/button";
+import {useToast} from "primevue/usetoast";
 import {PropType, reactive, ref} from 'vue'
+import {useI18n} from "vue-i18n";
 
-import {useAuthStore} from "@/stores/auth";
-
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
 import Const from "@/plugins/Constants";
+import {fromAxiosError} from "@/plugins/ToastWriter";
+import {useAuthStore} from "@/stores/auth";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import {useToast} from "primevue/usetoast";
-import {fromAxiosError} from "@/plugins/ToastWriter";
-import DialogTitle from "@/components/dialogs/DialogTitle.vue";
-import {useI18n} from "vue-i18n";
-import Button from "primevue/button";
 
 const props = defineProps({
   user: {type: String as PropType<string>, required: true}
@@ -56,24 +55,24 @@ const {t} = useI18n()
 const state = reactive<LoadingState>({state: NaN})
 const code = ref({code: ""})
 
-const getCode = () => {
+const getCode = (): void => {
   state.state = LoadingStates.Loading
 
   axios.request({
     url: 'users/share?userId=' + props.user, method: 'get', baseURL: Const.API_URL,
     headers: {'Authorization': 'Bearer ' + authStore.token}
-  }).then(response => {
+  }).then((response: AxiosResponse<{ code: string }, any>) => {
     code.value = response.data
     state.state = LoadingStates.Loaded
     setVisibility(true)
-  }).catch(error => {
+  }).catch((error: AxiosError) => {
     toast.add(fromAxiosError(error))
     state.state = LoadingStates.Error
   })
 }
 
-const copyCode = () => {
-  navigator.clipboard.writeText(code.value.code)
+const copyCode = (): void => {
+  void navigator.clipboard.writeText(code.value.code)
   toast.add({summary: 'Success', life: 2000, severity: "success"})
 }
 
@@ -81,7 +80,7 @@ const copyCode = () => {
 // dialog visibility management
 // ----------------------------
 const visible = ref(false)
-const setVisibility = (val: boolean) => {
+const setVisibility = (val: boolean): void => {
   visible.value = val
 
   if (!val) code.value = {code: ""}

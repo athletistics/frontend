@@ -16,26 +16,26 @@
 </template>
 
 <script lang="ts">
-import {useI18n} from "vue-i18n";
 import {defineComponent, PropType} from 'vue'
+import {useI18n} from "vue-i18n";
 
 import {formatResult} from "@/plugins/Helper";
 import {useDataStore} from "@/stores/data";
 
 export default defineComponent({
-  name: "Card",
+  name: "ResultCard",
+  props: {
+    result: {type: Object as PropType<Result.Data>, required: true},
+    withUsers: {type: Boolean, default: true}
+  },
   setup() {
     const dataStore = useDataStore()
     const {te} = useI18n()
     return {dataStore, te}
   },
-  props: {
-    result: {type: Object as PropType<Result.Data>, required: true},
-    withUsers: {type: Boolean, default: true}
-  },
   computed: {
     formattedValue(): string {
-      this.dataStore.maps.disciplines?.size
+      // this.dataStore.maps.disciplines?.size
       return formatResult(this.result.value, this.dataStore.getDisciplineById(this.result.disciplineId))
     }
   }

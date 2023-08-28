@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import {onMounted,Ref, ref} from "vue";
+
 import {useDataStore} from "@/stores/data";
-import {Ref, ref, onMounted} from "vue";
 import User from "@/types/User";
 
 // data
@@ -12,21 +13,21 @@ const users: User[] = useDataStore().users
 const props = defineProps({
   modelValue: {type: String, default: ''},
   disabled: {type: Boolean, default: false},
-  inputClass: {type: Object, default: {}}
+  inputClass: {type: Object, default() {return {}}}
 })
-const emit = defineEmits(['update:modelValue'])
+defineEmits(['update:modelValue'])
 
-const search = (event: any) => {
+const search = (event: {query: string}) : void => {
   if (event.query?.trim()?.length) {
     filteredUsers.value = users.filter(u => {
       return u.firstName.toLowerCase().startsWith(event.query.toLowerCase()) ||
           u.lastName.toLowerCase().startsWith(event.query.toLowerCase())
     })
   } else {
-    filteredUsers.value = users.filter(_ => true)
+    filteredUsers.value = users.filter(() => true)
   }
 }
-const optionLabel = (selectedUser: User) => {
+const optionLabel = (selectedUser: User) : any => {
   return `${selectedUser.lastName} ${selectedUser.firstName}`
 }
 
@@ -39,10 +40,11 @@ onMounted(() => {
 
 <template>
   <span class="p-float-label p-fluid">
-    <AutoComplete inputId="user" :suggestions="filteredUsers" @complete="search" :class="inputClass"
-                  dropdown forceSelection :optionLabel="optionLabel" :disabled="disabled"
+    <AutoComplete
+v-model="value" input-id="user" :suggestions="filteredUsers" :class="inputClass"
+                  dropdown force-selection :option-label="optionLabel" :disabled="disabled"
 
-                  v-model="value"
+                  @complete="search"
                   @update:modelValue="(newVal: User) => $emit('update:modelValue', newVal?.id)">
       <template #empty>
         <div class="p-autocomplete-item">Nothing to see</div>

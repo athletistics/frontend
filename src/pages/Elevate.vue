@@ -1,14 +1,14 @@
 <template>
 
   <div v-if="ready">
-    <div class="shadow-2xl rounded-md max-w-md p-5 mx-auto grid gap-5 mt-10 text-center" v-if="!shouldCreate">
+    <div v-if="!shouldCreate" class="shadow-2xl rounded-md max-w-md p-5 mx-auto grid gap-5 mt-10 text-center">
       <h1>{{ $t('page.elevate.title.elevate') }}</h1>
       <p>{{ $t('page.elevate.desc.elevate') }}</p>
       <hr>
-      <form class="space-y-4 with-label" v-on:submit.prevent="verify">
+      <form class="space-y-4 with-label" @submit.prevent="verify">
         <div>
           <label>{{ $t('page.elevate.code') }}</label>
-          <input type="text" v-model="code"/>
+          <input v-model="code" type="text"/>
         </div>
         <div>
           <LoadingBtn :type="'submit'" :loading="state" :disabled="code.length !== Constants.TOTP_CODE_LENGTH" full visual-type="primary">{{ $t('glob.btn.verify') }}</LoadingBtn>
@@ -16,7 +16,7 @@
       </form>
     </div>
 
-    <div class="shadow-2xl rounded-md max-w-md p-5 mx-auto grid gap-5 mt-10 text-center" v-if="shouldCreate">
+    <div v-if="shouldCreate" class="shadow-2xl rounded-md max-w-md p-5 mx-auto grid gap-5 mt-10 text-center">
       <h1>{{ $t('page.elevate.title.setup') }}</h1>
       <p>{{ $t('page.elevate.desc.setup') }}</p>
       <hr>
@@ -24,22 +24,23 @@
       <form class="space-y-4 with-label">
         <div>
           <label>{{ $t('page.elevate.secret') }}</label>
-          <input type="text" v-model="secret" disabled/>
+          <input v-model="secret" type="text" disabled/>
         </div>
       </form>
       <hr>
-      <form class="space-y-4 with-label" v-on:submit.prevent="confirm">
+      <form class="space-y-4 with-label" @submit.prevent="confirm">
         <p>{{ $t('page.elevate.desc.verify') }}</p>
         <div>
           <label>{{ $t('page.elevate.device') }}</label>
-          <input type="text" v-model="deviceName"/>
+          <input v-model="deviceName" type="text"/>
         </div>
         <div>
           <label>{{ $t('page.elevate.code') }}</label>
-          <input type="text" v-model="code"/>
+          <input v-model="code" type="text"/>
         </div>
         <div>
-          <LoadingBtn :type="'submit'" full visual-type="primary"
+          <LoadingBtn
+:type="'submit'" full visual-type="primary"
                       :loading="state"
                       :disabled="deviceName.length === 0 || code.length !== Constants.TOTP_CODE_LENGTH"  >{{ $t('glob.btn.verify') }}</LoadingBtn>
         </div>
@@ -54,26 +55,24 @@
 </template>
 
 <script lang="ts">
-import axios from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {defineComponent} from "vue";
 
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import Const from "@/plugins/Constants";
 import {useAuthStore} from "@/stores/auth";
 import {useToastStore} from "@/stores/toast";
-
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
-import Const from "@/plugins/Constants";
-
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
 
 export default defineComponent({
+  name: "Elevate",
   components: {LoadingBtn},
   setup() {
     const authStore = useAuthStore()
     const toastStore = useToastStore()
     return {authStore, toastStore}
   },
-  name: "Elevate",
   data() {
     return {
       code: "",
@@ -91,6 +90,22 @@ export default defineComponent({
     shouldCreate() {
       return !this.authStore.has2Fa
     },
+  },
+  mounted() {
+    if (!this.shouldCreate) return
+    axios.request({
+      url: "/",
+      method: 'get',
+      baseURL: Const.TOTP_API_URL,
+      headers: {
+        'Authorization': 'Bearer ' + this.authStore.token
+      }
+    }).then((response: AxiosResponse<{secret: string, qrCode: string}, any>) => {
+      this.secret = response.data.secret
+      this.qrCode = response.data.qrCode
+    }).catch(() => {
+      this.ready = false
+    })
   },
   methods: {
     confirm() {
@@ -110,11 +125,11 @@ export default defineComponent({
         this.state.state = LoadingStates.Loaded
         this.authStore.set2FaValidated(true)
         this.authStore.setHas2Fa(true)
-        this.$router.push('/home')
-      }).catch(error => {
+        void this.$router.push('/home')
+      }).catch((error: AxiosError) => {
         this.state.state = LoadingStates.Error
         this.code = ""
-        this.toastStore.addErrorToast(error.response.data.message)
+        this.toastStore.addToastFromAxiosError(error)
       })
     },
     verify() {
@@ -132,29 +147,13 @@ export default defineComponent({
       }).then(() => {
         this.state.state = LoadingStates.Loaded
         this.authStore.set2FaValidated(true)
-        this.$router.push('/home')
-      }).catch(error => {
+        void this.$router.push('/home')
+      }).catch((error: AxiosError) => {
         this.state.state = LoadingStates.Error
         this.code = ""
-        this.toastStore.addErrorToast(error.response.data.message)
+        this.toastStore.addToastFromAxiosError(error)
       })
     }
-  },
-  mounted() {
-    if (!this.shouldCreate) return
-    axios.request({
-      url: "/",
-      method: 'get',
-      baseURL: Const.TOTP_API_URL,
-      headers: {
-        'Authorization': 'Bearer ' + this.authStore.token
-      }
-    }).then(response => {
-      this.secret = response.data.secret
-      this.qrCode = response.data.qrCode
-    }).catch(() => {
-      this.ready = false
-    })
   }
 })
 </script>

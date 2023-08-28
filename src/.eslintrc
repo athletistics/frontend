@@ -1,0 +1,63 @@
+{
+  "root": true,
+  "env": {
+    "node": true
+  },
+  "extends": [
+    "plugin:vue/recommended",
+    "eslint:recommended",
+    "@vue/typescript/recommended",
+    "prettier",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+  ],
+  "plugins": ["simple-import-sort"],
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "project": "./tsconfig.json",
+    "parser": "@typescript-eslint/parser"
+  },
+  "rules": {
+    "vue/component-name-in-template-casing": "error",
+    "vue/match-component-file-name": [
+      "error",
+      {
+        "extensions": ["vue"],
+        "shouldMatchCase": true
+      }
+    ],
+    "no-unreachable": "off",
+    "valid-v-for": "off",
+    "vue/valid-v-for": "off",
+    "vue/require-v-for-key": "off",
+    "vue/no-v-model-argument": "off",
+    "vue/no-multiple-template-root": "off",
+    "vue/multi-word-component-names": "off",
+    "vue/no-reserved-component-names": "off",
+    "vue/no-side-effects-in-computed-properties": "off",
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-this-alias": "off",
+    "@typescript-eslint/unbound-method": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/explicit-function-return-type": [
+      "error",
+      { "allowExpressions": true }
+    ],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/__tests__/*.{j,t}s?(x)",
+        "**/tests/unit/**/*.spec.{j,t}s?(x)"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
+}

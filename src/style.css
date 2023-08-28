@@ -153,3 +153,9 @@ form.with-label input:not([type=checkbox]), div.with-label input:not([type=check
 .p-dialog-content {
     padding-top: 1.5rem !important
 }
+
+/* Fixing a border that should not be there on the toast message.
+   Issue due to collision with tailwind css. */
+.p-toast-message-content {
+    border-style: none;
+}

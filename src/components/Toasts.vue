@@ -1,9 +1,10 @@
 <script lang="ts">
-import Toast from './Toast.vue'
-import {defineComponent} from "vue";
 import {mapState} from "pinia";
+import {defineComponent} from "vue";
 
 import {useToastStore} from "@/stores/toast";
+
+import Toast from './Toast.vue'
 
 export default defineComponent({
   name: 'Toasts',
@@ -15,7 +16,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="toasts-wrapper z-50" v-if="toasts.length">
+  <div v-if="toasts.length" class="toasts-wrapper z-50">
     <Toast v-for="t in toasts" :toast="t"></Toast>
   </div>
 </template>

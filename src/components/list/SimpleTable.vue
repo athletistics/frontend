@@ -1,7 +1,9 @@
 <script lang="ts">
-import TableStates from "./TableStates.vue";
 import {defineComponent, PropType} from "vue";
+
 import {LoadingStates} from "@/types/LoadingStates";
+
+import TableStates from "./TableStates.vue";
 
 export default defineComponent({
   components: {TableStates},
@@ -18,7 +20,7 @@ export default defineComponent({
     <table class="min-w-full">
       <thead class="border-b">
       <tr>
-        <th scope="col" class="table-head" v-for="h in headers">{{ i18n && h ? $t(h) : h }}</th>
+        <th v-for="h in headers" scope="col" class="table-head">{{ i18n && h ? $t(h) : h }}</th>
       </tr>
       </thead>
       <tbody>

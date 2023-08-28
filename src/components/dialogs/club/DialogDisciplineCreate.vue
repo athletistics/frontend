@@ -1,16 +1,18 @@
 <template>
   <Dialog v-model:visible="visible" modal>
-    <form class="space-y-8 with-label">
+    <form class="space-y-8">
       <span class="p-float-label p-fluid">
-        <InputText id="customName" v-model="newDiscipline.customName"
-                   :class="{'p-invalid': errors.customName}" v-tooltip="errors.customName"/>
+        <InputText
+            id="customName" v-model="newDiscipline.customName"
+            v-tooltip="errors.customName" :class="{'p-invalid': errors.customName}"/>
         <label for="customName">{{ t('page.club.disciplineName') }}</label>
       </span>
 
       <span class="p-float-label p-fluid">
-        <Dropdown id="customName" v-model="newDiscipline.isDescending"
-                  :options="disciplineTypes" optionValue="val" optionLabel="name"
-                  :class="{'p-invalid': errors.isDescending}"/>
+        <Dropdown
+            id="customName" v-model="newDiscipline.isDescending"
+            :options="disciplineTypes" option-value="val" option-label="name"
+            :class="{'p-invalid': errors.isDescending}"/>
         <label for="customName">{{ t('page.club.disciplineType') }}</label>
       </span>
 
@@ -36,22 +38,22 @@
 </template>
 
 <script setup lang="ts">
+import axios, {AxiosError} from "axios";
+import {useToast} from "primevue/usetoast";
+import {useForm} from "vee-validate";
+import {reactive, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {ref, reactive} from "vue";
+import {boolean, object, string} from "yup";
 
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import DialogFooter from "@/components/dialogs/DialogFooter.vue";
-import {useForm} from "vee-validate";
-import {object, string, boolean} from "yup";
-import LoadingState from "@/types/LoadingState";
-import Discipline from "@/types/Discipline";
-import {LoadingStates} from "@/types/LoadingStates";
-import axios from "axios";
-import Const from "@/plugins/Constants";
-import {useAuthStore} from "@/stores/auth";
-import {useToast} from "primevue/usetoast";
-import {fromAxiosError} from "@/plugins/ToastWriter";
 import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import Const from "@/plugins/Constants";
+import {fromAxiosError} from "@/plugins/ToastWriter";
+import {useAuthStore} from "@/stores/auth";
+import Discipline from "@/types/Discipline";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
 
 
 const emits = defineEmits(['success'])
@@ -83,7 +85,7 @@ const newDiscipline = reactive({
 })
 
 const createState = reactive<LoadingState>({state: NaN})
-const createDiscipline = handleSubmit(_ => {
+const createDiscipline = handleSubmit(() => {
   createState.state = LoadingStates.Loading
   axios.request({
     url: "/disciplines",
@@ -98,7 +100,7 @@ const createDiscipline = handleSubmit(_ => {
     setVisibility(false)
     toast.add({summary: 'Success'})
     emits('success')
-  }).catch(error => {
+  }).catch((error: AxiosError) => {
     createState.state = LoadingStates.Error
     toast.add(fromAxiosError(error))
   })
@@ -108,7 +110,7 @@ const createDiscipline = handleSubmit(_ => {
 // dialog visibility management
 // ----------------------------
 const visible = ref(false)
-const setVisibility = (val: boolean) => {
+const setVisibility = (val: boolean): void => {
   visible.value = val
 
   resetForm()

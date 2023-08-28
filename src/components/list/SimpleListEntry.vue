@@ -3,7 +3,7 @@ import {defineComponent, PropType} from "vue";
 
 export default defineComponent({
   props: {
-    to: {type: String as PropType<string | undefined>, required: false},
+    to: {type: String as PropType<string | undefined>, required: false, default: ""},
     enabled: {type: Boolean as PropType<boolean>, required: false, default: true}
   }
 })

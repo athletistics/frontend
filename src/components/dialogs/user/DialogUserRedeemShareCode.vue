@@ -1,9 +1,10 @@
 <template>
   <Dialog v-model:visible="visible" modal>
-    <form form="redeemShareCode" v-if="!userAdded" class="grid gap-4">
+    <form v-if="!userAdded" form="redeemShareCode" class="grid gap-4">
       <span class="p-fluid">
         <label for="code">{{ $t('comp.shareUser.descriptionAdd') }}</label>
-        <InputMask id="code" v-model="code" mask="********-****-****-****-************"
+        <InputMask
+id="code" v-model="code" mask="********-****-****-****-************"
                    placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"/>
       </span>
     </form>
@@ -13,10 +14,11 @@
 
       <LabeledText label="glob.user.firstName" :text="user?.firstName"/>
       <LabeledText label="glob.user.lastName" :text="user?.lastName"/>
-      <LabeledText label="glob.user.birthdate"
+      <LabeledText
+label="glob.user.birthdate"
                    :text="user?.birthDate ? $d(new Date(user.birthDate)) : undefined"/>
 
-      <LoadingBtn @click="setVisibility(false)" outlined>{{ $t('glob.btn.close') }}</LoadingBtn>
+      <LoadingBtn outlined @click="setVisibility(false)">{{ $t('glob.btn.close') }}</LoadingBtn>
     </div>
 
     <template #header>
@@ -24,11 +26,12 @@
       <DialogTitle v-else>{{ $t('comp.shareUser.title.success') }}</DialogTitle>
     </template>
 
-    <template #footer v-if="!userAdded">
+    <template v-if="!userAdded" #footer>
       <DialogFooter>
-        <LoadingBtn @click="setVisibility(false)" outlined>{{ $t('glob.btn.close') }}</LoadingBtn>
-        <LoadingBtn @click="redeem" :loading="state" :disabled="!meta.valid"
-                    outlined visual-type="primary">{{
+        <LoadingBtn outlined @click="setVisibility(false)">{{ $t('glob.btn.close') }}</LoadingBtn>
+        <LoadingBtn
+:loading="state" :disabled="!meta.valid" outlined
+                    visual-type="primary" @click="redeem">{{
             $t('glob.btn.save')
           }}
         </LoadingBtn>
@@ -38,31 +41,30 @@
 </template>
 
 <script setup lang="ts">
-import axios from "axios";
+import {toTypedSchema} from "@vee-validate/yup";
+import axios, {AxiosError, AxiosResponse} from "axios";
+import {useToast} from "primevue/usetoast";
+import {useForm} from "vee-validate";
 import {ref} from 'vue'
+import {object, string} from "yup";
 
-import {useAuthStore} from "@/stores/auth";
-
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import DialogFooter from "@/components/dialogs/DialogFooter.vue";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import LabeledText from "@/components/LabeledText.vue";
 import Const from "@/plugins/Constants";
-import User from "@/types/User";
+import {fromAxiosError} from "@/plugins/ToastWriter";
+import {useAuthStore} from "@/stores/auth";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import LabeledText from "@/components/LabeledText.vue";
-import DialogTitle from "@/components/dialogs/DialogTitle.vue";
-import {useToast} from "primevue/usetoast";
-import {fromAxiosError} from "@/plugins/ToastWriter";
-import DialogFooter from "@/components/dialogs/DialogFooter.vue";
-import {object, string} from "yup";
-import {useForm} from "vee-validate";
-import {toTypedSchema} from "@vee-validate/yup";
+import User from "@/types/User";
 
 const emits = defineEmits(['success'])
 
 const toast = useToast()
 const authStore = useAuthStore()
 
-const {handleSubmit, resetForm, errors, meta, useFieldModel} = useForm({
+const {handleSubmit, resetForm, meta, useFieldModel} = useForm({
   validationSchema: toTypedSchema(object({
     code: string().required().test('', '', (value) => {
           if (!value) return true
@@ -82,12 +84,12 @@ const redeem = handleSubmit(values => {
   axios.request({
     url: 'users/share?code=' + values.code, method: 'post', baseURL: Const.API_URL,
     headers: {'Authorization': 'Bearer ' + authStore.token}
-  }).then(response => {
+  }).then((response: AxiosResponse<User, any>) => {
     user.value = response.data
     state.value.state = LoadingStates.Loaded;
     emits('success')
     userAdded.value = true
-  }).catch(error => {
+  }).catch((error: AxiosError) => {
     toast.add(fromAxiosError(error))
     state.value.state = LoadingStates.Error
   })
@@ -98,7 +100,7 @@ const redeem = handleSubmit(values => {
 // dialog visibility management
 // ----------------------------
 const visible = ref(false)
-const setVisibility = (val: boolean) => {
+const setVisibility = (val: boolean) : void => {
   visible.value = val
 
   resetForm()

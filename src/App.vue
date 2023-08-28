@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen flex flex-col justify-between">
-    <Nav></Nav>
+    <NavBar />
     <div class="container mx-auto grow p-4 xl:max-w-7xl">
       <router-view></router-view>
     </div>
@@ -13,21 +13,22 @@
       </div>
     </footer>
   </div>
-  <Toast />
+  <Toast position="bottom-right"/>
   <Toasts/> <!-- TODO: Legacy toast service, filed for removal -->
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
-import Nav from './components/Nav.vue'
 import {mapStores} from "pinia";
-import {useMyUserStore} from "./stores/user";
-import {useAuthStore} from "./stores/auth";
+import {defineComponent} from "vue";
+
+import NavBar from './components/NavBar.vue'
 import Toasts from "./components/Toasts.vue";
+import {useAuthStore} from "./stores/auth";
 import {useDataStore} from "./stores/data";
+import {useMyUserStore} from "./stores/user";
 
 export default defineComponent({
-  components: {Toasts, Nav},
+  components: {Toasts, NavBar},
   setup() {
     const authStore = useAuthStore()
     const userStore = useMyUserStore()
@@ -35,13 +36,13 @@ export default defineComponent({
 
     return {authStore, userStore, dataStore}
   },
+  computed: {
+    ...mapStores(useMyUserStore, useAuthStore)
+  },
   mounted() {
     this.userStore.updateFromServer()
     this.dataStore.updateAll()
   },
-  computed: {
-    ...mapStores(useMyUserStore, useAuthStore)
-  }
 })
 </script>
 

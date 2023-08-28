@@ -2,7 +2,6 @@
 import {defineComponent, PropType} from 'vue'
 
 import {useToastStore} from "@/stores/toast";
-
 import Toast from '@/types/Toast'
 
 export default defineComponent({

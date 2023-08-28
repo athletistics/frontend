@@ -18,25 +18,25 @@
 
   <ResultTable :results="results" :state="resultsState" :show-event="false"></ResultTable>
 
-  <ModalResult ref="modal" :is-personal="false" @created="loadResults" :event="event"></ModalResult>
+  <ModalResult ref="modal" :is-personal="false" :event="event" @created="loadResults"></ModalResult>
 </template>
 
 <script lang="ts">
-import axios from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {defineComponent} from 'vue'
 
+import ModalResult from "@/components/dialogs/DialogResult.vue";
+import LabeledText from "@/components/LabeledText.vue";
+import ResultTable from "@/components/results/ResultTable.vue";
+import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import {canManageResults} from "@/plugins/AccessControl";
+import Const from "@/plugins/Constants";
+import {routeParamToString} from "@/plugins/Helper";
 import {useAuthStore} from "@/stores/auth";
 import {useDataStore} from "@/stores/data";
 import {useToastStore} from "@/stores/toast";
-
+import IntDialog from "@/types/IntDialog";
 import {LoadingStates} from "@/types/LoadingStates";
-import Const from "@/plugins/Constants";
-import {canManageResults} from "@/plugins/AccessControl";
-
-import LabeledText from "@/components/LabeledText.vue";
-import ModalResult from "@/components/dialogs/DialogResult.vue";
-import ResultTable from "@/components/results/ResultTable.vue";
-import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
 
 export default defineComponent({
   name: "Event",
@@ -75,31 +75,31 @@ export default defineComponent({
       return this.dataStore.getEventById(this.$route.params.id.toString())
     }
   },
+  mounted() {
+    this.loadResults()
+  },
   methods: {
     canManageResults,
     setModalVisibility(visible: boolean) {
-      (this.$refs.modal as any).setVisibility(visible)
+      (this.$refs.modal as IntDialog).setVisibility(visible)
     },
     loadResults() {
       this.resultsState = LoadingStates.Loading
       axios.request({
-        url: "/results?eventId=" + this.$route.params.id,
+        url: "/results?eventId=" + routeParamToString(this.$route.params.id),
         method: 'get',
         baseURL: Const.API_URL,
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         }
-      }).then(response => {
+      }).then((response: AxiosResponse<Result.Data[], any>) => {
         this.results = response.data
         this.resultsState = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
-      }).catch(response => {
+      }).catch((response: AxiosError) => {
         this.resultsState = LoadingStates.Error
         this.toastStore.addToastFromAxiosError(response)
       })
     }
-  },
-  mounted() {
-    this.loadResults()
   }
 })
 </script>

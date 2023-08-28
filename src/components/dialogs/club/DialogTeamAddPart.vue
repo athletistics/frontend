@@ -1,8 +1,9 @@
 <template>
   <Dialog v-model:visible="visible" modal>
     <form class="space-y-4 with-label">
-      <Listbox id="usersToAdd" v-model="usersToAdd.users" filter :filterFields="['firstName','lastName']"
-               :options="filteredUsers" optionValue="id" multiple>
+      <Listbox
+id="usersToAdd" v-model="usersToAdd.users" filter :filter-fields="['firstName','lastName']"
+               :options="filteredUsers" option-value="id" multiple>
         <template #option="user">
           {{user.option.lastName}} {{user.option.firstName}}
         </template>
@@ -28,26 +29,28 @@
 </template>
 
 <script setup lang="ts">
-import {computed, PropType, reactive, ref} from "vue";
-import User from "@/types/User";
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import axios, {AxiosError} from "axios";
+import {useToast} from "primevue/usetoast";
+import {useForm} from "vee-validate";
+import {computed, PropType, reactive, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {useDataStore} from "@/stores/data";
+import {useRoute} from "vue-router";
+
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import DialogFooter from "@/components/dialogs/DialogFooter.vue";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import Const from "@/plugins/Constants";
+import {routeParamToString} from "@/plugins/Helper";
+import {fromAxiosError} from "@/plugins/ToastWriter";
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
-import axios from "axios";
-import Const from "@/plugins/Constants";
-import {fromAxiosError} from "@/plugins/ToastWriter";
-import {useToast} from "primevue/usetoast";
-import {useAuthStore} from "@/stores/auth";
-import {useRoute} from "vue-router";
-import {useForm} from "vee-validate";
+import User from "@/types/User";
 
 const props = defineProps({
-  coaches: {type: Array as PropType<User[]>, required: false},
-  athletes: {type: Array as PropType<User[]>, required: false},
+  coaches: {type: Array as PropType<User[]>, required: false, default() {return []}},
+  athletes: {type: Array as PropType<User[]>, required: false, default() {return []}},
   asCoach: {type: Boolean, required: true}
 })
 
@@ -74,16 +77,16 @@ const filteredUsers = computed(() => {
 // ---------------
 // API interaction
 // ---------------
-const {handleSubmit, resetForm, useFieldModel} = useForm()
+const {handleSubmit, resetForm, useFieldModel} = useForm<{usersToAdd: string[]}>()
 
-const usersToAdd = reactive({
+const usersToAdd = reactive<{ users: Ref<string[]> }>({
   users: useFieldModel('usersToAdd')
 })
 const addState = reactive<LoadingState>({state: NaN})
-const addToTeam = handleSubmit(_ => {
+const addToTeam = handleSubmit(() => {
   addState.state = LoadingStates.Loading
   axios.request({
-    url: "/teams/" + route.params.id + "/participants",
+    url: "/teams/" + routeParamToString(route.params.id) + "/participants",
     method: 'post',
     baseURL: Const.API_URL,
     headers: {
@@ -97,7 +100,7 @@ const addToTeam = handleSubmit(_ => {
     setVisibility(false)
     toast.add({summary: "Success", severity: "success"})
     emits('success')
-  }).catch(error => {
+  }).catch((error: AxiosError) => {
     addState.state = LoadingStates.Error
     toast.add(fromAxiosError(error))
   })
@@ -107,7 +110,7 @@ const addToTeam = handleSubmit(_ => {
 // dialog visibility management
 // ----------------------------
 const visible = ref(false)
-const setVisibility = (val: boolean) => {
+const setVisibility = (val: boolean) : void => {
   visible.value = val
 
   resetForm()

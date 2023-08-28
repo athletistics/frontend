@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import {useDataStore} from "@/stores/data";
 import {onMounted, Ref, ref} from "vue";
-import Event from "@/types/Event";
 import {useI18n} from "vue-i18n";
+
+import {useDataStore} from "@/stores/data";
+import Event from "@/types/Event";
 
 // data
 const filteredEvents: Ref<Event[]> = ref([])
@@ -12,13 +13,13 @@ const events: Event[] = useDataStore().events
 const props = defineProps({
   modelValue: {type: String, default: ''},
   disabled: {type: Boolean, default: false},
-  inputClass: {type: Object, default: {}},
+  inputClass: {type: Object, default() {return {}}},
   isPersonal: {type: Boolean, default: false}
 })
-const emits = defineEmits(['update:modelValue'])
+defineEmits(['update:modelValue'])
 const {d} = useI18n()
 
-const search = (event: any) => {
+const search = (event: {query: string}) : void => {
   if (event.query?.trim()?.length) {
     filteredEvents.value = events.filter(e => {
       return (
@@ -33,7 +34,7 @@ const search = (event: any) => {
     filteredEvents.value = events.filter(e => props.isPersonal ? e.eventTypeId === 4 : true)
   }
 }
-const optionLabel = (selectedEvent: Event) => {
+const optionLabel = (selectedEvent: Event) : string => {
   return `${selectedEvent.name}, ${selectedEvent.place} (${d(selectedEvent.date)})`
 }
 
@@ -46,10 +47,11 @@ onMounted(() => {
 
 <template>
   <span class="p-float-label p-fluid">
-    <AutoComplete inputId="user" :suggestions="filteredEvents" @complete="search" :class="inputClass"
-                  dropdown forceSelection :optionLabel="optionLabel" :disabled="disabled"
+    <AutoComplete
+v-model="value" input-id="user" :suggestions="filteredEvents" :class="inputClass"
+                  dropdown force-selection :option-label="optionLabel" :disabled="disabled"
 
-                  v-model="value"
+                  @complete="search"
                   @update:modelValue="(newVal: Event) => $emit('update:modelValue', newVal?.id)">
       <template #empty>
         <div class="p-autocomplete-item">Nothing to see</div>

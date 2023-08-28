@@ -19,18 +19,16 @@
 
 <script setup lang="ts">
 import {reactive} from "vue";
-
-import {useDataStore} from "@/stores/data";
-
-import LoadingState from "@/types/LoadingState";
-import {canManageEvents} from "@/plugins/AccessControl";
-
-import SimpleTable from "@/components/list/SimpleTable.vue";
-import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
-import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
-import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
-import DialogEventCreate from "@/components/dialogs/events/DialogEventCreate.vue";
 import {useRouter} from "vue-router";
+
+import DialogEventCreate from "@/components/dialogs/events/DialogEventCreate.vue";
+import SimpleTable from "@/components/list/SimpleTable.vue";
+import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
+import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import {canManageEvents} from "@/plugins/AccessControl";
+import {useDataStore} from "@/stores/data";
+import LoadingState from "@/types/LoadingState";
 
 const router = useRouter()
 const dataStore = useDataStore()
@@ -38,11 +36,11 @@ const headers = ['glob.event.name', 'glob.event.place', 'glob.event.date', 'glob
 
 
 const state = reactive<LoadingState>({state: NaN})
-const toEvent = (id: string) => {
-  router.push("/events/" + id)
+const toEvent = (id: string) : void => {
+  void router.push("/events/" + id)
 }
 
-const eventCreated = () => {
+const eventCreated = () : void=> {
   dataStore.updateEvents(state)
 }
 

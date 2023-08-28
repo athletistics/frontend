@@ -4,8 +4,9 @@
       <div class="space-y-8">
 
         <span class="p-float-label p-fluid">
-          <Calendar id="startDate" selectionMode="range" :manualInput="false"
-                    v-model="newActivity.dates" :class="{'p-invalid': errors.dates}"/>
+          <Calendar
+              id="startDate" v-model="newActivity.dates" selection-mode="range"
+              :manual-input="false" :class="{'p-invalid': errors.dates}"/>
           <label for="startDate">{{ $t('page.activity.startDate') }}*</label>
         </span>
 
@@ -22,8 +23,9 @@
         </span>
 
         <span class="p-float-label p-fluid">
-          <Calendar id="startTimeObj" v-model="newActivity.startTimeObj" :class="{'p-invalid': errors.startTimeObj}"
-                    timeOnly :showOnFocus="false" showIcon/>
+          <Calendar
+              id="startTimeObj" v-model="newActivity.startTimeObj" :class="{'p-invalid': errors.startTimeObj}"
+              time-only :show-on-focus="false" show-icon/>
           <label for="startTimeObj">{{ $t('page.activity.startTime') }}*</label>
         </span>
 
@@ -46,8 +48,9 @@
 
     <template #footer>
       <DialogFooter>
-        <LoadingBtn full outlined visual-type="primary"
-                    :loading="createState" @click="createActivity()" :disabled="!meta.valid">
+        <LoadingBtn
+            full outlined visual-type="primary"
+            :loading="createState" :disabled="!meta.valid" @click="createActivity()">
           {{ $t('glob.btn.create') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
@@ -57,24 +60,23 @@
 </template>
 
 <script setup lang="ts">
-import axios from "axios";
+import {toTypedSchema} from "@vee-validate/yup";
+import axios, {AxiosError} from "axios";
+import moment from "moment/moment";
+import {useToast} from "primevue/usetoast";
+import {useForm} from "vee-validate";
 import {reactive, ref} from 'vue'
+import {useRoute} from "vue-router";
+import {array, date, number, object, string} from "yup";
 
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import DialogFooter from "@/components/dialogs/DialogFooter.vue";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import Const from "@/plugins/Constants";
+import {fromAxiosError} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
-
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
-import Const from "@/plugins/Constants";
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import DialogTitle from "@/components/dialogs/DialogTitle.vue";
-import DialogFooter from "@/components/dialogs/DialogFooter.vue";
-import {useToast} from "primevue/usetoast";
-import {useRoute} from "vue-router";
-import {fromAxiosError} from "@/plugins/ToastWriter";
-import {useForm} from "vee-validate";
-import {date, number, object, string, array} from "yup";
-import {toTypedSchema} from "@vee-validate/yup";
-import moment from "moment/moment";
 
 const emits = defineEmits(['success'])
 
@@ -115,8 +117,8 @@ const createActivity = handleSubmit(() => {
 
   // correctly format time and date
   if (newActivity.dates) {
-    newActivity.startDate = moment(newActivity.dates[0]).format('YYYY-MM-DD')
-    newActivity.endDate = moment(newActivity.dates[1]).format('YYYY-MM-DD')
+    newActivity.startDate = moment(newActivity.dates[0] as Date).format('YYYY-MM-DD')
+    newActivity.endDate = moment(newActivity.dates[1] as Date).format('YYYY-MM-DD')
   }
   newActivity.startTime = moment(newActivity.startTimeObj).format('HH:mm')
 
@@ -128,12 +130,12 @@ const createActivity = handleSubmit(() => {
       'Authorization': 'Bearer ' + authStore.token
     },
     data: newActivity,
-  }).then(response => {
+  }).then(() => {
     createState.state = LoadingStates.Loaded
     toast.add({summary: "Success", severity: "success"})
     emits('success')
     setVisibility(false)
-  }).catch(response => {
+  }).catch((response: AxiosError) => {
     createState.state = LoadingStates.Error
     toast.add(fromAxiosError(response))
   })
@@ -141,7 +143,7 @@ const createActivity = handleSubmit(() => {
 
 
 const visible = ref(false)
-const setVisibility = (val: boolean) => {
+const setVisibility = (val: boolean): void => {
   visible.value = val
   resetForm()
 }

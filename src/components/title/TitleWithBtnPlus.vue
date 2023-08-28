@@ -1,6 +1,7 @@
 <script lang="ts">
-import BtnPlus from "@/components/button/BtnPlus.vue";
 import {defineComponent, PropType} from "vue";
+
+import BtnPlus from "@/components/button/BtnPlus.vue";
 
 export default defineComponent({
   components: {BtnPlus},

@@ -3,26 +3,30 @@
     <form class="space-y-8">
 
       <span class="p-float-label p-fluid">
-        <Dropdown id="ndsActivityTypeId" v-model="newInstance.ndsActivityTypeId"
+        <Dropdown
+id="ndsActivityTypeId" v-model="newInstance.ndsActivityTypeId"
                   :class="{'p-invalid': errors.ndsActivityTypeId}"
-                  :options="dataStore.activityTypes" :optionLabel="t => $t('data.' + t.i18nName)" optionValue="id"/>
+                  :options="dataStore.activityTypes" :option-label="t => $t('data.' + t.i18nName)" option-value="id"/>
         <label for="ndsActivityTypeId">{{ $t('page.activity.type') }}*</label>
       </span>
 
       <span class="p-float-label p-fluid">
-        <Calendar id="date" v-model="newInstance.date" :class="{'p-invalid': errors.date}"
-                  :showOnFocus="false" showIcon/>
+        <Calendar
+id="date" v-model="newInstance.date" :class="{'p-invalid': errors.date}"
+                  :show-on-focus="false" show-icon/>
         <label for="date">{{ $t('page.activity.date') }}*</label>
       </span>
 
       <span v-if="newInstance.ndsActivityTypeId === 1" class="p-float-label p-fluid">
-        <Calendar id="startTime" v-model="newInstance.startTime" :class="{'p-invalid': errors.startTime}"
-                  timeOnly :showOnFocus="false" showIcon/>
+        <Calendar
+id="startTime" v-model="newInstance.startTime" :class="{'p-invalid': errors.startTime}"
+                  time-only :show-on-focus="false" show-icon/>
         <label for="startTime">{{ $t('page.activity.startTime') }}*</label>
       </span>
 
       <span v-if="newInstance.ndsActivityTypeId === 1" class="p-float-label p-fluid">
-        <Dropdown id="duration" v-model="newInstance.duration"
+        <Dropdown
+id="duration" v-model="newInstance.duration"
                   :options="durations" :class="{'p-invalid': errors.duration}"/>
         <label for="duration">{{ $t('page.activity.duration') }}*</label>
       </span>
@@ -42,7 +46,8 @@
 
     <template #footer>
       <DialogFooter>
-        <LoadingBtn full outlined visual-type="primary"
+        <LoadingBtn
+full outlined visual-type="primary"
                     :loading="state" @click="createInstance()">
           {{ $t('glob.btn.create') }}
         </LoadingBtn>
@@ -55,25 +60,25 @@
 </template>
 
 <script setup lang="ts">
-import axios from "axios";
+import axios, {AxiosError} from "axios";
+import moment from "moment";
+import {useToast} from "primevue/usetoast";
+import {useForm} from "vee-validate";
 import {reactive, ref} from 'vue'
+import {useRoute} from "vue-router";
+import {date, number, object, string} from "yup";
 
-import {useAuthStore} from "@/stores/auth";
-
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import DialogFooter from "@/components/dialogs/DialogFooter.vue";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
 import Const from "@/plugins/Constants";
+import {routeParamToString} from "@/plugins/Helper";
+import {fromAxiosError} from "@/plugins/ToastWriter";
+import {useAuthStore} from "@/stores/auth";
 import {useDataStore} from "@/stores/data";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import {useForm} from "vee-validate";
-import {date, number, object, string} from "yup";
-import {fromAxiosError} from "@/plugins/ToastWriter";
-import {useRoute} from "vue-router";
-import {useToast} from "primevue/usetoast";
-import DialogTitle from "@/components/dialogs/DialogTitle.vue";
-import DialogFooter from "@/components/dialogs/DialogFooter.vue";
 import {Nds} from "@/types/Nds";
-import moment from "moment";
 
 const emits = defineEmits(['success'])
 
@@ -117,29 +122,29 @@ const newInstance = reactive({
 
 const state = reactive<LoadingState>({state: NaN})
 
-const createInstance = handleSubmit(_ => {
+const createInstance = handleSubmit(() => {
   state.state = LoadingStates.Loading
 
   // prepare the request and convert date/time to the correct format
-  newInstance.ndsActivityId = typeof route.params.id === 'string' ? route.params.id : route.params.id.join('')
-  const instanceReq: Nds.ActivityInstanceReq = JSON.parse(JSON.stringify(newInstance))
+  newInstance.ndsActivityId = routeParamToString(route.params.id)
+  const instanceReq: Nds.ActivityInstanceReq = JSON.parse(JSON.stringify(newInstance)) as Nds.ActivityInstanceReq
   instanceReq.date = moment(instanceReq.date).format('YYYY-MM-DD')
   if (instanceReq.startTime) instanceReq.startTime = moment(instanceReq.startTime).format('hh:mm')
 
   axios.request({
-    url: '/nds/activities/' + route.params.id + '/instances',
+    url: '/nds/activities/' + routeParamToString(route.params.id) + '/instances',
     method: 'post',
     baseURL: Const.API_URL,
     headers: {
       'Authorization': 'Bearer ' + authStore.token
     },
     data: instanceReq,
-  }).then(response => {
+  }).then(() => {
     state.state = LoadingStates.Loaded
     toast.add({summary: 'Success', life: 5000})
     emits('success')
     setVisibility(false)
-  }).catch(response => {
+  }).catch((response: AxiosError) => {
     state.state = LoadingStates.Error
     toast.add(fromAxiosError(response))
   })
@@ -150,7 +155,7 @@ const createInstance = handleSubmit(_ => {
 // dialog visibility management
 // ----------------------------
 const visible = ref(false)
-const setVisibility = (val: boolean) => {
+const setVisibility = (val: boolean) : void => {
   visible.value = val
 
   resetForm()

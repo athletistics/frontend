@@ -1,6 +1,7 @@
 <script lang="ts">
-import SimpleListEntry from "./SimpleListEntry.vue";
 import {defineComponent, PropType} from "vue";
+
+import SimpleListEntry from "./SimpleListEntry.vue";
 
 export default defineComponent({
   components: {SimpleListEntry},
@@ -11,7 +12,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <SimpleListEntry v-for="i in entries" class="animated-pulse">
+  <SimpleListEntry v-for="() in entries" class="animated-pulse">
     <div class="h-2 my-2 bg-slate-200 rounded"></div>
   </SimpleListEntry>
 </template>

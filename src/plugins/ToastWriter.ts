@@ -4,7 +4,7 @@ export const fromAxiosError = (error: AxiosError): { severity: 'success' | 'info
   return {
     life: 5000,
     summary: "Error while processing the request",
-    detail: (error?.response?.data as any)?.message ?? error?.code ?? "Unknown error",
+    detail: (error?.response?.data as {message: string})?.message ?? error?.code ?? "Unknown error",
     severity: 'error',
   }
 }

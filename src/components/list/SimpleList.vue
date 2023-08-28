@@ -1,19 +1,21 @@
 <script lang="ts">
-import SimpleListLoading from "./SimpleListLoading.vue";
 import {defineComponent, PropType} from "vue";
+
 import {LoadingStates} from "@/types/LoadingStates";
+
 import SimpleListEntry from "./SimpleListEntry.vue";
+import SimpleListLoading from "./SimpleListLoading.vue";
 
 export default defineComponent({
   name: "SimpleList",
+  components: {SimpleListEntry, SimpleListLoading},
+  props: {
+    state: {type: Number as PropType<LoadingStates>, required: false, default: LoadingStates.Loaded},
+  },
   computed: {
     LoadingStates() {
       return LoadingStates
     }
-  },
-  components: {SimpleListEntry, SimpleListLoading},
-  props: {
-    state: {type: Number as PropType<LoadingStates>, required: false, default: LoadingStates.Loaded},
   },
 })
 </script>

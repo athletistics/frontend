@@ -1,8 +1,8 @@
 <template>
   <Dialog v-model:visible="visible" modal>
-    <form class="space-y-8 with-label">
+    <form class="space-y-8">
       <span class="p-float-label p-fluid">
-        <InputText id="name" v-model="newTeam.name" :class="{'p-invalid': errors.name}" v-tooltip="errors.name"/>
+        <InputText id="name" v-model="newTeam.name" v-tooltip="errors.name" :class="{'p-invalid': errors.name}"/>
         <label for="name">{{ $t('page.club.teamName') }}</label>
       </span>
     </form>
@@ -26,23 +26,22 @@
 
 <script setup lang="ts">
 
-import axios from "axios";
+import axios, {AxiosError} from "axios";
+import Dialog from "primevue/dialog";
+import {useForm} from "vee-validate";
 import {reactive, ref} from "vue";
 import {object, string} from 'yup';
-import {useForm} from "vee-validate";
-import Dialog from "primevue/dialog";
 
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import Team from "@/types/Team";
-import LoadingState from "@/types/LoadingState";
-import {LoadingStates} from "@/types/LoadingStates";
+import DialogFooter from "@/components/dialogs/DialogFooter.vue";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
 import Const from "@/plugins/Constants";
-
 import {useAuthStore} from "@/stores/auth";
 import {useToastStore} from "@/stores/toast";
 import {useMyUserStore} from "@/stores/user";
-import DialogTitle from "@/components/dialogs/DialogTitle.vue";
-import DialogFooter from "@/components/dialogs/DialogFooter.vue";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import Team from "@/types/Team";
 
 const emits = defineEmits(['success'])
 
@@ -66,7 +65,7 @@ const newTeam = reactive({
 })
 
 const createState = reactive<LoadingState>({state: NaN})
-const createTeam = handleSubmit(_ => {
+const createTeam = handleSubmit(() => {
   createState.state = LoadingStates.Loading
   axios.request({
     url: "/club/" + userStore.user.clubId + "/teams",
@@ -80,7 +79,7 @@ const createTeam = handleSubmit(_ => {
     createState.state = LoadingStates.Loaded
     emits('success')
     setVisibility(false)
-  }).catch(error => {
+  }).catch((error: AxiosError) => {
     createState.state = LoadingStates.Error
     toastStore.addToastFromAxiosError(error)
   })
@@ -90,7 +89,7 @@ const createTeam = handleSubmit(_ => {
 // dialog visibility management
 // ----------------------------
 const visible = ref(false)
-const setVisibility = (val: boolean) => {
+const setVisibility = (val: boolean): void => {
   visible.value = val
 
   resetForm()

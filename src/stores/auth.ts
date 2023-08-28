@@ -1,6 +1,8 @@
-import {acceptHMRUpdate, defineStore} from 'pinia'
 import axios, {AxiosResponse} from "axios";
+import {acceptHMRUpdate, defineStore} from 'pinia'
+
 import Const from "@/plugins/Constants";
+
 import {useMyUserStore} from "./user";
 
 interface State {
@@ -15,8 +17,7 @@ export const useAuthStore = defineStore('auth', {
     is2FaOk: false,
     has2Fa: false
   }),
-  getters: {
-  },
+  getters: {},
   actions: {
     updateFromServer(callback?: (response: AxiosResponse<any, any>) => void) {
       if (this.token == "") return
@@ -29,7 +30,7 @@ export const useAuthStore = defineStore('auth', {
         headers: {
           'Authorization': 'Bearer ' + this.token
         }
-      }).then(response => {
+      }).then((response: AxiosResponse<{ authRoles: { club: string, role: string }[], has2Fa: boolean, is2FaOk: boolean }>) => {
         userStore.setRoles(response.data.authRoles)
 
         this.has2Fa = response.data.has2Fa
@@ -54,6 +55,6 @@ export const useAuthStore = defineStore('auth', {
   persist: true
 })
 
-if(import.meta.hot) {
+if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
 }

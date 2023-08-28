@@ -1,5 +1,4 @@
 import Club from "./Club";
-import Place from "./Place";
 import Country from "./Country";
 
 export default interface User {
