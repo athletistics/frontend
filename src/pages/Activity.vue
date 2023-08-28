@@ -46,7 +46,7 @@
   </SimpleTable>
 
   <AttendanceModal ref="attendance" :users="users"/>
-  <InstanceModal ref="instance" @created="getInstances"/>
+  <DialogInstance ref="instance" @success="getInstances"/>
 
 </template>
 
@@ -70,7 +70,7 @@ import BtnMenu from "@/components/button/BtnMenu.vue";
 import LabeledText from "@/components/LabeledText.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import SimpleTable from "@/components/list/SimpleTable.vue";
-import InstanceModal from "@/components/dialogs/nds/DialogInstance.vue";
+import DialogInstance from "@/components/dialogs/nds/DialogInstance.vue";
 import BtnMenuEntry from "@/components/button/BtnMenuEntry.vue";
 import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
 import AttendanceModal from "@/components/dialogs/nds/DialogAttendance.vue";
@@ -82,7 +82,7 @@ export default defineComponent({
   components: {
     BtnMenuEntry,
     BtnMenu,
-    InstanceModal,
+    DialogInstance,
     AttendanceModal,
     LoadingBtn,
     SimpleTableCell,

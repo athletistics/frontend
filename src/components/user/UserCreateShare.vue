@@ -1,78 +1,94 @@
 <template>
-  <LoadingBtn :loading="state" @click="getCode">{{$t('comp.shareUser.share')}}</LoadingBtn>
-  <Teleport to="body">
-    <Modal ref="modal">
-      <form class="with-label grid gap-4 max-w-full overflow-hidden">
-        <h3>{{ $t('comp.shareUser.title.code') }}</h3>
+  <LoadingBtn :loading="state" @click="getCode">{{ $t('comp.shareUser.share') }}</LoadingBtn>
 
-        <div>
-          <label>{{ $t('comp.shareUser.description') }}</label>
-          <input disabled v-model="code.code">
-        </div>
+  <Dialog v-model:visible="visible" modal>
+    <form class="space-y-8">
 
-        <div class="grid grid-cols-2 gap-4">
-        <LoadingBtn outlined @click="close">{{ $t('glob.btn.close') }}</LoadingBtn>
-        <LoadingBtn outlined @click="copyCode">{{ $t('glob.btn.copy') }}</LoadingBtn>
-        </div>
-      </form>
-    </Modal>
-  </Teleport>
+      <label for="code">{{ $t('comp.shareUser.description') }}</label>
+      <div class="p-inputgroup flex-1">
+        <InputText id="code" disabled v-model="code.code"/>
+        <Button icon="pi pi-copy" @click="copyCode" severity="secondary" />
+      </div>
+
+    </form>
+
+    <template #header>
+      <DialogTitle>
+        {{ t('comp.shareUser.title.code') }}
+      </DialogTitle>
+    </template>
+
+    <template #footer>
+      <div class="grid">
+        <LoadingBtn full outlined @click="setVisibility(false)">
+          {{ t('glob.btn.close') }}
+        </LoadingBtn>
+      </div>
+    </template>
+  </Dialog>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import axios from "axios";
-import {defineComponent, PropType} from 'vue'
+import {PropType, reactive, ref} from 'vue'
 
 import {useAuthStore} from "@/stores/auth";
-import {useToastStore} from "@/stores/toast";
 
 import Const from "@/plugins/Constants";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
-import Modal from "@/components/dialogs/Modal.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import {useToast} from "primevue/usetoast";
+import {fromAxiosError} from "@/plugins/ToastWriter";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import {useI18n} from "vue-i18n";
+import Button from "primevue/button";
 
-export default defineComponent({
-  name: "UserCreateShare",
-  components: {LoadingBtn, Modal},
-  props: {
-    user: {type: String as PropType<string>, required: true}
-  },
-  setup() {
-    const authStore = useAuthStore()
-    const toastStore = useToastStore()
-    return {authStore, toastStore}
-  },
-  data() {
-    return {
-      state: {state: NaN} as LoadingState,
-      code: {} as { code: string }
-    }
-  },
-  methods: {
-    getCode() {
-      this.state.state = LoadingStates.Loading
+const props = defineProps({
+  user: {type: String as PropType<string>, required: true}
+})
 
-      axios.request({
-        url: 'users/share?userId=' + this.user, method: 'get', baseURL: Const.API_URL,
-        headers: {'Authorization': 'Bearer ' + this.authStore.token}
-      }).then(response => {
-        this.code = response.data
-        this.state.state = LoadingStates.Loaded;
-        (this.$refs.modal as any).setVisibility(true)
-      }).catch(error => {
-        this.toastStore.addToastFromAxiosError(error)
-        this.state.state = LoadingStates.Error
-      })
-    },
-    close() {
-      (this.$refs.modal as any).setVisibility(false)
-    },
-    copyCode() {
-      navigator.clipboard.writeText(this.code.code)
-      this.toastStore.addSuccessToast()
-    }
-  }
+const authStore = useAuthStore()
+const toast = useToast()
+const {t} = useI18n()
+
+
+const state = reactive<LoadingState>({state: NaN})
+const code = ref({code: ""})
+
+const getCode = () => {
+  state.state = LoadingStates.Loading
+
+  axios.request({
+    url: 'users/share?userId=' + props.user, method: 'get', baseURL: Const.API_URL,
+    headers: {'Authorization': 'Bearer ' + authStore.token}
+  }).then(response => {
+    code.value = response.data
+    state.state = LoadingStates.Loaded
+    setVisibility(true)
+  }).catch(error => {
+    toast.add(fromAxiosError(error))
+    state.state = LoadingStates.Error
+  })
+}
+
+const copyCode = () => {
+  navigator.clipboard.writeText(code.value.code)
+  toast.add({summary: 'Success', life: 2000, severity: "success"})
+}
+
+// ----------------------------
+// dialog visibility management
+// ----------------------------
+const visible = ref(false)
+const setVisibility = (val: boolean) => {
+  visible.value = val
+
+  if (!val) code.value = {code: ""}
+}
+
+defineExpose({
+  setVisibility
 })
 </script>
 

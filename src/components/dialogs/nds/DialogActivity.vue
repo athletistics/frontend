@@ -54,9 +54,6 @@
       </DialogFooter>
     </template>
   </Dialog>
-  <Modal ref="modal" classes="lg:max-w-5xl">
-
-  </Modal>
 </template>
 
 <script setup lang="ts">
@@ -68,7 +65,6 @@ import {useAuthStore} from "@/stores/auth";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
 import Const from "@/plugins/Constants";
-import Modal from "@/components/dialogs/Modal.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import DialogTitle from "@/components/dialogs/DialogTitle.vue";
 import DialogFooter from "@/components/dialogs/DialogFooter.vue";

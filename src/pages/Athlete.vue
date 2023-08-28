@@ -80,7 +80,7 @@
   <ResultList :results="results" :show-user="false" :state="resultsState"></ResultList>
 
   <ModalResult ref="modal" :is-personal="isMe" :user="data"></ModalResult>
-  <ExternalIdModal :internal-id="userId" :existing-ids="externalIds" @created="getExternalIds()" ref="externalIdModal"/>
+  <DialogCreateExternalId :internal-id="userId" :existing-ids="externalIds" @success="getExternalIds()" ref="externalIdModal"/>
   <ModalResultImport ref="importModal" @created="getResults"/>
 
 </template>
@@ -106,13 +106,14 @@ import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import ResultCard from "@/components/results/ResultCard.vue";
 import ModalResult from "@/components/dialogs/DialogResult.vue";
 import ResultList from "@/components/results/ResultTable.vue";
-import ExternalIdModal from "@/components/user/ExternalIdModal.vue";
+import DialogCreateExternalId from "@/components/user/DialogAddExternalId.vue";
 import UserCreateShare from "@/components/user/UserCreateShare.vue";
 import BtnStravaImport from "@/components/button/BtnResultImport.vue";
 import ResultEvolution from "@/components/results/ResultEvolution.vue";
 import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
 import ModalResultImport from "@/components/dialogs/DialogResultImport.vue";
 import ResultLimitComparison from "@/components/results/ResultLimitComparison.vue";
+import {ExternalId} from "@/types/ExternalId";
 
 export default defineComponent({
   name: "Athlete",
@@ -121,7 +122,7 @@ export default defineComponent({
     ModalResultImport,
     BtnResultImport: BtnStravaImport,
     BtnPlus,
-    ExternalIdModal,
+    DialogCreateExternalId,
     LoadingBtn,
     ResultLimitComparison,
     TitleWithBtnPlus, LabeledText, ResultEvolution, ResultList, ModalResult, ResultCard

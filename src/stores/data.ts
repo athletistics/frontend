@@ -15,6 +15,7 @@ import Discipline from "@/types/Discipline";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
 import Const from "@/plugins/Constants";
+import {ExternalId} from "@/types/ExternalId";
 
 interface State {
   externalIdTypes: ExternalId.Type[]
