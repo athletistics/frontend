@@ -6,12 +6,15 @@
     <div class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <LabeledText :state="dataState" label="glob.user.firstName" :text="data.firstName"/>
       <LabeledText :state="dataState" label="glob.user.lastName" :text="data.lastName"/>
-      <LabeledText :state="dataState" label="glob.user.birthdate"
-                   :text="data.birthDate ? $d(new Date(data.birthDate)) : undefined"/>
-      <LabeledText :state="dataState" label="glob.user.prefLang"
-                   :text="dataStore.getLanguageById(data.languageId)?.short"/>
-      <LabeledText :state="dataState" label="glob.user.gender"
-                   :text="data.genderId ? $t('data.gender['+(data.genderId-1)+']') : undefined"/>
+      <LabeledText
+          :state="dataState" label="glob.user.birthdate"
+          :text="data.birthDate ? $d(new Date(data.birthDate)) : undefined"/>
+      <LabeledText
+          :state="dataState" label="glob.user.prefLang"
+          :text="dataStore.getLanguageById(data.languageId)?.short"/>
+      <LabeledText
+          :state="dataState" label="glob.user.gender"
+          :text="data.genderId ? $t('data.gender['+(data.genderId-1)+']') : undefined"/>
       <LabeledText :state="dataState" label="glob.user.oasi" :text="data.oasi"/>
       <LabeledText :state="dataState" label="glob.user.address" :text="data.address"/>
       <LabeledText :state="dataState" label="glob.user.city" :text="`${data.postCode} ${data.city}`"/>
@@ -29,26 +32,30 @@
       <!-- Strava connection -->
       <LoadingBtn v-if="data.userState==USER_STATE_INITIAL" disabled>{{ $t("page.user.sendInit") }}</LoadingBtn>
       <LabeledText v-if="isMe && userStore.hasStravaToken" :state="dataState" label="page.user.strava">
-        {{ $t('page.user.stravaActive') }}, <a @click="revokeStrava" class="cursor-pointer"
-                                               style="color: #FC4C02">{{ $t('page.user.disconnectStrava') }}</a>
+        {{ $t('page.user.stravaActive') }}, <a
+          class="cursor-pointer" style="color: #FC4C02"
+          @click="revokeStrava">{{ $t('page.user.disconnectStrava') }}</a>
       </LabeledText>
-      <LoadingBtn v-if="isMe && !userStore.hasStravaToken" style="background-color: #FC4C02" class="!p-0"
-                  @click="redirectToStrava" :loading="stravaState">
+      <LoadingBtn
+          v-if="isMe && !userStore.hasStravaToken" style="background-color: #FC4C02" class="!p-0"
+          :loading="stravaState" @click="redirectToStrava">
         <img src="../assets/strava/btn_strava_connectwith_orange.svg" class="inline">
       </LoadingBtn>
     </div>
 
     <!-- External IDs -->
-    <div class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3" v-if="externalIds?.length">
-      <LabeledText v-for="e in externalIds" i18n
-                   :label="'data.' + dataStore.getExternalIdTypeById(e.externalIdTypeId)?.i18nName">{{ e.externalId }}
+    <div v-if="externalIds?.length" class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <LabeledText
+          v-for="e in externalIds" i18n
+          :label="'data.' + dataStore.getExternalIdTypeById(e.externalIdTypeId)?.i18nName">{{ e.externalId }}
       </LabeledText>
     </div>
 
     <!-- Actions -->
-    <div class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3" v-if="userStore.user.clubId === data.clubId && !isMe">
-      <LoadingBtn v-if="canManageUsers() && externalIds.length < dataStore.externalIdTypes.length"
-                  @click="setExternalIdModalVisibility(true)">{{ $t('page.user.addExternalId') }}
+    <div v-if="userStore.user.clubId === data.clubId && !isMe" class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <LoadingBtn
+          v-if="canManageUsers() && externalIds.length < dataStore.externalIdTypes.length"
+          @click="setExternalIdModalVisibility(true)">{{ $t('page.user.addExternalId') }}
       </LoadingBtn>
       <UserCreateShare v-if="canManageUsers()" :user="userId"/>
       <LoadingBtn v-if="data.id && !data.withLogin" disabled>{{ $t("page.user.createLogin") }}</LoadingBtn>
@@ -72,45 +79,50 @@
 
   <div class="flex items-center">
     <h1 class="grow">{{ $t(`page.${pref}.title.results`) }}</h1>
-    <BtnResultImport v-if="isMe && userStore.hasStravaToken" @click="setResultImportModalVisibility(true)"
-                     class="mr-2"/>
+    <BtnResultImport
+        v-if="isMe && userStore.hasStravaToken" class="mr-2"
+        @click="setResultImportModalVisibility(true)"/>
     <BtnPlus v-if="canManageResults() || !$route.params.id" @click="setModalVisibility(true)"/>
   </div>
 
   <ResultList :results="results" :show-user="false" :state="resultsState"></ResultList>
 
   <ModalResult ref="modal" :is-personal="isMe" :user="data"></ModalResult>
-  <ExternalIdModal :internal-id="userId" :existing-ids="externalIds" @created="getExternalIds()" ref="externalIdModal"/>
+  <DialogCreateExternalId
+      ref="externalIdModal" :internal-id="userId" :existing-ids="externalIds"
+      @success="getExternalIds()"/>
   <ModalResultImport ref="importModal" @created="getResults"/>
 
 </template>
 
 <script lang="ts">
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {defineComponent} from "vue";
-import axios from "axios";
-import User, {USER_STATE_INITIAL,} from "../types/User";
-import {useAuthStore} from "../stores/auth";
-import {useDataStore} from "../stores/data";
-import {useToastStore} from "../stores/toast";
-import {LoadingStates} from "../types/LoadingStates";
 
-import LabeledText from "../components/LabeledText.vue";
-import ResultCard from "../components/results/ResultCard.vue";
-import ModalResult from "../components/modals/ModalResult.vue";
-import ResultList from "../components/results/ResultTable.vue";
-import ResultEvolution from "../components/results/ResultEvolution.vue";
-import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
-import {canManageResults, canManageUsers} from "../plugins/AccessControl";
-import ResultLimitComparison from "../components/results/ResultLimitComparison.vue";
-import LoadingBtn from "../components/button/LoadingBtn.vue";
-import {useMyUserStore} from "../stores/user";
-import ExternalIdModal from "../components/user/ExternalIdModal.vue";
-import Const from '../plugins/Constants'
-import LoadingState from "../types/LoadingState";
-import BtnPlus from "../components/button/BtnPlus.vue";
-import BtnStravaImport from "../components/button/BtnResultImport.vue";
-import ModalResultImport from "../components/modals/ModalResultImport.vue";
-import UserCreateShare from "../components/user/UserCreateShare.vue";
+import BtnPlus from "@/components/button/BtnPlus.vue";
+import BtnStravaImport from "@/components/button/BtnResultImport.vue";
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import ModalResult from "@/components/dialogs/DialogResult.vue";
+import ModalResultImport from "@/components/dialogs/DialogResultImport.vue";
+import LabeledText from "@/components/LabeledText.vue";
+import ResultCard from "@/components/results/ResultCard.vue";
+import ResultEvolution from "@/components/results/ResultEvolution.vue";
+import ResultLimitComparison from "@/components/results/ResultLimitComparison.vue";
+import ResultList from "@/components/results/ResultTable.vue";
+import DialogCreateExternalId from "@/components/user/DialogAddExternalId.vue";
+import UserCreateShare from "@/components/user/UserCreateShare.vue";
+import {canManageResults, canManageUsers} from "@/plugins/AccessControl";
+import Const from '@/plugins/Constants'
+import {routeQueryToString} from "@/plugins/Helper";
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useToastStore} from "@/stores/toast";
+import {useMyUserStore} from "@/stores/user";
+import {ExternalId} from "@/types/ExternalId";
+import IntDialog from "@/types/IntDialog";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import User, {USER_STATE_INITIAL,} from "@/types/User";
 
 export default defineComponent({
   name: "Athlete",
@@ -119,10 +131,10 @@ export default defineComponent({
     ModalResultImport,
     BtnResultImport: BtnStravaImport,
     BtnPlus,
-    ExternalIdModal,
+    DialogCreateExternalId,
     LoadingBtn,
     ResultLimitComparison,
-    TitleWithBtnPlus, LabeledText, ResultEvolution, ResultList, ModalResult, ResultCard
+    LabeledText, ResultEvolution, ResultList, ModalResult, ResultCard
   },
   setup() {
     const authStore = useAuthStore()
@@ -159,17 +171,27 @@ export default defineComponent({
       return typeof this.$route.params.id === 'string' ? this.$route.params.id : this.$route.params.id.join('')
     }
   },
+  watch: {
+    "$route.params.id"() {
+      (this.$refs.evolutionChart as { resetData: Function }).resetData()
+      this.loadData()
+    }
+  },
+  mounted() {
+    this.loadData()
+    this.connectStrava()
+  },
   methods: {
     canManageUsers,
     canManageResults,
     setModalVisibility(visible: boolean) {
-      (this.$refs.modal as any).setVisibility(visible)
+      (this.$refs.modal as IntDialog).setVisibility(visible)
     },
     setExternalIdModalVisibility(visible: boolean) {
-      (this.$refs.externalIdModal as any).setVisibility(visible)
+      (this.$refs.externalIdModal as IntDialog).setVisibility(visible)
     },
     setResultImportModalVisibility(visible: boolean) {
-      (this.$refs.importModal as any).setVisibility(visible)
+      (this.$refs.importModal as IntDialog).setVisibility(visible)
     },
     getResults() {
       const url = this.isMe ? "/me/results" : `/results?userId=${this.userId}`
@@ -182,7 +204,7 @@ export default defineComponent({
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         }
-      }).then(response => {
+      }).then((response: AxiosResponse<Result.Data[], any>) => {
         this.resultsState = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
         if (!response.data?.length) return
 
@@ -190,10 +212,10 @@ export default defineComponent({
 
         // load data into evolution chart, whith user's name as a label
         const name = response.data[0]?.userLastName + " " + response.data[0]?.userFirstName
-        const chart = this.$refs.evolutionChart as typeof ResultEvolution
+        const chart: { dataMap: Map<string, Result.Data[]> } = this.$refs.evolutionChart as { dataMap: Map<string, Result.Data[]> }
 
         chart.dataMap.set(name, response.data)
-      }).catch(response => {
+      }).catch((response: AxiosError) => {
         this.resultsState = LoadingStates.Error
         this.toastStore.addToastFromAxiosError(response)
       })
@@ -208,9 +230,9 @@ export default defineComponent({
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         }
-      }).then(response => {
+      }).then((response: AxiosResponse<Result.Data[], any>) => {
         this.bests = response.data
-      }).catch(response => this.toastStore.addToastFromAxiosError(response))
+      }).catch((response: AxiosError) => this.toastStore.addToastFromAxiosError(response))
     },
     getUser() {
       const url = this.isMe ? "/me" : `/users/${this.userId}`
@@ -224,10 +246,10 @@ export default defineComponent({
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         }
-      }).then(response => {
+      }).then((response: AxiosResponse<User, any>) => {
         this.data = response.data
         this.dataState = LoadingStates.Loaded
-      }).catch(response => {
+      }).catch((response: AxiosError) => {
         this.toastStore.addToastFromAxiosError(response)
         this.dataState = LoadingStates.Error
       })
@@ -242,9 +264,9 @@ export default defineComponent({
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         }
-      }).then(response => {
+      }).then((response: AxiosResponse<ExternalId.Id[], any>) => {
         this.externalIds = response.data
-      }).catch(response => this.toastStore.addToastFromAxiosError(response))
+      }).catch((response: AxiosError) => this.toastStore.addToastFromAxiosError(response))
     },
     redirectToStrava() {
       window.open(this.stravaConnectLink, '_self')
@@ -257,17 +279,17 @@ export default defineComponent({
 
       this.stravaState.state = LoadingStates.Loading
       axios.request({
-        url: '?code=' + this.$route.query.code, method: 'post', baseURL: Const.STRAVA_API_URL,
+        url: '?code=' + routeQueryToString(this.$route.query.code), method: 'post', baseURL: Const.STRAVA_API_URL,
         headers: {'Authorization': 'Bearer ' + this.authStore.token}
       }).then(() => {
         this.stravaState.state = LoadingStates.Loaded
         this.userStore.updateStrava()
         this.toastStore.addSuccessToast()
-        this.$router.push('/me') // reset query params
-      }).catch(error => {
+        void this.$router.push('/me') // reset query params
+      }).catch((error: AxiosError) => {
         this.stravaState.state = LoadingStates.Error
         this.toastStore.addToastFromAxiosError(error)
-        this.$router.push('/me') // reset query params
+        void this.$router.push('/me') // reset query params
       })
     },
     revokeStrava() {
@@ -278,12 +300,10 @@ export default defineComponent({
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         }
-      })
-          .then(response => {
-            this.userStore.updateStrava()
-            this.toastStore.addSuccessToast()
-          })
-          .catch(response => this.toastStore.addToastFromAxiosError(response))
+      }).then(() => {
+        this.userStore.updateStrava()
+        this.toastStore.addSuccessToast()
+      }).catch((response: AxiosError) => this.toastStore.addToastFromAxiosError(response))
     },
     loadData() {
       this.getBests()
@@ -291,16 +311,6 @@ export default defineComponent({
       this.getUser()
       this.getExternalIds()
     }
-  },
-  watch: {
-    "$route.params.id"(val) {
-      (this.$refs.evolutionChart as any).resetData()
-      this.loadData()
-    }
-  },
-  mounted() {
-    this.loadData()
-    this.connectStrava()
   }
 })
 </script>

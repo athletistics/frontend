@@ -3,7 +3,7 @@
     <SimpleTableRow v-for="r in results">
       <SimpleTableCell v-if="showUser">{{ r.userLastName }} {{ r.userFirstName }}</SimpleTableCell>
       <SimpleTableCell v-if="showDisciplines" class="table-cell">{{
-          $te('data.' + r.disciplineName) ? $t('data.' + r.disciplineName) : r.disciplineName
+          te('data.' + r.disciplineName) ? $t('data.' + r.disciplineName) : r.disciplineName
         }}</SimpleTableCell>
       <SimpleTableCell>{{ getFormattedValue(r) }}</SimpleTableCell>
       <SimpleTableCell v-if="showEvent">{{ r.eventName }} - {{
@@ -18,27 +18,29 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import {LoadingStates} from "../../types/LoadingStates";
-import {formatResult} from "../../plugins/Helper";
-import {useDataStore} from "../../stores/data";
-import ListStates from "../list/TableStates.vue";
-import SimpleTable from "../list/SimpleTable.vue";
-import SimpleTableRow from "../list/SimpleTableRow.vue";
-import SimpleTableCell from "../list/SimpleTableCell.vue";
+import {useI18n} from "vue-i18n";
+
+import SimpleTable from "@/components/list/SimpleTable.vue";
+import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
+import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import {formatResult} from "@/plugins/Helper";
+import {useDataStore} from "@/stores/data";
+import {LoadingStates} from "@/types/LoadingStates";
 
 export default defineComponent({
   name: "ResultTable",
-  components: {SimpleTableCell, SimpleTableRow, SimpleTable, ListStates},
-  setup() {
-    const dataStore = useDataStore()
-    return {dataStore}
-  },
+  components: {SimpleTableCell, SimpleTableRow, SimpleTable},
   props: {
     results: {type: Array as PropType<Result.Data[]>, required: true},
     showDisciplines: {type: Boolean, default: true},
     showUser: {type: Boolean, default: true},
     showEvent: {type: Boolean, default: true},
     state: {type: Number as PropType<LoadingStates>, default: LoadingStates.Loaded, required: false}
+  },
+  setup() {
+    const dataStore = useDataStore()
+    const {te} = useI18n()
+    return {dataStore, te}
   },
   computed: {
     headers() {
@@ -55,7 +57,6 @@ export default defineComponent({
       return LoadingStates
     },
     getFormattedValue() {
-      this.dataStore.maps.disciplines?.size
       return (result: Result.Data) => {
         return formatResult(result.value, this.dataStore.getDisciplineById(result.disciplineId))
       }

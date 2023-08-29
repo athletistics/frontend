@@ -1,6 +1,4 @@
 import {acceptHMRUpdate, defineStore} from 'pinia'
-import Toast from "../types/Toast";
-import {AxiosError} from "axios";
 
 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 const charactersLength = characters.length;

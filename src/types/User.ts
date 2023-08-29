@@ -1,5 +1,4 @@
 import Club from "./Club";
-import Place from "./Place";
 import Country from "./Country";
 
 export default interface User {
@@ -15,6 +14,7 @@ export default interface User {
   oasi?: string,
   birthDate: Date | string,
   address: string,
+  houseNumber: string,
   postCode: string,
   city: string,
   countryId: number,

@@ -1,21 +1,20 @@
 import {createRouter, createWebHistory, RouteLocationNormalized} from 'vue-router'
 
+import Activity from "./pages/Activity.vue"
 import Athlete from "./pages/Athlete.vue"
+import Athletes from "./pages/Athletes.vue"
+import Callback from "./pages/Callback.vue"
 import Club from "./pages/Club.vue"
-import Home from "./pages/Home.vue"
-import Team from "./pages/Team.vue"
+import Elevate from "./pages/Elevate.vue"
 import Event from "./pages/Event.vue"
 import Events from "./pages/Events.vue"
-import Elevate from "./pages/Elevate.vue"
+import Home from "./pages/Home.vue"
 import Landing from "./pages/Landing.vue"
+import References from "./pages/References.vue"
 import Results from "./pages/Results.vue"
-import Callback from "./pages/Callback.vue"
-import Athletes from "./pages/Athletes.vue"
-import Activity from "./pages/Activity.vue"
-
+import Team from "./pages/Team.vue"
 import {OPEN_ROUTES, TOTPLESS_ROUTES} from "./plugins/Constants"
 import {useAuthStore} from "./stores/auth"
-import References from "./pages/References.vue"
 
 const routes = [
   {path: '/', name: 'index', component: Landing},
@@ -46,7 +45,7 @@ const router = createRouter({
   routes: routes
 })
 
-function isRouteProtected(route: RouteLocationNormalized) {
+function isRouteProtected(route: RouteLocationNormalized): boolean {
   for (let i = 0; i < OPEN_ROUTES.length; i++) {
     // @ts-ignore
     if (OPEN_ROUTES[i] == route?.name) {
@@ -56,7 +55,7 @@ function isRouteProtected(route: RouteLocationNormalized) {
   return true
 }
 
-function isRouteTotpProtected(route: RouteLocationNormalized) {
+function isRouteTotpProtected(route: RouteLocationNormalized): boolean {
   for (let i = 0; i < TOTPLESS_ROUTES.length; i++) {
     // @ts-ignore
     if (TOTPLESS_ROUTES[i] == route?.name) {

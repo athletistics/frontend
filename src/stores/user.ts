@@ -1,7 +1,9 @@
+import axios, {AxiosResponse} from "axios";
 import {acceptHMRUpdate, defineStore} from 'pinia'
-import User from "../types/User";
-import axios from "axios";
-import Const from "../plugins/Constants";
+
+import Const from "@/plugins/Constants";
+import User from "@/types/User";
+
 import {useAuthStore} from "./auth";
 
 interface State {
@@ -31,7 +33,7 @@ export const useMyUserStore = defineStore('myUser', {
       axios.request({
         url: "/me", method: 'get', baseURL: Const.API_URL,
         headers: {'Authorization': 'Bearer ' + authStore.token}
-      }).then(response => {
+      }).then((response: AxiosResponse<User, any>) => {
         this.user = response.data
       }).catch(() => {
       })
@@ -49,7 +51,7 @@ export const useMyUserStore = defineStore('myUser', {
         headers: {
           'Authorization': 'Bearer ' + authStore.token
         }
-      }).then(response => {
+      }).then(() => {
         this.hasStravaToken = true
       }).catch(() => {
         this.hasStravaToken = false

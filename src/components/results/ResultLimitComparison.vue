@@ -47,29 +47,30 @@
 </template>
 
 <script lang="ts">
-import {Radar} from 'vue-chartjs'
+import 'chartjs-adapter-moment';
+
 import {
   Chart as ChartJS,
   ChartOptions,
   Filler,
-  Title,
-  Tooltip,
   Legend,
   LineController,
   LineElement,
-  RadialLinearScale,
   PointElement,
+  RadialLinearScale,
+  Title,
+  Tooltip,
 } from 'chart.js'
-import 'chartjs-adapter-moment';
+import {defineComponent, PropType} from 'vue'
+import {Radar} from 'vue-chartjs'
 
-import {defineComponent, PropType, ref} from 'vue'
-import {useAuthStore} from "../../stores/auth";
-import {useDataStore} from "../../stores/data";
-import {useToastStore} from "../../stores/toast";
-import {formatResult} from "../../plugins/Helper";
-import LoadingState from "../../types/LoadingState";
-import Category from "../../types/Category";
-import {CHART_COLOR_TRANSPARENT, CHART_COLORS, transparentize} from "../../plugins/ChartUtils";
+import {CHART_COLOR_TRANSPARENT, CHART_COLORS, transparentize} from "@/plugins/ChartUtils";
+import {formatResult} from "@/plugins/Helper";
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useToastStore} from "@/stores/toast";
+import Category from "@/types/Category";
+import LoadingState from "@/types/LoadingState";
 
 ChartJS.register(Filler, Title, Tooltip, Legend, LineController, LineElement, PointElement, RadialLinearScale)
 export default defineComponent({
@@ -98,19 +99,15 @@ export default defineComponent({
       trackBests: [] as number[],
       fieldReferences: [] as number[],
       fieldBests: [] as number[],
-      typeId: NaN as number,
+      typeId: NaN ,
       state: {state: NaN} as LoadingState
     }
-  },
-  mounted() {
-    // select first result type on loading
-    this.typeId = this.dataStore.staticResultTypes[0].id
   },
   computed: {
     // search for all categories that have static results for the selected static result type
     filteredCategories(): Category[] {
       // categories are stored in a set, simplifying the search for distinct categories
-      let categories = new Set<Category>()
+      const categories = new Set<Category>()
 
       this.dataStore.staticResults.forEach(r => {
         // reject static results of different types
@@ -147,7 +144,7 @@ export default defineComponent({
             suggestedMax: this.MaxPercent,
             suggestedMin: this.MinPercent,
             ticks: {
-              callback: (value, index, ticks) => {
+              callback: (value) => {
                 return value + '%'
               }
             },
@@ -157,7 +154,7 @@ export default defineComponent({
           tooltip: {
             callbacks: {
               label: (context) => {
-                const raw = context.raw as any
+                const raw = context.raw as {val: string, r: number, disciplineId: string}
                 const formattedResult = formatResult(raw.val.toString(), this.dataStore.getDisciplineById(raw.disciplineId))
                 return `${context.dataset.label}: ${formattedResult} (${raw.r.toFixed(2)}%)`
               }
@@ -167,10 +164,14 @@ export default defineComponent({
       }
     },
   },
+  mounted() {
+    // select first result type on loading
+    this.typeId = this.dataStore.staticResultTypes[0].id
+  },
   methods: {
     computeDatasets(results: Result.Data[], isDescending: boolean) {
-      let labels = [] as string[]
-      let datasets = [{
+      const labels = [] as string[]
+      const datasets = [{
         label: this.$t('glob.result.limit'),
         data: [] as any[],
         pointBackgroundColor: transparentize(CHART_COLORS.green, 0.5),
@@ -185,7 +186,7 @@ export default defineComponent({
       }]
 
       // create a dataset entry for each available result set
-      results.forEach((result, name) => {
+      results.forEach((result) => {
         const discipline = this.dataStore.getDisciplineById(result.disciplineId)
 
         // only continue for existing disciplines that are sorted in ascending order

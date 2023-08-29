@@ -1,18 +1,21 @@
+import axios, {AxiosResponse} from "axios";
 import {acceptHMRUpdate, defineStore} from 'pinia'
-import Discipline from "../types/Discipline";
-import axios from "axios";
-import Const from "../plugins/Constants";
+
+import Const from "@/plugins/Constants";
+import Category from "@/types/Category";
+import Country from "@/types/Country";
+import Discipline from "@/types/Discipline";
+import Event from "@/types/Event";
+import EventType from "@/types/EventType";
+import {ExternalId} from "@/types/ExternalId";
+import Indexable from "@/types/Indexable";
+import Language from "@/types/Language";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import {Nds} from "@/types/Nds";
+import User from "@/types/User";
+
 import {useAuthStore} from "./auth";
-import User from "../types/User";
-import Category from "../types/Category";
-import Event from "../types/Event";
-import EventType from "../types/EventType";
-import Language from "../types/Language";
-import LoadingState from "../types/LoadingState";
-import {LoadingStates} from "../types/LoadingStates";
-import Indexable from "../types/Indexable";
-import Country from "../types/Country";
-import {Nds} from "../types/Nds";
 
 interface State {
   externalIdTypes: ExternalId.Type[]
@@ -26,13 +29,18 @@ interface State {
   languages: Language[],
   events: Event[],
   users: User[]
-  maps: StateMaps
 }
 
 interface StateMaps {
   events: Map<string, Event>,
   categories: Map<string, Category>,
   disciplines: Map<string, Discipline>
+}
+
+const maps = {
+  events: new Map<string, Event>(),
+  categories: new Map<string, Category>(),
+  disciplines: new Map<string, Discipline>()
 }
 
 export const useDataStore = defineStore('data', {
@@ -48,11 +56,6 @@ export const useDataStore = defineStore('data', {
     languages: [] as Language[],
     events: [] as Event[],
     users: [] as User[],
-    maps: {
-      events: new Map<string, Event>(),
-      categories: new Map<string, Category>(),
-      disciplines: new Map<string, Discipline>()
-    }
   }),
   getters: {
     getExternalIdTypeById(state) {
@@ -70,24 +73,24 @@ export const useDataStore = defineStore('data', {
         return state.eventTypes.find(e => e.id === id)
       }
     },
-    getEventById(state) {
+    getEventById() {
       return (id: string): Event | undefined => {
-        if (!state.maps.events?.size) return undefined
-        return state.maps.events.get(id)
+        if (!maps.events?.size) return undefined
+        return maps.events.get(id)
       }
     },
-    getDisciplineById(state) {
+    getDisciplineById() {
       return (id: string): Discipline | undefined => {
-        if (!state.maps.disciplines?.size) return undefined
+        if (!maps.disciplines?.size) return undefined
 
-        return state.maps.disciplines.get(id)
+        return maps.disciplines.get(id)
       }
     },
-    getCategoryById(state) {
+    getCategoryById() {
       return (id: string): Category | undefined => {
-        if (!state.maps.categories?.size) return {id, name: "", gender: ""}
+        if (!maps.categories?.size) return {id, name: "", gender: ""}
 
-        return state.maps.categories.get(id)
+        return maps.categories.get(id)
       }
     },
     getReferenceValue(state) {
@@ -134,37 +137,38 @@ export const useDataStore = defineStore('data', {
       this.updateExternalIdTypes()
     },
     updateExternalIdTypes(s?: LoadingState) {
-      this.updateData<ExternalId.Type>('/externalId/idTypes', 'externalIdTypes', undefined, s, true)
+      void this.updateData<ExternalId.Type>('/externalId/idTypes', 'externalIdTypes', undefined, s, true)
     },
     updateActivityTypes(s?: LoadingState) {
-      this.updateData<Nds.ActivityType>('/nds/types', 'activityTypes', undefined, s, true)
+      void this.updateData<Nds.ActivityType>('/nds/types', 'activityTypes', undefined, s, true)
     },
     updateDisciplines(s?: LoadingState) {
-      this.updateData<Discipline>('/disciplines', 'disciplines', 'disciplines', s)
+      void this.updateData<Discipline>('/disciplines', 'disciplines', 'disciplines', s)
     },
     updateEvents(s?: LoadingState) {
-      this.updateData<Event>('/events', 'events', 'events', s)
+      void this.updateData<Event>('/events', 'events', 'events', s)
     },
     updateUsers(s?: LoadingState) {
-      this.updateData<User>('/users', 'users', undefined, s, true)
+      void this.updateData<User>('/users', 'users', undefined, s, true)
     },
     updateCategories(s?: LoadingState) {
-      this.updateData<Category>('/data/categories?sport=1', 'categories', 'categories', s)
+      void this.updateData<Category>('/data/categories?sport=1', 'categories', 'categories', s)
     },
-    updateCountries(s?: LoadingState){
-      this.updateData<Country>('/data/countries', 'countries', undefined, s)
+    updateCountries(s?: LoadingState) {
+      void this.updateData<Country>('/data/countries', 'countries', undefined, s)
     },
     updateStaticResults(s?: LoadingState) {
-      this.updateData('/results/static?sport=1', undefined, undefined, s)?.then(response => {
-        this.staticResults = response.data.results
-        this.staticResultTypes = response.data.types
-      })
+      void this.updateData('/results/static?sport=1', undefined, undefined, s)
+        ?.then((response: AxiosResponse<{ results: Result.Static[], types: Result.StaticType[] }, any>) => {
+          this.staticResults = response.data.results
+          this.staticResultTypes = response.data.types
+        })
     },
     updateEventTypes(s?: LoadingState) {
-      this.updateData<EventType>('/data/eventTypes?filter=false', 'eventTypes', undefined, s)
+      void this.updateData<EventType>('/data/eventTypes?filter=false', 'eventTypes', undefined, s)
     },
     updateLanguages(s?: LoadingState) {
-      this.updateData<Language>('/data/languages', 'languages', undefined, s)
+      void this.updateData<Language>('/data/languages', 'languages', undefined, s)
     },
     updateData<dataType extends Indexable>(url: string, targetProperty?: keyof State, targetMapProperty?: keyof StateMaps, stateObj?: LoadingState, requires2fa: boolean = false) {
       const authStore = useAuthStore()
@@ -185,7 +189,7 @@ export const useDataStore = defineStore('data', {
       })
 
       // process the response success and error
-      req.then(response => {
+      req.then((response: AxiosResponse<any[]>) => {
         // set the state to loaded or empty, based on the number of returned results
         if (stateObj) stateObj.state = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
 
@@ -196,13 +200,13 @@ export const useDataStore = defineStore('data', {
         this[targetProperty] = response.data
 
         if (targetMapProperty) {
-          (this.maps[targetMapProperty] as unknown as Map<string | number, dataType>) = new Map<string | number, dataType>();
+          (maps[targetMapProperty] as unknown as Map<string | number, dataType>) = new Map<string | number, dataType>();
           (this[targetProperty] as dataType[]).forEach(v => {
-            (this.maps[targetMapProperty] as unknown as Map<string | number, dataType>).set(v.id, v)
+            (maps[targetMapProperty] as unknown as Map<string | number, dataType>).set(v.id, v)
           })
         }
       }).catch(() => {
-        if(stateObj) stateObj.state = LoadingStates.Error
+        if (stateObj) stateObj.state = LoadingStates.Error
         console.log('error reading path ' + url)
       })
 

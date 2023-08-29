@@ -5,8 +5,9 @@
 
     <ul role="list" class="divide-y divide-slate-200 overflow-hidden">
       <li v-for="a in users.coaches" class="flex px-4 hover:bg-main cursor-pointer main-transition">
-        <input class="mr-2 cursor-pointer" :id="a.id" type="checkbox"
-               :value="a.id" v-model="selectedCoaches">
+        <input
+            :id="a.id" v-model="selectedCoaches" class="mr-2 cursor-pointer"
+            type="checkbox" :value="a.id">
         <label class="flex-grow py-3 cursor-pointer" :for="a.id">
           {{ a.lastName }} {{ a.firstName }}
         </label>
@@ -18,8 +19,9 @@
 
     <ul role="list" class="divide-y divide-slate-200 overflow-hidden">
       <li v-for="a in users.athletes" class="flex px-4 hover:bg-main cursor-pointer main-transition">
-        <input class="mr-2 cursor-pointer" :id="a.id" type="checkbox"
-               :value="a.id" v-model="selectedAthletes">
+        <input
+            :id="a.id" v-model="selectedAthletes" class="mr-2 cursor-pointer"
+            type="checkbox" :value="a.id">
         <label class="flex-grow py-3 cursor-pointer" :for="a.id">
           {{ a.lastName }} {{ a.firstName }}
         </label>
@@ -39,20 +41,23 @@
 </template>
 
 <script lang="ts">
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {defineComponent, PropType} from 'vue'
-import Modal from "../modals/Modal.vue";
-import LoadingBtn from "../button/LoadingBtn.vue";
-import LoadingState from "../../types/LoadingState";
-import User from "../../types/User";
-import {Nds} from "../../types/Nds";
-import {LoadingStates} from "../../types/LoadingStates";
-import axios from "axios";
-import Const from "../../plugins/Constants";
-import {useAuthStore} from "../../stores/auth";
-import {useToastStore} from "../../stores/toast";
+
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import Modal from "@/components/dialogs/Modal.vue";
+import Const from "@/plugins/Constants";
+import {routeParamToString} from "@/plugins/Helper";
+import {useAuthStore} from "@/stores/auth";
+import {useToastStore} from "@/stores/toast";
+import IntDialog from "@/types/IntDialog";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import {Nds} from "@/types/Nds";
+import User from "@/types/User";
 
 export default defineComponent({
-  name: "AttendanceModal",
+  name: "DialogAttendance",
   components: {LoadingBtn, Modal},
   props: {
     users: {type: Object as PropType<{ coaches: User[], athletes: User[] }>, required: true},
@@ -72,7 +77,7 @@ export default defineComponent({
   },
   methods: {
     setVisibility(visibility: boolean, instance?: Nds.ActivityInstance) {
-      (this.$refs.modal as any).setVisibility(visibility)
+      (this.$refs.modal as IntDialog).setVisibility(visibility)
       this.selectedCoaches = [] as string[]
       this.selectedAthletes = [] as string[]
 
@@ -81,14 +86,14 @@ export default defineComponent({
     },
     getAttendance() {
       axios.request({
-        url: `/nds/activities/${this.$route.params.id}/instances/${this.instance.id}/attendances`,
+        url: `/nds/activities/${routeParamToString(this.$route.params.id)}/instances/${routeParamToString(this.instance.id)}/attendances`,
         method: 'get',
         baseURL: Const.API_URL,
         headers: {'Authorization': 'Bearer ' + this.authStore.token}
-      }).then(response => {
-        this.selectedCoaches = (response.data as Nds.Attendance[]).filter(a => a.isCoach).map(a => a.userId)
-        this.selectedAthletes = (response.data as Nds.Attendance[]).filter(a => !a.isCoach).map(a => a.userId)
-      }).catch(e => {
+      }).then((response: AxiosResponse<Nds.Attendance[], any>) => {
+        this.selectedCoaches = response.data.filter(a => a.isCoach).map(a => a.userId)
+        this.selectedAthletes = response.data.filter(a => !a.isCoach).map(a => a.userId)
+      }).catch(() => {
       })
     },
     updateAttendance() {
@@ -103,7 +108,7 @@ export default defineComponent({
       }))
 
       axios.request({
-        url: `/nds/activities/${this.$route.params.id}/instances/${this.instance.id}/attendances`,
+        url: `/nds/activities/${routeParamToString(this.$route.params.id)}/instances/${routeParamToString(this.instance.id)}/attendances`,
         method: 'put',
         baseURL: Const.API_URL,
         headers: {'Authorization': 'Bearer ' + this.authStore.token},
@@ -112,7 +117,7 @@ export default defineComponent({
         this.state.state = LoadingStates.Loaded
         this.toastStore.addSuccessToast()
         this.setVisibility(false)
-      }).catch(e => {
+      }).catch((e: AxiosError) => {
         this.state.state = LoadingStates.Error
         this.toastStore.addToastFromAxiosError(e)
       })

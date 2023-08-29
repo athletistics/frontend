@@ -1,11 +1,12 @@
 <script lang="ts">
 import {defineComponent, PropType} from "vue";
-import {LoadingStates} from "../types/LoadingStates";
+
+import {LoadingStates} from "@/types/LoadingStates";
 
 export default defineComponent({
   props: {
-    text: {type: String as PropType<string>, required: false},
-    label: {type: String as PropType<string>, required: false},
+    text: {type: String as PropType<string>, required: false, default: ""},
+    label: {type: String as PropType<string>, required: false, default: ""},
     state: {type: Number as PropType<LoadingStates>, required: false, default: LoadingStates.Loaded}
   },
   computed: {
@@ -25,6 +26,7 @@ export default defineComponent({
         case LoadingStates.Loading:
           return "bg-slate-200"
       }
+      return ""
     },
     content() {
       if (!this.slotEmpty) return ""

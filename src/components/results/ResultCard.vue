@@ -5,7 +5,7 @@
       <p class="text-xl font-argentum mt-5">{{ result.userLastName }} {{ result.userFirstName }}</p>
     </div>
     <div v-else>
-      <p class="text-xl font-bold font-argentum">{{ $te('data.' + result.disciplineName) ? $t('data.' + result.disciplineName) : result.disciplineName }}</p>
+      <p class="text-xl font-bold font-argentum">{{ te('data.' + result.disciplineName) ? $t('data.' + result.disciplineName) : result.disciplineName }}</p>
       <p class="text-xl font-argentum">{{ formattedValue }} <span
           v-if="result.wind">({{ $t('glob.result.wind') }}: {{ result.wind }})</span></p>
     </div>
@@ -17,22 +17,25 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import {formatResult} from "../../plugins/Helper";
-import {useDataStore} from "../../stores/data";
+import {useI18n} from "vue-i18n";
+
+import {formatResult} from "@/plugins/Helper";
+import {useDataStore} from "@/stores/data";
 
 export default defineComponent({
-  name: "Card",
-  setup() {
-    const dataStore = useDataStore()
-    return {dataStore}
-  },
+  name: "ResultCard",
   props: {
     result: {type: Object as PropType<Result.Data>, required: true},
     withUsers: {type: Boolean, default: true}
   },
+  setup() {
+    const dataStore = useDataStore()
+    const {te} = useI18n()
+    return {dataStore, te}
+  },
   computed: {
     formattedValue(): string {
-      this.dataStore.maps.disciplines?.size
+      // this.dataStore.maps.disciplines?.size
       return formatResult(this.result.value, this.dataStore.getDisciplineById(this.result.disciplineId))
     }
   }

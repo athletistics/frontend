@@ -35,15 +35,15 @@ export const NAMED_COLORS = [
   CHART_COLORS.grey,
 ];
 
-export function color(index: number) {
+export function color(index: number): string {
   return COLORS[index % COLORS.length];
 }
 
-export function namedColor(index: number) {
+export function namedColor(index: number): string {
   return NAMED_COLORS[index % NAMED_COLORS.length];
 }
 
-export function transparentize(value: string, opacity: number) {
-  var alpha = opacity === undefined ? 0.5 : 1 - opacity;
+export function transparentize(value: string, opacity: number): string {
+  const alpha = opacity === undefined ? 0.5 : 1 - opacity;
   return colorLib(value).alpha(alpha).rgbString();
 }

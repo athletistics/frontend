@@ -1,11 +1,11 @@
-declare namespace ExternalId {
-  interface Id {
+export namespace ExternalId {
+  export interface Id {
     externalId: string,
     internalId: string,
     externalIdTypeId: number
   }
 
-  interface Type {
+  export interface Type {
     id: number,
     i18nName: string
   }

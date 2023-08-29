@@ -13,7 +13,7 @@
       <LabeledText label="page.activity.duration" :state="stateActivity">{{ activity.duration }} min</LabeledText>
       <LabeledText label="page.activity.place" :state="stateActivity">{{ activity.place }}</LabeledText>
     </div>
-    <LoadingBtn @click="getCSVs" :loading="stateCSV" full visual-type="primary">{{
+    <LoadingBtn :loading="stateCSV" full visual-type="primary" @click="getCSVs">{{
         $t('page.activity.export')
       }}
     </LoadingBtn>
@@ -21,14 +21,14 @@
 
   <div class="py-5">&nbsp;</div>
 
-  <TitleWithBtnPlus @btn-click="($refs.instance as any).setVisibility(true)" :btn-visible="canManageActivityInstances()">
+  <TitleWithBtnPlus :btn-visible="canManageActivityInstances()" @btn-click="($refs.instance as any).setVisibility(true)">
     {{ $t('page.activity.title.instances') }}
   </TitleWithBtnPlus>
 
   <SimpleTable
       :state="stateInstances" i18n
       :headers="['page.activity.date', 'page.activity.startTime', 'page.activity.duration', 'page.activity.type', 'page.activity.place', '']">
-    <SimpleTableRow clickable v-for="i in instances">
+    <SimpleTableRow v-for="i in instances" clickable>
       <SimpleTableCell @click="c(i)">{{ i.date ? $d(i.date) : "" }}</SimpleTableCell>
       <SimpleTableCell @click="c(i)">{{ i.startTime }}</SimpleTableCell>
       <SimpleTableCell @click="c(i)">{{ i.duration ? i.duration + ' min' : '' }}</SimpleTableCell>
@@ -39,46 +39,49 @@
       <SimpleTableCell @click="c(i)">{{ i.place }}</SimpleTableCell>
       <SimpleTableCell class="!py-0">
         <BtnMenu ref="btnMenu">
-          <BtnMenuEntry @click="deleteInstance(i.id)" class="text-red-600">Delete</BtnMenuEntry>
+          <BtnMenuEntry class="text-red-600" @click="deleteInstance(i.id)">Delete</BtnMenuEntry>
         </BtnMenu>
       </SimpleTableCell>
     </SimpleTableRow>
   </SimpleTable>
 
   <AttendanceModal ref="attendance" :users="users"/>
-  <InstanceModal ref="instance" @created="getInstances"/>
+  <DialogInstance ref="instance" @success="getInstances"/>
 
 </template>
 
 <script lang="ts">
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {defineComponent} from 'vue'
-import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
-import LabeledText from "../components/LabeledText.vue";
-import {LoadingStates} from "../types/LoadingStates";
-import SimpleTable from "../components/list/SimpleTable.vue";
-import SimpleTableRow from "../components/list/SimpleTableRow.vue";
-import SimpleTableCell from "../components/list/SimpleTableCell.vue";
-import LoadingBtn from "../components/button/LoadingBtn.vue";
-import AttendanceModal from "../components/nds/AttendanceModal.vue";
-import {useDataStore} from "../stores/data";
-import InstanceModal from "../components/nds/InstanceModal.vue";
-import axios from "axios";
-import Const from "../plugins/Constants";
-import {useAuthStore} from "../stores/auth";
-import {canManageActivityInstances} from "../plugins/AccessControl";
-import BtnMenu from "../components/button/BtnMenu.vue";
-import BtnMenuEntry from "../components/button/BtnMenuEntry.vue";
-import {useToastStore} from "../stores/toast";
-import User from "../types/User";
-import {Nds} from "../types/Nds";
-import LoadingState from "../types/LoadingState";
+
+import BtnMenu from "@/components/button/BtnMenu.vue";
+import BtnMenuEntry from "@/components/button/BtnMenuEntry.vue";
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import AttendanceModal from "@/components/dialogs/nds/DialogAttendance.vue";
+import DialogInstance from "@/components/dialogs/nds/DialogInstance.vue";
+import LabeledText from "@/components/LabeledText.vue";
+import SimpleTable from "@/components/list/SimpleTable.vue";
+import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
+import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import {canManageActivityInstances} from "@/plugins/AccessControl";
+import Const from "@/plugins/Constants";
+import {routeParamToString} from "@/plugins/Helper";
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useToastStore} from "@/stores/toast";
+import IntDialog from "@/types/IntDialog";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
+import {Nds} from "@/types/Nds";
+import User from "@/types/User";
 
 export default defineComponent({
   name: "Activity",
   components: {
     BtnMenuEntry,
     BtnMenu,
-    InstanceModal,
+    DialogInstance,
     AttendanceModal,
     LoadingBtn,
     SimpleTableCell,
@@ -103,10 +106,14 @@ export default defineComponent({
       stateCSV: {state: NaN} as LoadingState
     }
   },
+  mounted() {
+    this.getActivity()
+    this.getInstances()
+  },
   methods: {
     canManageActivityInstances,
     c(i: Nds.ActivityInstance) {
-      (this.$refs.attendance as any).setVisibility(true, i)
+      (this.$refs.attendance as IntDialog).setVisibility(true, i)
     },
     fileName(suffix: string): string {
       const teamName = this.activity.team.name.replace(/[^0-9a-zA-Z]/g, '')
@@ -131,41 +138,44 @@ export default defineComponent({
       window.URL.revokeObjectURL(href);
     },
     getCSVs() {
+      const routeId = routeParamToString(this.$route.params.id)
       this.stateCSV.state = LoadingStates.Loading
       axios.request({
-        url: "/nds/activities/" + this.$route.params.id + "/export/users",
+        url: "/nds/activities/" + routeId + "/export/users",
         method: 'get', baseURL: Const.API_URL, headers: {'Authorization': 'Bearer ' + this.authStore.token}
-      }).then(response => {
+      }).then((response: AxiosResponse<string, any>) => {
         this.download(response.data, "Persons")
         this.stateCSV.state = LoadingStates.Loaded
-      }).catch(e => this.stateCSV.state = LoadingStates.Error)
+      }).catch(() => this.stateCSV.state = LoadingStates.Error)
+
       axios.request({
-        url: "/nds/activities/" + this.$route.params.id + "/export/attendances",
+        url: "/nds/activities/" + routeId + "/export/attendances",
         method: 'get', baseURL: Const.API_URL, headers: {'Authorization': 'Bearer ' + this.authStore.token}
-      }).then(response => {
+      }).then((response: AxiosResponse<string, any>) => {
         this.download(response.data, "Attendances")
         this.stateCSV.state = LoadingStates.Loaded
-      }).catch(e => this.stateCSV.state = LoadingStates.Error)
+      }).catch(() => this.stateCSV.state = LoadingStates.Error)
+
       axios.request({
-        url: "/nds/activities/" + this.$route.params.id + "/export/instances",
+        url: "/nds/activities/" + routeId + "/export/instances",
         method: 'get', baseURL: Const.API_URL, headers: {'Authorization': 'Bearer ' + this.authStore.token}
-      }).then(response => {
+      }).then((response: AxiosResponse<string, any>) => {
         this.download(response.data, "Instances")
         this.stateCSV.state = LoadingStates.Loaded
-      }).catch(e => this.stateCSV.state = LoadingStates.Error)
+      }).catch(() => this.stateCSV.state = LoadingStates.Error)
     },
     getActivity() {
       this.stateActivity = LoadingStates.Loading
       axios.request({
-        url: "/nds/activities/" + this.$route.params.id,
+        url: "/nds/activities/" + routeParamToString(this.$route.params.id),
         method: 'get',
         baseURL: Const.API_URL,
         headers: {'Authorization': 'Bearer ' + this.authStore.token}
-      }).then(response => {
+      }).then((response: AxiosResponse<Nds.Activity, any>) => {
         this.activity = response.data
         this.stateActivity = response.data ? LoadingStates.Loaded : LoadingStates.Empty
         this.getUsers(this.activity.team.id)
-      }).catch(e => {
+      }).catch(() => {
         this.stateActivity = LoadingStates.Error
       })
     },
@@ -173,27 +183,27 @@ export default defineComponent({
       this.instances = [] as Nds.ActivityInstance[]
       this.stateInstances = LoadingStates.Loading
       axios.request({
-        url: "/nds/activities/" + this.$route.params.id + "/instances",
+        url: "/nds/activities/" + routeParamToString(this.$route.params.id) + "/instances",
         method: 'get',
         baseURL: Const.API_URL,
         headers: {'Authorization': 'Bearer ' + this.authStore.token}
-      }).then(response => {
+      }).then((response: AxiosResponse<Nds.ActivityInstance[], any>) => {
         this.instances = response.data
         this.stateInstances = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
-      }).catch(e => {
+      }).catch(() => {
         this.stateInstances = LoadingStates.Error
       })
     },
     deleteInstance(id: string) {
       axios.request({
-        url: "/nds/activities/" + this.$route.params.id + "/instances/" + id,
+        url: "/nds/activities/" + routeParamToString(this.$route.params.id) + "/instances/" + id,
         method: 'delete',
         baseURL: Const.API_URL,
         headers: {'Authorization': 'Bearer ' + this.authStore.token}
-      }).then(response => {
+      }).then(() => {
         this.toastStore.addSuccessToast()
         this.getInstances()
-      }).catch(e => {
+      }).catch((e: AxiosError) => {
         this.toastStore.addToastFromAxiosError(e)
       })
     },
@@ -207,16 +217,12 @@ export default defineComponent({
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         }
-      }).then(response => {
+      }).then((response: AxiosResponse<{coaches: User[], athletes: User[]}, any>) => {
         this.users = response.data
       }).catch(() => {
 
       })
     }
-  },
-  mounted() {
-    this.getActivity()
-    this.getInstances()
   }
 })
 </script>

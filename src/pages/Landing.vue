@@ -19,13 +19,14 @@
 
 <script lang="ts">
 import axios from "axios";
-import Const from './../plugins/Constants'
-import {defineComponent, PropType} from "vue";
-import authConfig from "../plugins/AuthConfig";
 import {CreateSigninRequestArgs, OidcClient} from "oidc-client-ts";
-import {useAuthStore} from "../stores/auth";
-import LoadingBtn from "../components/button/LoadingBtn.vue";
-import {useOidcStateStore} from "../stores/oidcState";
+import {defineComponent} from "vue";
+
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import authConfig from "@/plugins/AuthConfig";
+import Const from '@/plugins/Constants'
+import {useAuthStore} from "@/stores/auth";
+import {useOidcStateStore} from "@/stores/oidcState";
 
 const stateDefault = 0
 const stateLoading = 1
@@ -35,11 +36,6 @@ const stateExpired = 3
 export default defineComponent({
   name: "Landing",
   components: {LoadingBtn},
-  data() {
-    return {
-      state: 0,
-    }
-  },
   setup() {
     const authStore = useAuthStore()
     const oidcStateStore = useOidcStateStore()
@@ -48,14 +44,9 @@ export default defineComponent({
       authStore, oidcStateStore, stateDefault, stateLoading, stateOK, stateExpired
     }
   },
-  methods: {
-    login: function () {
-      this.oidcStateStore.createState()
-      const options: CreateSigninRequestArgs = {state: this.oidcStateStore.state}
-      const client = new OidcClient(authConfig)
-      client.createSigninRequest(options).then(function (req) {
-        window.location.href = req.url;
-      })
+  data() {
+    return {
+      state: 0,
     }
   },
   mounted() {
@@ -76,6 +67,16 @@ export default defineComponent({
     }).catch(() => {
       this.state = stateExpired
     })
+  },
+  methods: {
+    login: function () {
+      this.oidcStateStore.createState()
+      const options: CreateSigninRequestArgs = {state: this.oidcStateStore.state}
+      const client = new OidcClient(authConfig)
+      void client.createSigninRequest(options).then(function (req) {
+        window.location.href = req.url;
+      })
+    }
   }
 })
 </script>

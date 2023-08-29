@@ -28,7 +28,7 @@
         <div v-if="filteredCategories?.length">
           <label>{{ $t('comp.evolution.category') }}</label>
           <div class="flex">
-            <input type="checkbox" class="w-6 mr-2" v-model="showReference">
+            <input v-model="showReference" type="checkbox" class="w-6 mr-2">
             <select v-model="category">
               <option v-for="c in filteredCategories" :value="c.id">{{ c.name }} {{
                   c.gender ? $t('glob.gender.' + c.gender) : ""
@@ -57,17 +57,19 @@
 
       <div>
         <div v-for="u in dataStore.users" class="flex hover:bg-main cursor-pointer">
-          <input :id="u.id" :value="u.id" type="checkbox" v-model="usersToAdd" class="mr-2 cursor-pointer">
+          <input :id="u.id" v-model="usersToAdd" :value="u.id" type="checkbox" class="mr-2 cursor-pointer">
           <label :for="u.id" class="flex-grow py-3 cursor-pointer">{{ u.lastName }} {{ u.firstName }}</label>
         </div>
       </div>
 
       <hr>
       <div class="grid sm:grid-cols-2 gap-4">
-        <LoadingBtn full outlined visual-type="primary"
+        <LoadingBtn
+full outlined visual-type="primary"
                     :state="state" @click="compare()">{{ $t('glob.btn.add') }}
         </LoadingBtn>
-        <LoadingBtn full outlined
+        <LoadingBtn
+full outlined
                     @click="setModalVisibility(false)">{{ $t('glob.btn.cancel') }}
         </LoadingBtn>
       </div>
@@ -76,38 +78,40 @@
 </template>
 
 <script lang="ts">
-import {Line} from 'vue-chartjs'
+import 'chartjs-adapter-moment';
+
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {
+  BarElement,
+  CategoryScale,
   Chart as ChartJS,
   ChartOptions,
-  Title,
-  Tooltip,
   Legend,
-  BarElement,
-  TimeScale,
-  CategoryScale,
   LinearScale,
   LineController,
   LineElement,
   PointElement,
+  TimeScale,
+  Title,
+  Tooltip,
 } from 'chart.js'
-import 'chartjs-adapter-moment';
-
 import {defineComponent, PropType} from 'vue'
-import {useAuthStore} from "../../stores/auth";
-import {useDataStore} from "../../stores/data";
-import axios from "axios";
-import Const from "../../plugins/Constants";
-import {useToastStore} from "../../stores/toast";
-import Discipline from "../../types/Discipline";
-import Modal from "../modals/Modal.vue";
-import {CHART_COLORS, namedColor, transparentize} from "../../plugins/ChartUtils";
-import Category from "../../types/Category";
-import {canManageResults} from "../../plugins/AccessControl";
-import {formatResult} from "../../plugins/Helper";
-import LoadingBtn from "../button/LoadingBtn.vue";
-import LoadingState from "../../types/LoadingState";
-import {LoadingStates} from "../../types/LoadingStates";
+import {Line} from 'vue-chartjs'
+
+import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import Modal from "@/components/dialogs/Modal.vue";
+import {canManageResults} from "@/plugins/AccessControl";
+import {CHART_COLORS, namedColor, transparentize} from "@/plugins/ChartUtils";
+import Const from "@/plugins/Constants";
+import {formatResult} from "@/plugins/Helper";
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useToastStore} from "@/stores/toast";
+import Category from "@/types/Category";
+import Discipline from "@/types/Discipline";
+import IntDialog from "@/types/IntDialog";
+import LoadingState from "@/types/LoadingState";
+import {LoadingStates} from "@/types/LoadingStates";
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineController, LineElement, PointElement, TimeScale)
 export default defineComponent({
@@ -128,16 +132,16 @@ export default defineComponent({
       discipline: "" as string,
       category: "" as string,
       showReference: false as boolean,
-      dataMap: new Map<string, Result.Data[]>() as Map<string, Result.Data[]>,
+      dataMap: new Map<string, Result.Data[]>() ,
       usersToAdd: [] as string[],
       state: {state: NaN} as LoadingState,
-      typeId: NaN as number,
+      typeId: NaN ,
       visible: true as boolean
     }
   },
   computed: {
     filteredCategories(): Category[] {
-      let categories = [] as Category[]
+      const categories = [] as Category[]
 
       this.dataStore.staticResults.forEach(r => {
         if (r.disciplineId == this.discipline && r.resultStaticTypeId === this.typeId) {
@@ -153,7 +157,7 @@ export default defineComponent({
 
       // get distinct disciplines in all result sets
       const results = new Set<Discipline>()
-      this.dataMap.forEach((data, name) => {
+      this.dataMap.forEach((data) => {
         data.forEach(entry => {
           const discipline = this.dataStore.getDisciplineById(entry.disciplineId)
           if (discipline) {
@@ -177,11 +181,11 @@ export default defineComponent({
 
       let minX = 0
       let maxX = 0
-      let datasets = []
+      const datasets = []
 
       // create a dataset entry for each available result set
       this.dataMap.forEach((d, name) => {
-        let xyData = [] as any[]
+        const xyData = [] as any[]
 
         // select the entries of the selected discipline
         d.forEach(d => {
@@ -198,14 +202,14 @@ export default defineComponent({
           }
         })
 
-        xyData.sort((a, b) => a.x - b.x)
+        xyData.sort((a: {x: number}, b: {x: number}) => a.x - b.x)
 
         datasets.push({
           label: name,
           fill: false,
           pointRadius: 4,
-          pointBackgroundColor: xyData.map(d => d.isTraining ? transparentize(CHART_COLORS.grey, 0.5) : transparentize(namedColor(datasets.length), 0.5)),
-          pointBorderColor: xyData.map(d => d.isTraining ? CHART_COLORS.grey : namedColor(datasets.length)),
+          pointBackgroundColor: xyData.map((d: {isTraining: boolean}) => d.isTraining ? transparentize(CHART_COLORS.grey, 0.5) : transparentize(namedColor(datasets.length), 0.5)),
+          pointBorderColor: xyData.map((d: {isTraining: boolean}) => d.isTraining ? CHART_COLORS.grey : namedColor(datasets.length)),
           backgroundColor: transparentize(namedColor(datasets.length), 0.5),
           borderColor: namedColor(datasets.length),
           data: xyData
@@ -243,7 +247,7 @@ export default defineComponent({
           },
           y: {
             ticks: {
-              callback: (value, index, ticks) => {
+              callback: (value) => {
                 return formatResult(value.toString(), this.dataStore.getDisciplineById(this.discipline))
               }
             },
@@ -271,7 +275,7 @@ export default defineComponent({
   methods: {
     canManageResults,
     setModalVisibility(visible: boolean) {
-      (this.$refs.modal as any).setVisibility(visible)
+      (this.$refs.modal as IntDialog).setVisibility(visible)
 
       this.usersToAdd = [] as string[]
     },
@@ -292,7 +296,7 @@ export default defineComponent({
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         }
-      }).then(response => {
+      }).then((response: AxiosResponse<Result.Data[], any>) => {
         this.state.state = LoadingStates.Loaded
 
         // create a dataMap. this is only required on first call
@@ -309,7 +313,7 @@ export default defineComponent({
         const name = response.data[0]?.userLastName + " " + response.data[0]?.userFirstName
 
         this.dataMap.set(name ?? userId, response.data)
-      }).catch(response => {
+      }).catch((response: AxiosError) => {
         this.state.state = LoadingStates.Error
         this.toastStore.addToastFromAxiosError(response)
       })

@@ -5,13 +5,14 @@
         <div id="logo" class="text-3xl font-black mr-5 py-3 text-black">Athletistics</div>
       </router-link>
       <div class="md:hidden flex-1"></div>
-      <div class="md:hidden cursor-pointer" v-on:click="toggleNav()">
+      <div class="md:hidden cursor-pointer" @click="toggleNav()">
         <font-awesome-icon icon="fa-xmark" size="2x" class="main-transition translate-x-full w-9" :class="xClasses"/>
         <font-awesome-icon icon="fa-bars" size="2x" class="main-transition w-9" :class="hamClasses"/>
       </div>
     </div>
-    <ul v-on:click="closeNav()" v-if="authStore.token && $route.name !== 'index'" :class="navClasses" class="flex flex-1 bg-white md:flex-row flex-col
-          max-md:w-full max-md:text-center max-md:absolute max-md:top-full max-md:shadow-lg main-transition">
+    <ul
+v-if="authStore.token && $route.name !== 'index'" :class="navClasses" class="flex flex-1 bg-white md:flex-row flex-col
+          max-md:w-full max-md:text-center max-md:absolute max-md:top-full max-md:shadow-lg main-transition" @click="closeNav()">
       <li>
         <router-link class="router-link" to="/home">{{ $t('page.home.title') }}</router-link>
       </li>
@@ -43,7 +44,7 @@
         <router-link to="/me" class="router-link w-full">{{ $t('page.me.title.account') }}</router-link>
       </li>
       <li>
-        <a href="#" class="router-link w-full" v-on:click="logout()"><span
+        <a href="#" class="router-link w-full" @click="logout()"><span
             class="md:hidden">{{ $t('comp.nav.logout') }}</span>
           <font-awesome-icon class="ml-2" icon="fa-solid fa-arrow-right-from-bracket"/>
         </a>
@@ -53,15 +54,16 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
-import Const from "../plugins/Constants";
-import {useAuthStore} from "../stores/auth";
-import {useMyUserStore} from "../stores/user";
 import {OidcClient} from "oidc-client-ts";
-import authConfig from "../plugins/AuthConfig";
+import {defineComponent} from "vue";
+
+import authConfig from "@/plugins/AuthConfig";
+import Const from "@/plugins/Constants";
+import {useAuthStore} from "@/stores/auth";
+import {useMyUserStore} from "@/stores/user";
 
 export default defineComponent({
-  name: "Nav",
+  name: "NavBar",
   setup() {
     const authStore = useAuthStore()
     const userStore = useMyUserStore()
@@ -71,22 +73,6 @@ export default defineComponent({
   data() {
     return {
       navVisibility: false as boolean
-    }
-  },
-  methods: {
-    logout() {
-      let client = new OidcClient(authConfig)
-      client.createSignoutRequest({extraQueryParams: {client_id: authConfig.client_id}}).then((req) => {
-        this.authStore.$reset()
-        this.userStore.$reset()
-        window.location.href = req.url;
-      })
-    },
-    toggleNav() {
-      this.navVisibility = !this.navVisibility
-    },
-    closeNav() {
-      this.navVisibility = false
     }
   },
   computed: {
@@ -117,6 +103,22 @@ export default defineComponent({
     },
     hamClasses(): string {
       return this.navVisibility ? 'opacity-0' : 'opacity-100'
+    }
+  },
+  methods: {
+    logout() {
+      const client = new OidcClient(authConfig)
+      void client.createSignoutRequest({extraQueryParams: {client_id: authConfig.client_id}}).then((req) => {
+        this.authStore.$reset()
+        this.userStore.$reset()
+        window.location.href = req.url;
+      })
+    },
+    toggleNav() {
+      this.navVisibility = !this.navVisibility
+    },
+    closeNav() {
+      this.navVisibility = false
     }
   }
 })

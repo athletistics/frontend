@@ -7,16 +7,18 @@
 </template>
 
 <script lang="ts">
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {defineComponent} from "vue";
-import {useAuthStore} from "../stores/auth";
-import {useToastStore} from "../stores/toast";
-import ModalResult from "../components/modals/ModalResult.vue";
-import axios from "axios";
-import Const from "../plugins/Constants";
-import ResultTable from "../components/results/ResultTable.vue";
-import {LoadingStates} from "../types/LoadingStates";
-import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
-import {canManageResults} from "../plugins/AccessControl";
+
+import ModalResult from "@/components/dialogs/DialogResult.vue";
+import ResultTable from "@/components/results/ResultTable.vue";
+import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import {canManageResults} from "@/plugins/AccessControl";
+import Const from "@/plugins/Constants";
+import {useAuthStore} from "@/stores/auth";
+import {useToastStore} from "@/stores/toast";
+import IntDialog from "@/types/IntDialog";
+import {LoadingStates} from "@/types/LoadingStates";
 
 export default defineComponent({
   name: "Results",
@@ -33,10 +35,13 @@ export default defineComponent({
       resultsState: NaN as LoadingStates
     }
   },
+  mounted() {
+    this.loadResults()
+  },
   methods: {
     canManageResults,
     setModalVisibility(visible: boolean) {
-      (this.$refs.modal as any).setVisibility(visible)
+      (this.$refs.modal as IntDialog).setVisibility(visible)
     },
     loadResults() {
       this.resultsState = LoadingStates.Loading
@@ -47,17 +52,14 @@ export default defineComponent({
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         }
-      }).then(response => {
+      }).then((response: AxiosResponse<Result.Data[], any>) => {
         this.results = response.data
         this.resultsState = response.data ? LoadingStates.Loaded : LoadingStates.Empty
-      }).catch(response => {
+      }).catch((response: AxiosError) => {
         this.resultsState = LoadingStates.Error
         this.toastStore.addToastFromAxiosError(response)
       })
     }
-  },
-  mounted() {
-    this.loadResults()
   }
 })
 </script>

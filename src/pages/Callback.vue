@@ -1,16 +1,17 @@
 <template>
-
+  <div></div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
 import {OidcClient} from "oidc-client-ts";
-import authConfig from "../plugins/AuthConfig";
-import Const from "../plugins/Constants";
-import {useAuthStore} from "../stores/auth";
-import {useMyUserStore} from "../stores/user";
-import {useDataStore} from "../stores/data";
-import {useOidcStateStore} from "../stores/oidcState";
+import {defineComponent} from "vue";
+
+import authConfig from "@/plugins/AuthConfig";
+import Const from "@/plugins/Constants";
+import {useAuthStore} from "@/stores/auth";
+import {useDataStore} from "@/stores/data";
+import {useOidcStateStore} from "@/stores/oidcState";
+import {useMyUserStore} from "@/stores/user";
 
 export default defineComponent({
   setup() {
@@ -22,11 +23,11 @@ export default defineComponent({
     return {userStore, authStore, dataStore, oidcStateStore}
   },
   mounted() {
-    let client = new OidcClient(authConfig)
+    const client = new OidcClient(authConfig)
     const router = this.$router
 
-    client.processSigninResponse(window.location.href).then ((response) => {
-      if (response.state !== this.oidcStateStore.state) router.push('/?error=invalidState')
+    client.processSigninResponse(window.location.href).then((response) => {
+      if (response.state !== this.oidcStateStore.state) void router.push('/?error=invalidState')
       this.oidcStateStore.$reset()
 
       this.authStore.token = response.access_token
@@ -34,20 +35,20 @@ export default defineComponent({
       this.userStore.updateFromServer()
       this.dataStore.updateAll()
 
-      this.authStore.updateFromServer(() => {
-        if(this.userStore.hasRole(Const.ROLE_COACH) || this.userStore.hasRole(Const.ROLE_HEAD_COACH)){
-          if(!this.authStore.has2Fa){
-            router.push('/elevate')
+      void this.authStore.updateFromServer(() => {
+        if (this.userStore.hasRole(Const.ROLE_COACH) || this.userStore.hasRole(Const.ROLE_HEAD_COACH)) {
+          if (!this.authStore.has2Fa) {
+            void router.push('/elevate')
             return
           }
         }
-        router.push('/home')
+        void router.push('/home')
       })
 
-      router.push('/home')
+      void router.push('/home')
     }).catch(function (err) {
       console.error(err)
-      router.push('/?message=error')
+      void router.push('/?message=error')
     })
   }
 })
