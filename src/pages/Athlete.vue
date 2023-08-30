@@ -95,6 +95,8 @@
       @success="getExternalIds()"/>
   <ModalResultImport ref="dialogImport" @created="getResults"/>
 
+  <DialogUserCreate ref="dialogEditAthlete" :user-to-edit="data" />
+
 </template>
 
 <script setup lang="ts">
@@ -115,6 +117,7 @@ import ResultLimitComparison from "@/components/results/ResultLimitComparison.vu
 import ResultList from "@/components/results/ResultTable.vue";
 import TitleWithContextBtn from "@/components/title/TitleWithContextBtn.vue";
 import DialogCreateExternalId from "@/components/user/DialogAddExternalId.vue";
+import DialogUserCreate from "@/components/user/DialogUserCreate.vue";
 import UserCreateShare from "@/components/user/UserCreateShare.vue";
 import {canManageResults, canManageUsers} from "@/plugins/AccessControl";
 import Const from '@/plugins/Constants'
@@ -152,7 +155,8 @@ const userId = computed((): string => {
   return routeParamToString(route.params.id)
 })
 
-const editAthlete = (): void => toast.add(notImplemented('edit athlete'))
+const dialogEditAthlete = ref<IntDialog>()
+const editAthlete = (): void => void dialogEditAthlete.value?.setVisibility(true)
 const deleteAthlete = (): void => toast.add(notImplemented('delete athlete'))
 
 // ----------------------------

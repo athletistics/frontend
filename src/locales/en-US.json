@@ -26,6 +26,7 @@
       "title": "Members",
       "titleExternal": "External Athletes",
       "create": "Create member",
+      "modify": "Update member",
       "btn": {
         "create": "Create member"
       }
