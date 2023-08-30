@@ -1,6 +1,8 @@
 <template>
   <h1 v-if="resultsState!==LoadingStates.Loaded || pref ==  'me'">{{ $t(`page.${pref}.title.account`) }}</h1>
-  <h1 v-else>{{ data.firstName }} {{ data.lastName }}</h1>
+  <TitleWithContextBtn v-else :btn-visible="canManageUsers()" @edit="editAthlete" @delete="deleteAthlete">
+    {{ data.firstName }} {{ data.lastName }}
+  </TitleWithContextBtn>
 
   <div class="white-rounded divide-y">
     <div class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -82,25 +84,27 @@
     <BtnResultImport
         v-if="isMe && userStore.hasStravaToken" class="mr-2"
         @click="setResultImportModalVisibility(true)"/>
-    <BtnPlus v-if="canManageResults() || !$route.params.id" @click="setModalVisibility(true)"/>
+    <BtnPlus v-if="canManageResults() || !route.params.id" @click="setModalVisibility(true)"/>
   </div>
 
   <ResultList :results="results" :show-user="false" :state="resultsState"></ResultList>
 
-  <ModalResult ref="modal" :is-personal="isMe" :user="data"></ModalResult>
+  <ModalResult ref="dialogResult" :is-personal="isMe" :user="data"></ModalResult>
   <DialogCreateExternalId
-      ref="externalIdModal" :internal-id="userId" :existing-ids="externalIds"
+      ref="dialogExternalId" :internal-id="userId" :existing-ids="externalIds"
       @success="getExternalIds()"/>
-  <ModalResultImport ref="importModal" @created="getResults"/>
+  <ModalResultImport ref="dialogImport" @created="getResults"/>
 
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import axios, {AxiosError, AxiosResponse} from "axios";
-import {defineComponent} from "vue";
+import {useToast} from "primevue/usetoast";
+import {computed, onMounted, reactive, ref, watch} from "vue";
+import {useRoute, useRouter} from "vue-router";
 
 import BtnPlus from "@/components/button/BtnPlus.vue";
-import BtnStravaImport from "@/components/button/BtnResultImport.vue";
+import BtnResultImport from "@/components/button/BtnResultImport.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import ModalResult from "@/components/dialogs/DialogResult.vue";
 import ModalResultImport from "@/components/dialogs/DialogResultImport.vue";
@@ -109,14 +113,15 @@ import ResultCard from "@/components/results/ResultCard.vue";
 import ResultEvolution from "@/components/results/ResultEvolution.vue";
 import ResultLimitComparison from "@/components/results/ResultLimitComparison.vue";
 import ResultList from "@/components/results/ResultTable.vue";
+import TitleWithContextBtn from "@/components/title/TitleWithContextBtn.vue";
 import DialogCreateExternalId from "@/components/user/DialogAddExternalId.vue";
 import UserCreateShare from "@/components/user/UserCreateShare.vue";
 import {canManageResults, canManageUsers} from "@/plugins/AccessControl";
 import Const from '@/plugins/Constants'
-import {routeQueryToString} from "@/plugins/Helper";
+import {routeParamToString, routeQueryToString} from "@/plugins/Helper";
+import {fromAxiosError, fromErrorMessage, notImplemented, successToast} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
 import {useDataStore} from "@/stores/data";
-import {useToastStore} from "@/stores/toast";
 import {useMyUserStore} from "@/stores/user";
 import {ExternalId} from "@/types/ExternalId";
 import IntDialog from "@/types/IntDialog";
@@ -124,194 +129,184 @@ import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
 import User, {USER_STATE_INITIAL,} from "@/types/User";
 
-export default defineComponent({
-  name: "Athlete",
-  components: {
-    UserCreateShare,
-    ModalResultImport,
-    BtnResultImport: BtnStravaImport,
-    BtnPlus,
-    DialogCreateExternalId,
-    LoadingBtn,
-    ResultLimitComparison,
-    LabeledText, ResultEvolution, ResultList, ModalResult, ResultCard
-  },
-  setup() {
-    const authStore = useAuthStore()
-    const dataStore = useDataStore()
-    const toastStore = useToastStore()
-    const userStore = useMyUserStore()
-    const stravaConnectLink = `${Const.STRAVA_AUTHORIZE}?client_id=${Const.STRAVA_CLIENT_ID}&response_type=code&redirect_uri=${Const.STRAVA_REDIRECT}/me?${Const.STRAVA_REDIRECT_QUERY}`
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+const dataStore = useDataStore()
+const userStore = useMyUserStore()
+const toast = useToast()
+const stravaConnectLink = `${Const.STRAVA_AUTHORIZE}?client_id=${Const.STRAVA_CLIENT_ID}&response_type=code&redirect_uri=${Const.STRAVA_REDIRECT}/me?${Const.STRAVA_REDIRECT_QUERY}`
 
-    return {authStore, toastStore, dataStore, userStore, USER_STATE_INITIAL, stravaConnectLink}
-  },
-  data() {
-    return {
-      data: {} as User,
-      dataState: NaN as LoadingStates,
-      stravaState: {state: NaN} as LoadingState,
-      bests: [] as Result.Data[],
-      results: [] as Result.Data[],
-      resultsState: NaN as LoadingStates,
-      externalIds: [] as ExternalId.Id[]
-    }
-  },
-  computed: {
-    LoadingStates() {
-      return LoadingStates
-    },
-    pref() {
-      return this.$route.params.id ? 'user' : 'me'
-    },
-    isMe() {
-      return !this.$route.params.id
-    },
-    userId(): string {
-      if (this.isMe) return this.userStore.user.id
-      return typeof this.$route.params.id === 'string' ? this.$route.params.id : this.$route.params.id.join('')
-    }
-  },
-  watch: {
-    "$route.params.id"() {
-      (this.$refs.evolutionChart as { resetData: Function }).resetData()
-      this.loadData()
-    }
-  },
-  mounted() {
-    this.loadData()
-    this.connectStrava()
-  },
-  methods: {
-    canManageUsers,
-    canManageResults,
-    setModalVisibility(visible: boolean) {
-      (this.$refs.modal as IntDialog).setVisibility(visible)
-    },
-    setExternalIdModalVisibility(visible: boolean) {
-      (this.$refs.externalIdModal as IntDialog).setVisibility(visible)
-    },
-    setResultImportModalVisibility(visible: boolean) {
-      (this.$refs.importModal as IntDialog).setVisibility(visible)
-    },
-    getResults() {
-      const url = this.isMe ? "/me/results" : `/results?userId=${this.userId}`
+const data = ref<User>({} as User)
+const dataState = ref<LoadingStates>(NaN)
+const stravaState = reactive<LoadingState>({state: NaN})
+const bests = ref<Result.Data[]>([])
+const results = ref<Result.Data[]>([])
+const resultsState = ref<LoadingStates>(NaN)
+const externalIds = ref<ExternalId.Id[]>([])
 
-      this.resultsState = LoadingStates.Loading
+const pref = computed(() => route.params.id ? 'user' : 'me')
+const isMe = computed(() => !route.params.id)
+const userId = computed((): string => {
+  if (isMe.value) return userStore.user.id
+  return routeParamToString(route.params.id)
+})
+
+const editAthlete = (): void => toast.add(notImplemented('edit athlete'))
+const deleteAthlete = (): void => toast.add(notImplemented('delete athlete'))
+
+// ----------------------------
+// Dialog visibility management
+// ----------------------------
+const dialogResult = ref<IntDialog>()
+const dialogExternalId = ref<IntDialog>()
+const dialogImport = ref<IntDialog>()
+const setModalVisibility = (visible: boolean): void => {
+  dialogResult.value?.setVisibility(visible)
+}
+const setExternalIdModalVisibility = (visible: boolean): void => {
+  dialogExternalId.value?.setVisibility(visible)
+}
+const setResultImportModalVisibility = (visible: boolean): void => {
+  dialogImport.value?.setVisibility(visible)
+}
+
+// ----------------
+// API interactions
+// ----------------
+
+const evolutionChart = ref<{ resetData: Function, dataMap: Map<string, Result.Data[]> }>()
+const getResults = (): void => {
+      const url = isMe.value ? "/me/results" : `/results?userId=${userId.value}`
+
+      resultsState.value = LoadingStates.Loading
       axios.request({
         url,
         method: 'get',
         baseURL: Const.API_URL,
         headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
+          'Authorization': 'Bearer ' + authStore.token
         }
       }).then((response: AxiosResponse<Result.Data[], any>) => {
-        this.resultsState = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
+        resultsState.value = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
         if (!response.data?.length) return
 
-        this.results = response.data
+        results.value = response.data
 
         // load data into evolution chart, whith user's name as a label
         const name = response.data[0]?.userLastName + " " + response.data[0]?.userFirstName
-        const chart: { dataMap: Map<string, Result.Data[]> } = this.$refs.evolutionChart as { dataMap: Map<string, Result.Data[]> }
-
-        chart.dataMap.set(name, response.data)
+        evolutionChart.value?.dataMap.set(name, response.data)
       }).catch((response: AxiosError) => {
-        this.resultsState = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(response)
+        resultsState.value = LoadingStates.Error
+        toast.add(fromAxiosError(response))
       })
-    },
-    getBests() {
-      const url = this.isMe ? "/me/results/best" : `/results/best?userId=${this.userId}`
-
-      axios.request({
-        url,
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        }
-      }).then((response: AxiosResponse<Result.Data[], any>) => {
-        this.bests = response.data
-      }).catch((response: AxiosError) => this.toastStore.addToastFromAxiosError(response))
-    },
-    getUser() {
-      const url = this.isMe ? "/me" : `/users/${this.userId}`
-      this.dataState = LoadingStates.Loading
-      this.data = {} as User
-
-      axios.request({
-        url,
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        }
-      }).then((response: AxiosResponse<User, any>) => {
-        this.data = response.data
-        this.dataState = LoadingStates.Loaded
-      }).catch((response: AxiosError) => {
-        this.toastStore.addToastFromAxiosError(response)
-        this.dataState = LoadingStates.Error
-      })
-    },
-    getExternalIds() {
-      if (!this.authStore.is2FaOk) return
-
-      axios.request({
-        url: `/externalId/user?internalId=${this.userId}`,
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        }
-      }).then((response: AxiosResponse<ExternalId.Id[], any>) => {
-        this.externalIds = response.data
-      }).catch((response: AxiosError) => this.toastStore.addToastFromAxiosError(response))
-    },
-    redirectToStrava() {
-      window.open(this.stravaConnectLink, '_self')
-    },
-    connectStrava() {
-      if (this.$route.query.error) {
-        this.toastStore.addErrorToast("Access to Strava denied")
-      }
-      if (!this.$route.query.code) return
-
-      this.stravaState.state = LoadingStates.Loading
-      axios.request({
-        url: '?code=' + routeQueryToString(this.$route.query.code), method: 'post', baseURL: Const.STRAVA_API_URL,
-        headers: {'Authorization': 'Bearer ' + this.authStore.token}
-      }).then(() => {
-        this.stravaState.state = LoadingStates.Loaded
-        this.userStore.updateStrava()
-        this.toastStore.addSuccessToast()
-        void this.$router.push('/me') // reset query params
-      }).catch((error: AxiosError) => {
-        this.stravaState.state = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(error)
-        void this.$router.push('/me') // reset query params
-      })
-    },
-    revokeStrava() {
-      axios.request({
-        url: `/`,
-        method: 'delete',
-        baseURL: Const.STRAVA_API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        }
-      }).then(() => {
-        this.userStore.updateStrava()
-        this.toastStore.addSuccessToast()
-      }).catch((response: AxiosError) => this.toastStore.addToastFromAxiosError(response))
-    },
-    loadData() {
-      this.getBests()
-      this.getResults()
-      this.getUser()
-      this.getExternalIds()
     }
+const getBests = (): void => {
+  const url = isMe.value ? "/me/results/best" : `/results/best?userId=${userId.value}`
+
+  axios.request({
+    url,
+    method: 'get',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
+    }
+  }).then((response: AxiosResponse<Result.Data[], any>) => {
+    bests.value = response.data
+  }).catch((response: AxiosError) => toast.add(fromAxiosError(response)))
+}
+
+const getUser = (): void => {
+  const url = isMe.value ? "/me" : `/users/${userId.value}`
+  dataState.value = LoadingStates.Loading
+  data.value = {} as User
+
+  axios.request({
+    url,
+    method: 'get',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
+    }
+  }).then((response: AxiosResponse<User, any>) => {
+    data.value = response.data
+    dataState.value = LoadingStates.Loaded
+  }).catch((response: AxiosError) => {
+    toast.add(fromAxiosError(response))
+    dataState.value = LoadingStates.Error
+  })
+}
+
+const getExternalIds = (): void => {
+  if (!authStore.is2FaOk) return
+
+  axios.request({
+    url: `/externalId/user?internalId=${userId.value}`,
+    method: 'get',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
+    }
+  }).then((response: AxiosResponse<ExternalId.Id[], any>) => {
+    externalIds.value = response.data
+  }).catch((response: AxiosError) => toast.add(fromAxiosError(response)))
+}
+
+const redirectToStrava = (): void => {
+  window.open(stravaConnectLink, '_self')
+}
+
+const connectStrava = (): void => {
+  if (route.query.error) {
+    toast.add(fromErrorMessage("Access to Strava denied"))
   }
+  if (!route.query.code) return
+
+  stravaState.state = LoadingStates.Loading
+  axios.request({
+    url: '?code=' + routeQueryToString(route.query.code), method: 'post', baseURL: Const.STRAVA_API_URL,
+    headers: {'Authorization': 'Bearer ' + authStore.token}
+  }).then(() => {
+    stravaState.state = LoadingStates.Loaded
+    userStore.updateStrava()
+    toast.add(successToast())
+    void router.push('/me') // reset query params
+  }).catch((error: AxiosError) => {
+    stravaState.state = LoadingStates.Error
+    toast.add(fromAxiosError(error))
+    void router.push('/me') // reset query params
+  })
+}
+
+const revokeStrava = (): void => {
+  axios.request({
+    url: `/`,
+    method: 'delete',
+    baseURL: Const.STRAVA_API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
+    }
+  }).then(() => {
+    userStore.updateStrava()
+    toast.add(successToast())
+  }).catch((response: AxiosError) => toast.add(fromAxiosError(response)))
+}
+
+const loadData = (): void => {
+  getBests()
+  getResults()
+  getUser()
+  getExternalIds()
+}
+
+watch(() => route.params.id, () => {
+  evolutionChart.value?.resetData()
+  loadData()
+})
+
+onMounted(() => {
+  loadData()
+  connectStrava()
 })
 </script>
 
