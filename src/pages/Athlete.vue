@@ -1,5 +1,5 @@
 <template>
-  <h1 v-if="resultsState!==LoadingStates.Loaded || pref ==  'me'">{{ $t(`page.${pref}.title.account`) }}</h1>
+  <h1 v-if="dataState!==LoadingStates.Loaded || pref ==  'me'">{{ $t(`page.${pref}.title.account`) }}</h1>
   <TitleWithContextBtn v-else :btn-visible="canManageUsers()" :items="actions">
     {{ data.firstName }} {{ data.lastName }}
   </TitleWithContextBtn>
