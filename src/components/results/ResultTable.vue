@@ -13,7 +13,7 @@
       </SimpleTableCell>
       <SimpleTableCell v-if="showEvent">{{ $d(r.date) }}</SimpleTableCell>
       <SimpleTableCell v-if="showEvent">{{ r.eventPlace }}</SimpleTableCell>
-      <SimpleTableCell class="!py-0">
+      <SimpleTableCell v-if="canManageResults()" class="!py-0">
         <Button
             type="button" icon="pi pi-ellipsis-v" text rounded severity="secondary" size="small"
             @click="(event) => toggle(event, r)"/>
@@ -37,6 +37,7 @@ import DialogResult from "@/components/dialogs/DialogResult.vue";
 import SimpleTable from "@/components/list/SimpleTable.vue";
 import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
 import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import {canManageResults} from "@/plugins/AccessControl";
 import {formatResult} from "@/plugins/Helper";
 import {notImplemented} from "@/plugins/ToastWriter";
 import {useDataStore} from "@/stores/data";

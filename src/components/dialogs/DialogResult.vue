@@ -23,15 +23,15 @@
       </span>
 
       <AutoCompleteUser
-          v-if="!isPersonal" id="userId" v-model="newResult.userId" v-tooltip="errors.userId"
+          v-if="!isPersonal && !isEdit" id="userId" v-model="newResult.userId" v-tooltip="errors.userId"
           :disabled="!!user" :input-class="{'p-invalid': errors.userId}"/>
 
       <AutoCompleteDiscipline
-          id="disciplineId" v-model="newResult.disciplineId"
+          v-if="!isEdit" id="disciplineId" v-model="newResult.disciplineId"
           v-tooltip="errors.disciplineId" :input-class="{'p-invalid': errors.disciplineId}"/>
 
       <AutoCompleteEvent
-          id="eventId" v-model="newResult.eventId" v-tooltip="errors.eventId"
+          v-if="!isEdit" id="eventId" v-model="newResult.eventId" v-tooltip="errors.eventId"
           :disabled="!!event" :input-class="{'p-invalid': errors.eventId}" :is-personal="isPersonal"/>
     </form>
 
@@ -166,8 +166,6 @@ const setVisibility = (val: boolean): void => {
   }
 
   if (props.user) setValues({userId: props.user.id})
-
-  console.log(newResult)
 
   createState.state = NaN
 }
