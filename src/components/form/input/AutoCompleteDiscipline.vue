@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Ref, ref} from "vue";
+import {onMounted, Ref, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
 import {useDataStore} from "@/stores/data";
@@ -10,7 +10,7 @@ const filteredDisciplines: Ref<Discipline[]> = ref([])
 const value: Ref<Discipline | undefined> = ref()
 const disciplines: Discipline[] = useDataStore().disciplines
 
-defineProps({
+const props = defineProps({
   modelValue: {type: String, default: ''},
   disabled: {type: Boolean, default: false},
   inputClass: {type: Object, default() {return {}}}
@@ -31,6 +31,12 @@ const search = (event: {query: string}): void => {
 const optionLabel = (selectedUser: Discipline) : any => {
   return selectedUser.customName ?? t('data.' + selectedUser.i18nName)
 }
+
+onMounted(() => {
+  if (props.modelValue) {
+    value.value = disciplines.find(d => d.id === props.modelValue)
+  }
+})
 </script>
 
 <template>

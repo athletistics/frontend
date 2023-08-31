@@ -30,7 +30,7 @@ export default defineComponent({
     },
     content() {
       if (!this.slotEmpty) return ""
-      if (this.text) return this.text
+      if (this.text?.trim()) return this.text
       return "-"
     }
   }

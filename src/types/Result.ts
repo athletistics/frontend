@@ -11,11 +11,14 @@ declare namespace Result {
   }
 
   interface Data {
+    id?: number,
+    userId: string,
     userFirstName: string,
     userLastName: string,
     categoryName: string,
     disciplineName: string,
     disciplineId: string,
+    eventId: string,
     eventName: string,
     eventPlace: string,
     eventOutdoor: boolean,

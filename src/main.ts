@@ -9,6 +9,7 @@ import AutoComplete from "primevue/autocomplete"
 import Calendar from 'primevue/calendar';
 import Checkbox from "primevue/checkbox";
 import PrimeVue from 'primevue/config'
+import ContextMenu from 'primevue/contextmenu';
 import Dialog from "primevue/dialog";
 import Dropdown from 'primevue/dropdown';
 import InputMask from 'primevue/inputmask';
@@ -16,6 +17,7 @@ import InputNumber from "primevue/inputnumber";
 import InputSwitch from 'primevue/inputswitch';
 import InputText from "primevue/inputtext";
 import Listbox from 'primevue/listbox'
+import Menu from 'primevue/menu';
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import Tooltip from 'primevue/tooltip'
@@ -29,13 +31,13 @@ import enUS from './locales/en-US.json'
 type MessageSchema = typeof enUS
 
 const i18n = createI18n<MessageSchema, 'en-US' | 'de-CH'>({
-    legacy: false,
-    locale: 'en-US',
-    fallbackLocale: 'en-US',
-    messages: {
-        'en-US': enUS,
-        'de-CH': deCH
-    }
+  legacy: false,
+  locale: 'en-US',
+  fallbackLocale: 'en-US',
+  messages: {
+    'en-US': enUS,
+    'de-CH': deCH
+  }
 })
 
 // font awesome
@@ -71,6 +73,8 @@ createApp(App)
     .component('Listbox', Listbox)
     .component('Checkbox', Checkbox)
     .component('Toast', Toast)
+    .component('Menu', Menu)
+    .component('ContextMenu', ContextMenu)
     .directive('Tooltip', Tooltip)
     .use(ToastService)
     .use(PrimeVue)

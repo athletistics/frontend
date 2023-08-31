@@ -26,6 +26,7 @@
       "title": "Members",
       "titleExternal": "External Athletes",
       "create": "Create member",
+      "modify": "Update member",
       "btn": {
         "create": "Create member"
       }
@@ -157,7 +158,9 @@
     },
     "result": {
       "createTraining": "Create training result",
-      "create": "Create result"
+      "editTraining": "Modify training result",
+      "create": "Create result",
+      "edit": "Modify result"
     },
     "list": {
       "loading": "Data is loading",

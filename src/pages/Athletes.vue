@@ -21,9 +21,9 @@ import axios, {AxiosError, AxiosResponse} from "axios";
 import {useToast} from "primevue/usetoast";
 import {onMounted, ref} from "vue";
 
-import DialogUserCreate from "@/components/dialogs/user/DialogUserCreate.vue";
-import UserRedeemShareCodeModal from "@/components/dialogs/user/DialogUserRedeemShareCode.vue";
 import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import DialogUserCreate from "@/components/user/DialogUserCreate.vue";
+import UserRedeemShareCodeModal from "@/components/user/DialogUserRedeemShareCode.vue";
 import UserList from "@/components/user/UserList.vue";
 import {canManageUsers} from "@/plugins/AccessControl";
 import Const from "@/plugins/Constants"
