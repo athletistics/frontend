@@ -70,7 +70,7 @@ import AutoCompleteDiscipline from "@/components/form/input/AutoCompleteDiscipli
 import AutoCompleteEvent from "@/components/form/input/AutoCompleteEvent.vue";
 import AutoCompleteUser from "@/components/form/input/AutoCompleteUser.vue";
 import Const from "@/plugins/Constants";
-import {fromAxiosError, notImplemented, successToast} from "@/plugins/ToastWriter";
+import {fromAxiosError, successToast} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
 import Event from "@/types/Event";
 import LoadingState from "@/types/LoadingState";
@@ -120,21 +120,17 @@ const newResult = reactive({
 
 const createState = reactive<LoadingState>({state: NaN})
 const createResult = handleSubmit(() => {
-  if (isEdit.value) {
-    toast.add(notImplemented('edit result'))
-    return
-  }
-
   createState.state = LoadingStates.Loading
-  const url = props.isPersonal ? "/me/results" : "/results"
+  let url = props.isPersonal ? "/me/results" : "/results"
+  if(isEdit.value) url += "/" + props.result?.id
+  const method = isEdit.value ? 'put' : 'post'
 
   if (props.isPersonal) {
     delete (newResult.userId)
   }
 
   axios.request({
-    url,
-    method: 'post',
+    url, method,
     baseURL: Const.API_URL,
     headers: {
       'Authorization': 'Bearer ' + authStore.token
@@ -150,7 +146,6 @@ const createResult = handleSubmit(() => {
     toast.add(fromAxiosError(response))
   })
 })
-
 
 // -------------------
 // modal management

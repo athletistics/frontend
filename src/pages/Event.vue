@@ -16,9 +16,9 @@
     {{ $t('page.results.title') }}
   </TitleWithBtnPlus>
 
-  <ResultTable :results="results" :state="resultsState" :show-event="false"></ResultTable>
+  <ResultTable :results="results" :state="resultsState" :show-event="false" @updated="loadResults"/>
 
-  <ModalResult ref="modal" :is-personal="false" :event="event" @created="loadResults"></ModalResult>
+  <ModalResult ref="modal" :is-personal="false" :event="event" @created="loadResults"/>
 </template>
 
 <script lang="ts">

@@ -22,15 +22,16 @@
   </SimpleTable>
 
   <Menu ref="menu" :model="items" :popup="true"/>
-  <DialogResult ref="dialogResult" :result="selectedResult" :is-personal="false"/>
+  <DialogResult ref="dialogResult" :result="selectedResult" :is-personal="false" @created="emits('updated')"/>
 </template>
 
 <script setup lang="ts">
+import axios, {AxiosError} from "axios";
 import Button from "primevue/button";
 import Menu from "primevue/menu";
 import {MenuItem} from "primevue/menuitem";
 import {useToast} from "primevue/usetoast";
-import {computed, PropType, ref} from 'vue'
+import {computed, PropType, reactive, ref} from 'vue'
 import {useI18n} from "vue-i18n";
 
 import DialogResult from "@/components/dialogs/DialogResult.vue";
@@ -38,10 +39,13 @@ import SimpleTable from "@/components/list/SimpleTable.vue";
 import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
 import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
 import {canManageResults} from "@/plugins/AccessControl";
+import Const from "@/plugins/Constants";
 import {formatResult} from "@/plugins/Helper";
-import {notImplemented} from "@/plugins/ToastWriter";
+import {fromAxiosError, successToast} from "@/plugins/ToastWriter";
+import {useAuthStore} from "@/stores/auth";
 import {useDataStore} from "@/stores/data";
 import IntDialog from "@/types/IntDialog";
+import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
 
 const props = defineProps({
@@ -51,8 +55,10 @@ const props = defineProps({
   showEvent: {type: Boolean, default: true},
   state: {type: Number as PropType<LoadingStates>, default: LoadingStates.Loaded, required: false}
 })
+const emits = defineEmits(['updated'])
 
 const dataStore = useDataStore()
+const authStore = useAuthStore()
 const toast = useToast()
 const {te} = useI18n()
 
@@ -73,6 +79,29 @@ const getFormattedValue = computed((): Function => {
   }
 })
 
+
+const deleteState = reactive<LoadingState>({state: NaN})
+const deleteResult = (): void => {
+  if(!selectedResult.value || !selectedResult.value.id) return
+
+  axios.request({
+    url: `/results/${selectedResult.value.id}`,
+    method: 'delete',
+    baseURL: Const.API_URL,
+    headers: {'Authorization': 'Bearer ' + authStore.token}
+  }).then(() => {
+    deleteState.state = LoadingStates.Loaded
+    toast.add(successToast())
+    emits('updated')
+  }).catch((response: AxiosError) => {
+    deleteState.state = LoadingStates.Error
+    toast.add(fromAxiosError(response))
+  })
+}
+
+// -------------------
+// Result editing menu
+// -------------------
 const dialogResult = ref<IntDialog>()
 const selectedResult = ref<Result.RequestBody>()
 const menu = ref<Menu>()
@@ -87,9 +116,7 @@ const items = ref<MenuItem[]>([
     label: 'Delete',
     icon: 'pi pi-trash',
     class: 'danger',
-    command: () => {
-      if (selectedResult.value) toast.add(notImplemented('delete result'))
-    }
+    command: () => void deleteResult()
   }
 ])
 const toggle = (event: Event, r: Result.Data): void => {

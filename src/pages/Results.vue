@@ -1,16 +1,16 @@
 <template>
   <TitleWithBtnPlus :btn-visible="canManageResults()" @btn-click="setModalVisibility(true)">{{$t('page.results.title')}}</TitleWithBtnPlus>
 
-  <ResultTable :results="results" :state="resultsState"></ResultTable>
+  <ResultTable :results="results" :state="resultsState" @updated="loadResults"/>
 
-  <ModalResult ref="modal" :is-personal="false" @created="loadResults"></ModalResult>
+  <DialogResult ref="modal" :is-personal="false" @created="loadResults"/>
 </template>
 
 <script lang="ts">
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {defineComponent} from "vue";
 
-import ModalResult from "@/components/dialogs/DialogResult.vue";
+import DialogResult from "@/components/dialogs/DialogResult.vue";
 import ResultTable from "@/components/results/ResultTable.vue";
 import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
 import {canManageResults} from "@/plugins/AccessControl";
@@ -22,7 +22,7 @@ import {LoadingStates} from "@/types/LoadingStates";
 
 export default defineComponent({
   name: "Results",
-  components: {TitleWithBtnPlus, ResultTable, ModalResult},
+  components: {TitleWithBtnPlus, ResultTable, DialogResult},
   setup() {
     const authStore = useAuthStore()
     const toastStore = useToastStore()

@@ -77,7 +77,7 @@
     <BtnPlus v-if="canManageResults() || !route.params.id" @click="setModalVisibility(true)"/>
   </div>
 
-  <ResultList :results="results" :show-user="false" :state="resultsState"></ResultList>
+  <ResultList :results="results" :show-user="false" :state="resultsState" @updated="getResults"/>
 
   <ModalResult ref="dialogResult" :is-personal="isMe" :user="data"></ModalResult>
   <DialogCreateExternalId
