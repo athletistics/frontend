@@ -1,6 +1,6 @@
 <template>
   <h1 v-if="resultsState!==LoadingStates.Loaded || pref ==  'me'">{{ $t(`page.${pref}.title.account`) }}</h1>
-  <TitleWithContextBtn v-else :btn-visible="canManageUsers()" @edit="editAthlete" @delete="deleteAthlete">
+  <TitleWithContextBtn v-else :btn-visible="canManageUsers()" :items="actions">
     {{ data.firstName }} {{ data.lastName }}
   </TitleWithContextBtn>
 
@@ -32,7 +32,7 @@
       </LabeledText>
 
       <!-- Strava connection -->
-      <LoadingBtn v-if="data.userState==USER_STATE_INITIAL" disabled>{{ $t("page.user.sendInit") }}</LoadingBtn>
+      <UserCreateShare v-if="canManageUsers()" :user="userId"/>
       <LabeledText v-if="isMe && userStore.hasStravaToken" :state="dataState" label="page.user.strava">
         {{ $t('page.user.stravaActive') }}, <a
           class="cursor-pointer" style="color: #FC4C02"
@@ -51,16 +51,6 @@
           v-for="e in externalIds" i18n
           :label="'data.' + dataStore.getExternalIdTypeById(e.externalIdTypeId)?.i18nName">{{ e.externalId }}
       </LabeledText>
-    </div>
-
-    <!-- Actions -->
-    <div v-if="userStore.user.clubId === data.clubId && !isMe" class="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <LoadingBtn
-          v-if="canManageUsers() && externalIds.length < dataStore.externalIdTypes.length"
-          @click="setExternalIdModalVisibility(true)">{{ $t('page.user.addExternalId') }}
-      </LoadingBtn>
-      <UserCreateShare v-if="canManageUsers()" :user="userId"/>
-      <LoadingBtn v-if="data.id && !data.withLogin" disabled>{{ $t("page.user.createLogin") }}</LoadingBtn>
     </div>
   </div>
 
@@ -95,14 +85,16 @@
       @success="getExternalIds()"/>
   <ModalResultImport ref="dialogImport" @created="getResults"/>
 
-  <DialogUserCreate ref="dialogEditAthlete" :user-to-edit="data" />
+  <DialogUserCreate ref="dialogEditAthlete" :user-to-edit="data"/>
 
 </template>
 
 <script setup lang="ts">
 import axios, {AxiosError, AxiosResponse} from "axios";
+import {MenuItem} from "primevue/menuitem";
 import {useToast} from "primevue/usetoast";
 import {computed, onMounted, reactive, ref, watch} from "vue";
+import {useI18n} from "vue-i18n";
 import {useRoute, useRouter} from "vue-router";
 
 import BtnPlus from "@/components/button/BtnPlus.vue";
@@ -134,6 +126,7 @@ import User, {USER_STATE_INITIAL,} from "@/types/User";
 
 const route = useRoute()
 const router = useRouter()
+const {t} = useI18n()
 const authStore = useAuthStore()
 const dataStore = useDataStore()
 const userStore = useMyUserStore()
@@ -155,9 +148,43 @@ const userId = computed((): string => {
   return routeParamToString(route.params.id)
 })
 
+// ---------------
+// Athlete actions
+// ---------------
+const actions = computed((): MenuItem[] => {
+  const items: MenuItem[] = []
+  let addSep = false
+
+  items.push({label: 'Edit', icon: 'pi pi-pencil', command: editAthlete})
+  items.push({separator: true})
+
+  if (userStore.user.clubId === data.value.clubId && canManageUsers()) {
+    if (externalIds.value.length < dataStore.externalIdTypes.length) {
+      addSep = true
+      items.push({label: t('page.user.addExternalId'), command: () => setExternalIdModalVisibility(true)})
+    }
+
+    if (data.value.userState==USER_STATE_INITIAL) {
+      addSep = true
+      items.push({label: t('page.user.sendInit'),  command: sendLoginInitEmail})
+    }
+    if (data.value.id && !data.value.withLogin) {
+      addSep = true
+      items.push({label: t("page.user.createLogin"), command: createLogin})
+    }
+  }
+
+  if (addSep) items.push({separator: true})
+  items.push({label: 'Delete', icon: 'pi pi-trash', class: 'danger', command: deleteAthlete})
+
+  return items
+})
+
 const dialogEditAthlete = ref<IntDialog>()
 const editAthlete = (): void => void dialogEditAthlete.value?.setVisibility(true)
 const deleteAthlete = (): void => toast.add(notImplemented('delete athlete'))
+const createLogin = (): void => toast.add(notImplemented('create login'))
+const sendLoginInitEmail = (): void => toast.add(notImplemented('send init email'))
 
 // ----------------------------
 // Dialog visibility management
@@ -181,30 +208,30 @@ const setResultImportModalVisibility = (visible: boolean): void => {
 
 const evolutionChart = ref<{ resetData: Function, dataMap: Map<string, Result.Data[]> }>()
 const getResults = (): void => {
-      const url = isMe.value ? "/me/results" : `/results?userId=${userId.value}`
+  const url = isMe.value ? "/me/results" : `/results?userId=${userId.value}`
 
-      resultsState.value = LoadingStates.Loading
-      axios.request({
-        url,
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + authStore.token
-        }
-      }).then((response: AxiosResponse<Result.Data[], any>) => {
-        resultsState.value = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
-        if (!response.data?.length) return
-
-        results.value = response.data
-
-        // load data into evolution chart, whith user's name as a label
-        const name = response.data[0]?.userLastName + " " + response.data[0]?.userFirstName
-        evolutionChart.value?.dataMap.set(name, response.data)
-      }).catch((response: AxiosError) => {
-        resultsState.value = LoadingStates.Error
-        toast.add(fromAxiosError(response))
-      })
+  resultsState.value = LoadingStates.Loading
+  axios.request({
+    url,
+    method: 'get',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
     }
+  }).then((response: AxiosResponse<Result.Data[], any>) => {
+    resultsState.value = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
+    if (!response.data?.length) return
+
+    results.value = response.data
+
+    // load data into evolution chart, whith user's name as a label
+    const name = response.data[0]?.userLastName + " " + response.data[0]?.userFirstName
+    evolutionChart.value?.dataMap.set(name, response.data)
+  }).catch((response: AxiosError) => {
+    resultsState.value = LoadingStates.Error
+    toast.add(fromAxiosError(response))
+  })
+}
 const getBests = (): void => {
   const url = isMe.value ? "/me/results/best" : `/results/best?userId=${userId.value}`
 

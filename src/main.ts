@@ -9,6 +9,7 @@ import AutoComplete from "primevue/autocomplete"
 import Calendar from 'primevue/calendar';
 import Checkbox from "primevue/checkbox";
 import PrimeVue from 'primevue/config'
+import ContextMenu from 'primevue/contextmenu';
 import Dialog from "primevue/dialog";
 import Dropdown from 'primevue/dropdown';
 import InputMask from 'primevue/inputmask';
@@ -73,6 +74,7 @@ createApp(App)
     .component('Checkbox', Checkbox)
     .component('Toast', Toast)
     .component('Menu', Menu)
+    .component('ContextMenu', ContextMenu)
     .directive('Tooltip', Tooltip)
     .use(ToastService)
     .use(PrimeVue)
