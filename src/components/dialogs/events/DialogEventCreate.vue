@@ -85,7 +85,7 @@ const {t} = useI18n()
 
 const seasons = [
   {val: false, label: t('glob.event.indoor')},
-  {val: false, label: t('glob.event.outdoor')},
+  {val: true, label: t('glob.event.outdoor')},
 ]
 
 const authStore = useAuthStore()
