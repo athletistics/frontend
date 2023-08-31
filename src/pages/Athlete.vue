@@ -18,7 +18,7 @@
           :state="dataState" label="glob.user.gender"
           :text="data.genderId ? $t('data.gender['+(data.genderId-1)+']') : undefined"/>
       <LabeledText :state="dataState" label="glob.user.oasi" :text="data.oasi"/>
-      <LabeledText :state="dataState" label="glob.user.address" :text="data.address"/>
+      <LabeledText :state="dataState" label="glob.user.address" :text="`${data.address} ${data.houseNumber}`"/>
       <LabeledText :state="dataState" label="glob.user.city" :text="`${data.postCode} ${data.city}`"/>
       <LabeledText :state="dataState" label="glob.user.country" :text="data.country?.name"/>
       <LabeledText :state="dataState" label="glob.user.primaryMail">
@@ -85,7 +85,7 @@
       @success="getExternalIds()"/>
   <ModalResultImport ref="dialogImport" @created="getResults"/>
 
-  <DialogUserCreate ref="dialogEditAthlete" :user-to-edit="data"/>
+  <DialogUserCreate ref="dialogEditAthlete" :user-to-edit="data" @success="getUser"/>
 
 </template>
 

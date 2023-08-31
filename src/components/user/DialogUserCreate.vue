@@ -145,7 +145,7 @@ import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import DialogFooter from "@/components/dialogs/DialogFooter.vue";
 import DialogTitle from "@/components/dialogs/DialogTitle.vue";
 import Const from "@/plugins/Constants";
-import {fromAxiosError, notImplemented} from "@/plugins/ToastWriter";
+import {fromAxiosError} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
 import {useDataStore} from "@/stores/data";
 import {useMyUserStore} from "@/stores/user";
@@ -221,19 +221,15 @@ const newUser = reactive({
 
 const createState = reactive<LoadingState>({state: NaN})
 const createUser = handleSubmit(() => {
-  if(isEdit.value){
-    toast.add(notImplemented('update user'))
-    setVisibility(false)
-    return
-  }
+  const url = isEdit.value ? `/users/${props.userToEdit?.id}` : '/users'
+  const method = isEdit.value ? 'put' : 'post'
 
   newUser.clubId = userStore.user.clubId
   newUser.birthDate = moment(newUser.birthDateObj).format('YYYY-MM-DD')
 
   createState.state = LoadingStates.Loading
   axios.request({
-    url: "/users",
-    method: 'post',
+    url, method,
     baseURL: Const.API_URL,
     headers: {
       'Authorization': 'Bearer ' + authStore.token
