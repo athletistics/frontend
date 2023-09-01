@@ -1,15 +1,18 @@
 <template>
-  <h1>{{ $t('page.home.title') }}</h1>
+  <div v-if="emergencyVisible">
+    <h1>{{ $t('page.home.title') }}</h1>
 
-  <SimpleTable
-      :headers="['glob.user.firstName', 'glob.user.lastName', 'glob.user.primaryPhone']" :state="state"
-      :i18n="true">
-    <SimpleTableRow v-for="a in athletes">
-      <SimpleTableCell>{{ a.firstName }}</SimpleTableCell>
-      <SimpleTableCell>{{ a.lastName }}</SimpleTableCell>
-      <SimpleTableCell><a :href="toPhoneLink(a.primaryPhone)">{{ a.primaryPhone }}</a></SimpleTableCell>
-    </SimpleTableRow>
-  </SimpleTable>
+    <SimpleTable
+        :headers="['glob.user.firstName', 'glob.user.lastName', 'glob.user.primaryPhone']" :state="state"
+        :i18n="true">
+      <SimpleTableRow v-for="a in athletes">
+        <SimpleTableCell>{{ a.firstName }}</SimpleTableCell>
+        <SimpleTableCell>{{ a.lastName }}</SimpleTableCell>
+        <SimpleTableCell><a :href="toPhoneLink(a.primaryPhone)">{{ a.primaryPhone }}</a></SimpleTableCell>
+      </SimpleTableRow>
+    </SimpleTable>
+  </div>
+  <h1 v-else>Hello {{userStore.user.firstName}}!</h1>
 
 </template>
 
@@ -48,6 +51,8 @@ export default defineComponent({
     }
   },
   mounted() {
+    if (!this.emergencyVisible) return
+
     // load emergency data
     this.state = LoadingStates.Loading
     axios.request({

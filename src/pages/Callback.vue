@@ -37,15 +37,12 @@ export default defineComponent({
 
       void this.authStore.updateFromServer(() => {
         if (this.userStore.hasRole(Const.ROLE_COACH) || this.userStore.hasRole(Const.ROLE_HEAD_COACH)) {
-          if (!this.authStore.has2Fa) {
-            void router.push('/elevate')
-            return
-          }
+          if (!this.authStore.has2Fa) void router.push('/elevate')
+          else void router.push('/home')
+        } else {
+          void router.push('/me')
         }
-        void router.push('/home')
       })
-
-      void router.push('/home')
     }).catch(function (err) {
       console.error(err)
       void router.push('/?message=error')

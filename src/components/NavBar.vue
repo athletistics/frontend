@@ -86,10 +86,10 @@ export default defineComponent({
       return this.isElevatedCoach
     },
     eventsVisible() {
-      return this.isElevatedCoach || this.userStore.hasRole(Const.ROLE_ATHLETE)
+      return this.isElevatedCoach
     },
     resultsVisible() {
-      return this.isElevatedCoach || this.userStore.hasRole(Const.ROLE_ATHLETE)
+      return this.isElevatedCoach
     },
     isElevatedCoach() {
       return this.authStore.is2FaOk && (this.userStore.hasRole(Const.ROLE_COACH) || this.userStore.hasRole(Const.ROLE_HEAD_COACH))
