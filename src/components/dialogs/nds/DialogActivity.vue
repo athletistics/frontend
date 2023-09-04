@@ -7,7 +7,7 @@
           <Calendar
               id="startDate" v-model="newActivity.dates" selection-mode="range"
               :manual-input="false" :class="{'p-invalid': errors.dates}"/>
-          <label for="startDate">{{ $t('page.activity.startDate') }}*</label>
+          <label for="startDate">{{ $t('page.activity.startDate') }}* {{errors.dates}}</label>
         </span>
 
         <span class="p-float-label p-fluid">
@@ -66,6 +66,7 @@ import moment from "moment/moment";
 import {useToast} from "primevue/usetoast";
 import {useForm} from "vee-validate";
 import {reactive, ref} from 'vue'
+import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
 import {array, date, number, object, string} from "yup";
 
@@ -84,6 +85,7 @@ const emits = defineEmits(['success'])
 const authStore = useAuthStore()
 const toast = useToast()
 const route = useRoute()
+const {t} = useI18n()
 const durations = [60, 75, 90]
 const weekdays = [1, 2, 3, 4, 5, 6, 0]
 
@@ -92,7 +94,7 @@ const weekdays = [1, 2, 3, 4, 5, 6, 0]
 // ---------------
 const {handleSubmit, resetForm, errors, useFieldModel, meta} = useForm({
   validationSchema: toTypedSchema(object({
-    dates: array().length(2),
+    dates: array().length(2).of(date().required(t('forms.startEndDate'))).required(t('forms.startEndDate')),
     startTimeObj: date().required(),
     duration: number().required(),
     weekday: number().required().max(6).min(0),
@@ -117,8 +119,8 @@ const createActivity = handleSubmit(() => {
 
   // correctly format time and date
   if (newActivity.dates) {
-    newActivity.startDate = moment(newActivity.dates[0] as Date).format('YYYY-MM-DD')
-    newActivity.endDate = moment(newActivity.dates[1] as Date).format('YYYY-MM-DD')
+    newActivity.startDate = moment(newActivity.dates[0] ).format('YYYY-MM-DD')
+    newActivity.endDate = moment(newActivity.dates[1] ).format('YYYY-MM-DD')
   }
   newActivity.startTime = moment(newActivity.startTimeObj).format('HH:mm')
 
@@ -132,7 +134,7 @@ const createActivity = handleSubmit(() => {
     data: newActivity,
   }).then(() => {
     createState.state = LoadingStates.Loaded
-    toast.add({summary: "Success", severity: "success"})
+    toast.add({summary: "Success", severity: "success", life: 5000})
     emits('success')
     setVisibility(false)
   }).catch((response: AxiosError) => {
