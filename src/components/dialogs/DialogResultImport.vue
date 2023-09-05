@@ -3,7 +3,7 @@
     <div v-if="isSelectionView" class="grid grid-cols-1 divide-y gap-4">
       <h3>{{ $t('comp.import.selectActivities') }}</h3>
 
-      <div class="pt-4">
+      <div class="pt-4 overflow-y-scroll" style="max-height: 60vh">
         <SimpleList :state="activityState">
           <SimpleListEntry v-for="a in activities">
             <input v-model="selectedActivityIds" type="checkbox" :value="a.id">{{ a.name }} ({{
