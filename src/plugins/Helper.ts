@@ -2,6 +2,7 @@ import moment, {duration} from "moment/moment";
 import {LocationQueryValue} from "vue-router";
 
 import Discipline from "@/types/Discipline";
+import User from "@/types/User";
 
 export function formatResult(value: string, discipline: Discipline | undefined): string {
   if (!discipline) return value
@@ -19,6 +20,12 @@ export function formatResult(value: string, discipline: Discipline | undefined):
     default:
       return d.format("h:mm:ss.SS") + 's'
   }
+}
+
+export function sortUser(a: User, b: User): number {
+  const compLastName = a.lastName.toUpperCase().localeCompare(b.lastName.toUpperCase())
+  const compFirstName = a.firstName.toUpperCase().localeCompare(b.firstName.toUpperCase())
+  return compLastName !== 0 ? compLastName : compFirstName
 }
 
 export function routeParamToString(param: string | string[]): string {

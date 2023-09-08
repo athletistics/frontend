@@ -79,7 +79,7 @@ import {useRoute} from "vue-router";
 import DialogTeamAddPart from "@/components/dialogs/club/DialogTeamAddPart.vue";
 import ActivityModal from "@/components/dialogs/nds/DialogActivity.vue";
 import {canManageActivities, canManageTeam} from "@/plugins/AccessControl";
-import {routeParamToString} from "@/plugins/Helper";
+import {routeParamToString, sortUser} from "@/plugins/Helper";
 import {fromAxiosError} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
 import IntDialog from "@/types/IntDialog";
@@ -168,8 +168,8 @@ const getParticipants = (): void => {
     }
   }).then((response: AxiosResponse<{ athletes: User[], coaches: User[] }, any>) => {
     state.value = response.data.athletes.length ? LoadingStates.Loaded : LoadingStates.Empty
-    participantAthletes.value = response.data.athletes
-    participantCoaches.value = response.data.coaches
+    participantAthletes.value = response.data.athletes.sort(sortUser)
+    participantCoaches.value = response.data.coaches.sort(sortUser)
   }).catch(() => {
     state.value = LoadingStates.Error
   })

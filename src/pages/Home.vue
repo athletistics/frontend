@@ -25,6 +25,7 @@ import SimpleTable from "@/components/list/SimpleTable.vue";
 import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
 import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
 import Const from "@/plugins/Constants";
+import {sortUser} from "@/plugins/Helper";
 import {useAuthStore} from "@/stores/auth";
 import {useToastStore} from "@/stores/toast";
 import {useMyUserStore} from "@/stores/user";
@@ -63,7 +64,7 @@ export default defineComponent({
         'Authorization': 'Bearer ' + this.authStore.token
       }
     }).then((response: AxiosResponse<User[], any>) => {
-      this.athletes = response.data
+      this.athletes = response.data?.sort(sortUser)
       this.state = response.data ? LoadingStates.Loaded : LoadingStates.Empty
       console.log('loaded')
     }).catch((error: AxiosError) => {

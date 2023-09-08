@@ -2,6 +2,7 @@ import axios, {AxiosResponse} from "axios";
 import {acceptHMRUpdate, defineStore} from 'pinia'
 
 import Const from "@/plugins/Constants";
+import {sortUser} from "@/plugins/Helper";
 import Category from "@/types/Category";
 import Country from "@/types/Country";
 import Discipline from "@/types/Discipline";
@@ -150,6 +151,9 @@ export const useDataStore = defineStore('data', {
     },
     updateUsers(s?: LoadingState) {
       void this.updateData<User>('/users', 'users', undefined, s, true)
+        ?.then((): void  => {
+          this.users = this.users.sort(sortUser)
+        })
     },
     updateCategories(s?: LoadingState) {
       void this.updateData<Category>('/data/categories?sport=1', 'categories', 'categories', s)

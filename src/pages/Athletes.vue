@@ -27,6 +27,7 @@ import UserRedeemShareCodeModal from "@/components/user/DialogUserRedeemShareCod
 import UserList from "@/components/user/UserList.vue";
 import {canManageUsers} from "@/plugins/AccessControl";
 import Const from "@/plugins/Constants"
+import {sortUser} from "@/plugins/Helper";
 import {fromAxiosError} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
 import {LoadingStates} from "@/types/LoadingStates";
@@ -48,8 +49,8 @@ const loadAthletes = () : void => {
     baseURL: Const.API_URL,
     headers: {'Authorization': 'Bearer ' + authStore.token}
   }).then((response: AxiosResponse<{ owned: User[], shared: User[] }, any>) => {
-    athletes.value = response.data.owned
-    externalAthletes.value = response.data.shared
+    athletes.value = response.data.owned.sort(sortUser)
+    externalAthletes.value = response.data.shared.sort(sortUser)
 
     athletesState.value = athletes.value?.length ? LoadingStates.Loaded : LoadingStates.Empty
     externalAthletesState.value = externalAthletes.value?.length ? LoadingStates.Loaded : LoadingStates.Empty
