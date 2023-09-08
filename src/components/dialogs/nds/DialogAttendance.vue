@@ -1,128 +1,140 @@
 <template>
-  <Modal ref="modal">
-    <h3>{{ $t('page.activity.attendance') }} - {{ instance?.date ? $d(instance.date) : "" }}</h3>
+  <Dialog v-model:visible="visible" modal>
     <h4>{{ $t('page.activity.coaches') }}</h4>
-
-    <ul role="list" class="divide-y divide-slate-200 overflow-hidden">
-      <li v-for="a in users.coaches" class="flex px-4 hover:bg-main cursor-pointer main-transition">
-        <input
-            :id="a.id" v-model="selectedCoaches" class="mr-2 cursor-pointer"
-            type="checkbox" :value="a.id">
-        <label class="flex-grow py-3 cursor-pointer" :for="a.id">
-          {{ a.lastName }} {{ a.firstName }}
-        </label>
-      </li>
-    </ul>
+    <Listbox
+        v-model="selectedCoaches" :options="users.coaches" option-value="id" multiple
+        :disabled="state.state === LoadingStates.Loading">
+      <template #option="user">
+        {{ user.option.lastName }} {{ user.option.firstName }}
+      </template>
+    </Listbox>
 
     <h4>{{ $t('page.activity.athletes') }}</h4>
+    <Listbox
+        v-model="selectedAthletes" :options="users.athletes" option-value="id" multiple
+        :disabled="state.state === LoadingStates.Loading">
+      <template #option="user">
+        {{ user.option.lastName }} {{ user.option.firstName }}
+      </template>
+    </Listbox>
 
+    <template #header>
+      <DialogTitle>
+        {{ $t('page.activity.attendance') }} - {{ instance?.date ? $d(instance.date) : "" }}
+      </DialogTitle>
+    </template>
 
-    <ul role="list" class="divide-y divide-slate-200 overflow-hidden">
-      <li v-for="a in users.athletes" class="flex px-4 hover:bg-main cursor-pointer main-transition">
-        <input
-            :id="a.id" v-model="selectedAthletes" class="mr-2 cursor-pointer"
-            type="checkbox" :value="a.id">
-        <label class="flex-grow py-3 cursor-pointer" :for="a.id">
-          {{ a.lastName }} {{ a.firstName }}
-        </label>
-      </li>
-    </ul>
-
-    <template #bottom>
-      <hr>
-      <div class="grid grid-cols-2 gap-4">
+    <template #footer>
+      <DialogFooter>
         <LoadingBtn full outlined visual-type="primary" :loading="state" @click="updateAttendance()">
           {{ $t('glob.btn.save') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
-      </div>
+      </DialogFooter>
     </template>
-  </Modal>
+
+  </Dialog>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import axios, {AxiosError, AxiosResponse} from "axios";
-import {defineComponent, PropType} from 'vue'
+import {useToast} from "primevue/usetoast";
+import {PropType, reactive, ref} from 'vue'
+import {useRoute} from "vue-router";
 
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import Modal from "@/components/dialogs/Modal.vue";
+import DialogFooter from "@/components/dialogs/DialogFooter.vue";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
 import Const from "@/plugins/Constants";
 import {routeParamToString} from "@/plugins/Helper";
+import {fromAxiosError, successToast} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
-import {useToastStore} from "@/stores/toast";
-import IntDialog from "@/types/IntDialog";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
 import {Nds} from "@/types/Nds";
 import User from "@/types/User";
 
-export default defineComponent({
-  name: "DialogAttendance",
-  components: {LoadingBtn, Modal},
-  props: {
-    users: {type: Object as PropType<{ coaches: User[], athletes: User[] }>, required: true},
-  },
-  setup() {
-    const authStore = useAuthStore()
-    const toastStore = useToastStore()
-    return {authStore, toastStore}
-  },
-  data() {
-    return {
-      selectedCoaches: [] as string[],
-      selectedAthletes: [] as string[],
-      state: {state: NaN} as LoadingState,
-      instance: {} as Nds.ActivityInstance
-    }
-  },
-  methods: {
-    setVisibility(visibility: boolean, instance?: Nds.ActivityInstance) {
-      (this.$refs.modal as IntDialog).setVisibility(visibility)
-      this.selectedCoaches = [] as string[]
-      this.selectedAthletes = [] as string[]
+defineProps({
+  users: {type: Object as PropType<{ coaches: User[], athletes: User[] }>, required: true},
+})
 
-      if (instance) this.instance = instance
-      if (visibility) this.getAttendance()
-    },
-    getAttendance() {
-      axios.request({
-        url: `/nds/activities/${routeParamToString(this.$route.params.id)}/instances/${routeParamToString(this.instance.id)}/attendances`,
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {'Authorization': 'Bearer ' + this.authStore.token}
-      }).then((response: AxiosResponse<Nds.Attendance[], any>) => {
-        this.selectedCoaches = response.data.filter(a => a.isCoach).map(a => a.userId)
-        this.selectedAthletes = response.data.filter(a => !a.isCoach).map(a => a.userId)
-      }).catch(() => {
-      })
-    },
-    updateAttendance() {
-      this.state.state = LoadingStates.Loading
-      const attendances = [] as { isCoach: boolean, userId: string }[]
+const authStore = useAuthStore()
+const toast = useToast()
+const route = useRoute()
 
-      attendances.push(...this.selectedCoaches.map(c => {
-        return {isCoach: true, userId: c}
-      }))
-      attendances.push(...this.selectedAthletes.map(c => {
-        return {isCoach: false, userId: c}
-      }))
+const selectedCoaches = ref<string[]>([])
+const selectedAthletes = ref<string[]>([])
+const state = reactive<LoadingState>({state: NaN})
+const instance = ref<Nds.ActivityInstance>()
 
-      axios.request({
-        url: `/nds/activities/${routeParamToString(this.$route.params.id)}/instances/${routeParamToString(this.instance.id)}/attendances`,
-        method: 'put',
-        baseURL: Const.API_URL,
-        headers: {'Authorization': 'Bearer ' + this.authStore.token},
-        data: attendances
-      }).then(() => {
-        this.state.state = LoadingStates.Loaded
-        this.toastStore.addSuccessToast()
-        this.setVisibility(false)
-      }).catch((e: AxiosError) => {
-        this.state.state = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(e)
-      })
-    }
+const getAttendance = (): void => {
+  if (!instance.value) {
+    toast.add({summary: 'No instance selected', life: 3000, severity: "error"})
+    return
   }
+
+  state.state = LoadingStates.Loading
+  axios.request({
+    url: `/nds/activities/${routeParamToString(route.params.id)}/instances/${instance.value.id}/attendances`,
+    method: 'get',
+    baseURL: Const.API_URL,
+    headers: {'Authorization': 'Bearer ' + authStore.token}
+  }).then((response: AxiosResponse<Nds.Attendance[], any>) => {
+    selectedCoaches.value = response.data.filter(a => a.isCoach).map(a => a.userId)
+    selectedAthletes.value = response.data.filter(a => !a.isCoach).map(a => a.userId)
+  }).catch(() => {
+  }).finally(() => {
+    state.state = LoadingStates.Loaded
+  })
+}
+
+const updateAttendance = (): void => {
+  if (!instance.value) {
+    toast.add({summary: 'No instance selected', life: 3000, severity: "error"})
+    return
+  }
+
+  state.state = LoadingStates.Loading
+  const attendances = [] as { isCoach: boolean, userId: string }[]
+
+  attendances.push(...selectedCoaches.value.map(c => {
+    return {isCoach: true, userId: c}
+  }))
+  attendances.push(...selectedAthletes.value.map(c => {
+    return {isCoach: false, userId: c}
+  }))
+
+  axios.request({
+    url: `/nds/activities/${routeParamToString(route.params.id)}/instances/${instance.value.id}/attendances`,
+    method: 'put',
+    baseURL: Const.API_URL,
+    headers: {'Authorization': 'Bearer ' + authStore.token},
+    data: attendances
+  }).then(() => {
+    state.state = LoadingStates.Loaded
+    toast.add(successToast())
+    setVisibility(false)
+  }).catch((e: AxiosError) => {
+    state.state = LoadingStates.Error
+    toast.add(fromAxiosError(e))
+  })
+}
+
+// ----------------------------
+// dialog visibility management
+// ----------------------------
+const visible = ref<boolean>(false)
+const setVisibility = (v: boolean, i?: Nds.ActivityInstance): void => {
+  visible.value = v
+  selectedCoaches.value = [] as string[]
+  selectedAthletes.value = [] as string[]
+
+  if (i) instance.value = i
+  if (visible.value) getAttendance()
+}
+
+defineExpose({
+  setVisibility
 })
 </script>
 
