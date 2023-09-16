@@ -10,7 +10,10 @@
       <div>
         <label>{{ $t('glob.discipline.name') }}</label>
         <select v-model="discipline">
-          <option v-for="d in disciplines" :value="d.id">{{ d.i18nName ? $t('data.' + d.i18nName) : d.customName }}</option>
+          <option v-for="d in disciplines" :value="d.id">{{
+              d.i18nName ? $t('data.' + d.i18nName) : d.customName
+            }}
+          </option>
         </select>
       </div>
 
@@ -50,31 +53,28 @@
     <Line :data="chartData" :options="chartOptions"/>
   </div>
 
-  <Modal ref="modal">
-    <form class="space-y-4 with-label">
-      <h3>{{ $t('comp.evolution.compare') }}</h3>
-      <hr>
-
-      <div>
-        <div v-for="u in dataStore.users" class="flex hover:bg-main cursor-pointer">
-          <input :id="u.id" v-model="usersToAdd" :value="u.id" type="checkbox" class="mr-2 cursor-pointer">
-          <label :for="u.id" class="flex-grow py-3 cursor-pointer">{{ u.lastName }} {{ u.firstName }}</label>
-        </div>
+  <Dialog v-model:visible="dialogVisible">
+    <div>
+      <div v-for="u in dataStore.users" class="flex hover:bg-main cursor-pointer">
+        <input :id="u.id" v-model="usersToAdd" :value="u.id" type="checkbox" class="mr-2 cursor-pointer">
+        <label :for="u.id" class="flex-grow py-3 cursor-pointer">{{ u.lastName }} {{ u.firstName }}</label>
       </div>
+    </div>
 
-      <hr>
-      <div class="grid sm:grid-cols-2 gap-4">
-        <LoadingBtn
-full outlined visual-type="primary"
-                    :state="state" @click="compare()">{{ $t('glob.btn.add') }}
+    <template #header>
+      <DialogTitle>{{ $t('comp.evolution.compare') }}</DialogTitle>
+    </template>
+
+    <template #footer>
+      <DialogFooter>
+        <LoadingBtn full outlined visual-type="primary" :state="state" @click="compare()">
+          {{ $t('glob.btn.add') }}
         </LoadingBtn>
-        <LoadingBtn
-full outlined
-                    @click="setModalVisibility(false)">{{ $t('glob.btn.cancel') }}
-        </LoadingBtn>
-      </div>
-    </form>
-  </Modal>
+        <LoadingBtn full outlined @click="setModalVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
+      </DialogFooter>
+    </template>
+  </Dialog>
+
 </template>
 
 <script lang="ts">
@@ -99,7 +99,8 @@ import {defineComponent, PropType} from 'vue'
 import {Line} from 'vue-chartjs'
 
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import Modal from "@/components/dialogs/Modal.vue";
+import DialogFooter from "@/components/dialogs/DialogFooter.vue";
+import DialogTitle from "@/components/dialogs/DialogTitle.vue";
 import {canManageResults} from "@/plugins/AccessControl";
 import {CHART_COLORS, namedColor, transparentize} from "@/plugins/ChartUtils";
 import Const from "@/plugins/Constants";
@@ -109,14 +110,13 @@ import {useDataStore} from "@/stores/data";
 import {useToastStore} from "@/stores/toast";
 import Category from "@/types/Category";
 import Discipline from "@/types/Discipline";
-import IntDialog from "@/types/IntDialog";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineController, LineElement, PointElement, TimeScale)
 export default defineComponent({
   name: "ResultEvolution",
-  components: {LoadingBtn, Modal, Line},
+  components: {DialogFooter, DialogTitle, LoadingBtn, Line},
   props: {
     defaultUser: {type: Object as PropType<string | undefined>, default: undefined}
   },
@@ -132,11 +132,12 @@ export default defineComponent({
       discipline: "" as string,
       category: "" as string,
       showReference: false as boolean,
-      dataMap: new Map<string, Result.Data[]>() ,
+      dataMap: new Map<string, Result.Data[]>(),
       usersToAdd: [] as string[],
       state: {state: NaN} as LoadingState,
-      typeId: NaN ,
-      visible: true as boolean
+      typeId: NaN,
+      visible: true as boolean,
+      dialogVisible: false as boolean
     }
   },
   computed: {
@@ -202,14 +203,18 @@ export default defineComponent({
           }
         })
 
-        xyData.sort((a: {x: number}, b: {x: number}) => a.x - b.x)
+        xyData.sort((a: { x: number }, b: { x: number }) => a.x - b.x)
 
         datasets.push({
           label: name,
           fill: false,
           pointRadius: 4,
-          pointBackgroundColor: xyData.map((d: {isTraining: boolean}) => d.isTraining ? transparentize(CHART_COLORS.grey, 0.5) : transparentize(namedColor(datasets.length), 0.5)),
-          pointBorderColor: xyData.map((d: {isTraining: boolean}) => d.isTraining ? CHART_COLORS.grey : namedColor(datasets.length)),
+          pointBackgroundColor: xyData.map((d: {
+            isTraining: boolean
+          }) => d.isTraining ? transparentize(CHART_COLORS.grey, 0.5) : transparentize(namedColor(datasets.length), 0.5)),
+          pointBorderColor: xyData.map((d: {
+            isTraining: boolean
+          }) => d.isTraining ? CHART_COLORS.grey : namedColor(datasets.length)),
           backgroundColor: transparentize(namedColor(datasets.length), 0.5),
           borderColor: namedColor(datasets.length),
           data: xyData
@@ -275,7 +280,7 @@ export default defineComponent({
   methods: {
     canManageResults,
     setModalVisibility(visible: boolean) {
-      (this.$refs.modal as IntDialog).setVisibility(visible)
+      this.dialogVisible = visible
 
       this.usersToAdd = [] as string[]
     },
