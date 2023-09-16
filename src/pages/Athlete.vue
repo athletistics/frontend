@@ -83,7 +83,7 @@
   <DialogCreateExternalId
       ref="dialogExternalId" :internal-id="userId" :existing-ids="externalIds"
       @success="getExternalIds()"/>
-  <ModalResultImport ref="dialogImport" @created="getResults"/>
+  <DialogResultImport ref="dialogImport" @success="getResults"/>
 
   <DialogUserCreate ref="dialogEditAthlete" :user-to-edit="data" @success="getUser"/>
 
@@ -101,7 +101,7 @@ import BtnPlus from "@/components/button/BtnPlus.vue";
 import BtnResultImport from "@/components/button/BtnResultImport.vue";
 import LoadingBtn from "@/components/button/LoadingBtn.vue";
 import ModalResult from "@/components/dialogs/DialogResult.vue";
-import ModalResultImport from "@/components/dialogs/DialogResultImport.vue";
+import DialogResultImport from "@/components/dialogs/DialogResultImport.vue";
 import LabeledText from "@/components/LabeledText.vue";
 import ResultCard from "@/components/results/ResultCard.vue";
 import ResultEvolution from "@/components/results/ResultEvolution.vue";
