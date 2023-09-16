@@ -217,12 +217,15 @@ const checkFinished = (): void => {
 // dialog visibility management
 // ----------------------------
 const visible = ref<boolean>(false)
-const visibilitySelectionView = computed<boolean>((): boolean => {
-  return visible.value && isSelectionView.value
+const visibilitySelectionView = computed<boolean>({
+  get: (): boolean => visible.value && isSelectionView.value,
+  set: (newVal: boolean): void => setVisibility(newVal)
 })
-const visibilityResultView = computed<boolean>((): boolean => {
-  return visible.value && !isSelectionView.value
+const visibilityResultView = computed<boolean>({
+  get: (): boolean => visible.value && !isSelectionView.value,
+  set: (newVal: boolean): void => setVisibility(newVal)
 })
+
 const setVisibility = (v: boolean): void => {
   visible.value = v
 
