@@ -25,10 +25,10 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {defineComponent} from 'vue'
 
-import ModalResult from "@/components/dialogs/DialogResult.vue";
-import LabeledText from "@/components/LabeledText.vue";
+import ModalResult from "@/components/results/DialogResult.vue";
 import ResultTable from "@/components/results/ResultTable.vue";
-import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import LabeledText from "@/coreComponents/LabeledText.vue";
+import TitleWithBtnPlus from "@/coreComponents/title/TitleWithBtnPlus.vue";
 import {canManageResults} from "@/plugins/AccessControl";
 import Const from "@/plugins/Constants";
 import {routeParamToString} from "@/plugins/Helper";

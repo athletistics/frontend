@@ -72,13 +72,13 @@ import {useToast} from "primevue/usetoast";
 import {computed, onMounted, reactive, ref} from 'vue'
 import {useI18n} from "vue-i18n";
 
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import DialogFooter from "@/components/dialogs/DialogFooter.vue";
-import DialogTitle from "@/components/dialogs/DialogTitle.vue";
-import AutoCompleteDiscipline from "@/components/form/input/AutoCompleteDiscipline.vue";
-import AutoCompleteEvent from "@/components/form/input/AutoCompleteEvent.vue";
-import SimpleList from "@/components/list/SimpleList.vue";
-import SimpleListEntry from "@/components/list/SimpleListEntry.vue";
+import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
+import DialogFooter from "@/coreComponents/dialogs/DialogFooter.vue";
+import DialogTitle from "@/coreComponents/dialogs/DialogTitle.vue";
+import AutoCompleteDiscipline from "@/coreComponents/form/input/AutoCompleteDiscipline.vue";
+import AutoCompleteEvent from "@/coreComponents/form/input/AutoCompleteEvent.vue";
+import SimpleList from "@/coreComponents/list/SimpleList.vue";
+import SimpleListEntry from "@/coreComponents/list/SimpleListEntry.vue";
 import Const from "@/plugins/Constants";
 import {fromAxiosError, fromErrorMessage, successToast} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";

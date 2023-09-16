@@ -34,10 +34,10 @@ import {useToast} from "primevue/usetoast";
 import {computed, PropType, reactive, ref} from 'vue'
 import {useI18n} from "vue-i18n";
 
-import DialogResult from "@/components/dialogs/DialogResult.vue";
-import SimpleTable from "@/components/list/SimpleTable.vue";
-import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
-import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import DialogResult from "@/components/results/DialogResult.vue";
+import SimpleTable from "@/coreComponents/list/SimpleTable.vue";
+import SimpleTableCell from "@/coreComponents/list/SimpleTableCell.vue";
+import SimpleTableRow from "@/coreComponents/list/SimpleTableRow.vue";
 import {canManageResults} from "@/plugins/AccessControl";
 import Const from "@/plugins/Constants";
 import {formatResult} from "@/plugins/Helper";

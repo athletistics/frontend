@@ -39,9 +39,9 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 
-import SimpleTable from "@/components/list/SimpleTable.vue";
-import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
-import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import SimpleTable from "@/coreComponents/list/SimpleTable.vue";
+import SimpleTableCell from "@/coreComponents/list/SimpleTableCell.vue";
+import SimpleTableRow from "@/coreComponents/list/SimpleTableRow.vue";
 import {formatResult} from "@/plugins/Helper";
 import {useDataStore} from "@/stores/data";
 import Discipline from "@/types/Discipline";

@@ -98,9 +98,9 @@ import {
 import {defineComponent, PropType} from 'vue'
 import {Line} from 'vue-chartjs'
 
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import DialogFooter from "@/components/dialogs/DialogFooter.vue";
-import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
+import DialogFooter from "@/coreComponents/dialogs/DialogFooter.vue";
+import DialogTitle from "@/coreComponents/dialogs/DialogTitle.vue";
 import {canManageResults} from "@/plugins/AccessControl";
 import {CHART_COLORS, namedColor, transparentize} from "@/plugins/ChartUtils";
 import Const from "@/plugins/Constants";

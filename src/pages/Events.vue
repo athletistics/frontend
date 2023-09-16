@@ -21,11 +21,11 @@
 import {reactive} from "vue";
 import {useRouter} from "vue-router";
 
-import DialogEventCreate from "@/components/dialogs/events/DialogEventCreate.vue";
-import SimpleTable from "@/components/list/SimpleTable.vue";
-import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
-import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
-import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import DialogEventCreate from "@/components/events/DialogEventCreate.vue";
+import SimpleTable from "@/coreComponents/list/SimpleTable.vue";
+import SimpleTableCell from "@/coreComponents/list/SimpleTableCell.vue";
+import SimpleTableRow from "@/coreComponents/list/SimpleTableRow.vue";
+import TitleWithBtnPlus from "@/coreComponents/title/TitleWithBtnPlus.vue";
 import {canManageEvents} from "@/plugins/AccessControl";
 import {useDataStore} from "@/stores/data";
 import LoadingState from "@/types/LoadingState";

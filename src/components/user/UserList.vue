@@ -10,9 +10,9 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
 
-import SimpleTable from "@/components/list/SimpleTable.vue";
-import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
-import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
+import SimpleTable from "@/coreComponents/list/SimpleTable.vue";
+import SimpleTableCell from "@/coreComponents/list/SimpleTableCell.vue";
+import SimpleTableRow from "@/coreComponents/list/SimpleTableRow.vue";
 import {LoadingStates} from "@/types/LoadingStates";
 import User from "@/types/User";
 

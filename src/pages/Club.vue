@@ -38,11 +38,11 @@
 import axios, {AxiosResponse} from "axios";
 import {onMounted, reactive, ref} from "vue";
 
-import DialogDisciplineCreate from "@/components/dialogs/club/DialogDisciplineCreate.vue";
-import DialogTeamCreate from "@/components/dialogs/club/DialogTeamCreate.vue";
-import SimpleList from "@/components/list/SimpleList.vue";
-import SimpleListEntry from "@/components/list/SimpleListEntry.vue";
-import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import DialogDisciplineCreate from "@/components/club/DialogDisciplineCreate.vue";
+import DialogTeamCreate from "@/components/club/DialogTeamCreate.vue";
+import SimpleList from "@/coreComponents/list/SimpleList.vue";
+import SimpleListEntry from "@/coreComponents/list/SimpleListEntry.vue";
+import TitleWithBtnPlus from "@/coreComponents/title/TitleWithBtnPlus.vue";
 import {canManageDiscipline, canManageTeam} from "@/plugins/AccessControl";
 import Const from "@/plugins/Constants"
 import {useAuthStore} from "@/stores/auth";

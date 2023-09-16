@@ -63,12 +63,12 @@ import {useForm} from 'vee-validate'
 import {computed, PropType, reactive, ref} from 'vue'
 import * as yup from 'yup';
 
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import DialogFooter from "@/components/dialogs/DialogFooter.vue";
-import DialogTitle from "@/components/dialogs/DialogTitle.vue";
-import AutoCompleteDiscipline from "@/components/form/input/AutoCompleteDiscipline.vue";
-import AutoCompleteEvent from "@/components/form/input/AutoCompleteEvent.vue";
-import AutoCompleteUser from "@/components/form/input/AutoCompleteUser.vue";
+import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
+import DialogFooter from "@/coreComponents/dialogs/DialogFooter.vue";
+import DialogTitle from "@/coreComponents/dialogs/DialogTitle.vue";
+import AutoCompleteDiscipline from "@/coreComponents/form/input/AutoCompleteDiscipline.vue";
+import AutoCompleteEvent from "@/coreComponents/form/input/AutoCompleteEvent.vue";
+import AutoCompleteUser from "@/coreComponents/form/input/AutoCompleteUser.vue";
 import Const from "@/plugins/Constants";
 import {fromAxiosError, successToast} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";

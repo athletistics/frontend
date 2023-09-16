@@ -21,8 +21,8 @@
 import {mapStores} from "pinia";
 import {defineComponent} from "vue";
 
-import NavBar from './components/NavBar.vue'
-import Toasts from "./components/Toasts.vue";
+import NavBar from './coreComponents/NavBar.vue'
+import Toasts from "./coreComponents/Toasts.vue";
 import {useAuthStore} from "./stores/auth";
 import {useDataStore} from "./stores/data";
 import {useMyUserStore} from "./stores/user";
