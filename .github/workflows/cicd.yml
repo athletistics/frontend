@@ -24,7 +24,7 @@ jobs:
         run: npm run test
 
   build_and_publish_docker:
-    name: Build and Publish Docker Images
+    name: Build and Push Docker Images
     runs-on: ubuntu-latest
 
     strategy:
