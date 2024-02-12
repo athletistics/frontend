@@ -38,26 +38,26 @@ jobs:
 
       - name: Build and publish latest Docker image
         run: |
-          docker buildx --platform ${{ matrix.platform }} -t $GITHUB_REPOSITORY:latest .
+          docker buildx build --platform ${{ matrix.platform }} -t $GITHUB_REPOSITORY:latest --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} .
           docker push $GITHUB_REPOSITORY:latest
 
       - name: Build and publish staging Docker image
         if: github.ref == 'refs/heads/staging'
         run: |
-          docker buildx --platform ${{ matrix.platform }} -t $GITHUB_REPOSITORY:staging .
+          docker buildx build --platform ${{ matrix.platform }} -t $GITHUB_REPOSITORY:staging --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} .
           docker push $GITHUB_REPOSITORY:staging
 
       - name: Build and publish stable Docker image
         if: github.ref == 'refs/heads/main'
         run: |
-          docker buildx --platform ${{ matrix.platform }} -t $GITHUB_REPOSITORY:stable .
+          docker buildx build --platform ${{ matrix.platform }} -t $GITHUB_REPOSITORY:stable --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} .
           docker push $GITHUB_REPOSITORY:stable
 
       - name: Build and publish tagged Docker image
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           tag=$(echo "${GITHUB_REF#refs/tags/}")
-          docker buildx --platform ${{ matrix.platform }} -t $GITHUB_REPOSITORY:$tag .
+          docker buildx build --platform ${{ matrix.platform }} -t $GITHUB_REPOSITORY:$tag --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} .
           docker push $GITHUB_REPOSITORY:$tag
 
   deploy_to_kubernetes:
