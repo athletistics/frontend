@@ -8,6 +8,10 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: ['20.3.0']
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -48,7 +52,7 @@ jobs:
           docker buildx build \
           --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:latest \
           --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_DEV }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
-          --build_arg INFISICAL_ENV=dev \
+          --build-arg INFISICAL_ENV=dev \
           --push .
 
       - name: Build and publish staging Docker image
@@ -57,7 +61,7 @@ jobs:
           docker buildx build \
           --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:staging \
           --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_STAGING }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
-          --build_arg INFISICAL_ENV=staging \
+          --build-arg INFISICAL_ENV=staging \
           --push .
 
       - name: Build and publish stable Docker image
@@ -66,7 +70,7 @@ jobs:
           docker buildx build \
           --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:stable \
           --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_PROD }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
-          --build_arg INFISICAL_ENV=prod \
+          --build-arg INFISICAL_ENV=prod \
           --push .
 
       - name: Build and publish tagged Docker image
