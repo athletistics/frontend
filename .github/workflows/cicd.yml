@@ -1,4 +1,4 @@
-name: Node.js CI/CD
+name: Test, Build, Deploy
 
 on:
   push
@@ -6,11 +6,16 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: node:20.3.0
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies
         run: npm ci
@@ -43,22 +48,25 @@ jobs:
           docker buildx build \
           --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:latest \
           --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_DEV }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
+          --build_arg INFISICAL_ENV=dev \
           --push .
 
       - name: Build and publish staging Docker image
-        if: github.ref == 'refs/heads/staging'
+#        if: github.ref == 'refs/heads/staging'
         run: |
           docker buildx build \
           --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:staging \
           --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_STAGING }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
+          --build_arg INFISICAL_ENV=staging \
           --push .
 
       - name: Build and publish stable Docker image
-        if: github.ref == 'refs/heads/main'
+#        if: github.ref == 'refs/heads/main'
         run: |
           docker buildx build \
           --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:stable \
           --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_PROD }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
+          --build_arg INFISICAL_ENV=prod \
           --push .
 
       - name: Build and publish tagged Docker image

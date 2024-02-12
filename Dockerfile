@@ -5,6 +5,8 @@ FROM node:20.3.0 as builder
 
 ARG INFISICAL_TOKEN
 ARG INFISICAL_API_URL
+ARG INFISICAL_ENV
+ENV INFISICAL_ENV=$INFISICAL_ENV
 ENV INFISICAL_TOKEN=$INFISICAL_TOKEN
 ENV INFISICAL_API_URL=$INFISICAL_API_URL
 
@@ -25,7 +27,7 @@ RUN npm ci
 COPY . .
 
 # Build the app
-RUN infisical run -- npm run build
+RUN infisical run --env=$INFISICAL_ENV --path="/frontend" -- npm run build
 
 # Stage 2: Run Nginx with the built app
 FROM nginx:alpine
