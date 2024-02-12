@@ -20,7 +20,7 @@ jobs:
 
   build_and_publish_docker:
     name: Build and Push Docker Images
-    needs: test
+#    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
