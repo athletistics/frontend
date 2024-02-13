@@ -35,8 +35,8 @@ jobs:
       matrix:
         env: [
           {tag: latest, infisical_env: dev, condition: true, namespace: athletistics-dev},
-          {tag: staging, infisical_env: staging, condition: github.ref == 'refs/heads/staging' ||  github.ref == 'refs/heads/main', namespace: athletistics-staging},
-          {tag: stable, infisical_env: prod, condition: github.ref == 'refs/heads/main', namespace: athletistics},
+          {tag: staging, infisical_env: staging, condition: "${{ github.ref == 'refs/heads/staging' ||  github.ref == 'refs/heads/main' }}", namespace: athletistics-staging},
+          {tag: stable, infisical_env: prod, condition: "${{ github.ref == 'refs/heads/main' }}, namespace: athletistics},
         ]
 
     uses: ./.github/workflows/build-publish-deploy.yml
