@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -28,77 +28,32 @@ jobs:
         run: npm run test
 
   build_and_publish_docker:
-    name: Build and Push Docker Images
+    name: Build, Publish and Rollout Docker Images
     needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Set up QEMU, adding support for more platforms
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and publish latest Docker image
-        run: |
-          docker buildx build \
-          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:latest \
-          --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_DEV }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
-          --build-arg INFISICAL_ENV=dev \
-          --push .
-
-      - name: Build and publish staging Docker image
-        if: github.ref == 'refs/heads/staging'
-        run: |
-          docker buildx build \
-          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:staging \
-          --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_STAGING }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
-          --build-arg INFISICAL_ENV=staging \
-          --push .
-
-      - name: Build and publish stable Docker image
-        if: github.ref == 'refs/heads/main'
-        run: |
-          docker buildx build \
-          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:stable \
-          --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_PROD }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
-          --build-arg INFISICAL_ENV=prod \
-          --push .
-
-      - name: Build and publish tagged Docker image
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          tag=$(echo "${GITHUB_REF#refs/tags/}")
-          docker buildx build \
-          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:$tag \
-          --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_PROD }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
-          --push .
-
-  deploy_to_kubernetes:
-    name: Deploy to Kubernetes
-    needs: build_and_publish_docker
-    runs-on: ubuntu-latest
 
     strategy:
       matrix:
         env: [
-          {if: true, namespace: athletistics-dev},
-          {if: github.ref == 'refs/heads/staging', namespace: athletistics-staging},
-          {if: github.ref == 'refs/heads/main', namespace: athletistics},
+          {tag: latest, infisical_env: dev, condition: true, namespace: athletistics-dev},
+          {tag: staging, infisical_env: staging, condition: github.ref == 'refs/heads/staging' ||  github.ref == 'refs/heads/main', namespace: athletistics-staging},
+          {tag: stable, infisical_env: prod, condition: github.ref == 'refs/heads/main', namespace: athletistics},
         ]
 
-    steps:
-      - name: Restart frontend deployment in namespace ${{ matrix.env.namespace }}
-        if: ${{ matrix.env.if }}
-        uses: steebchen/kubectl@v2.0.0
-        with:
-          config: ${{ secrets.KUBE_CONFIG }}
-          command: -n ${{ matrix.env.namespace }} rollout restart deploy frontend
+    uses: ./.github/workflows/build-publish-deploy.yml
+    secrets: inherit
+    with:
+      condition: ${{ matrix.env.condition }}
+      tag: ${{ matrix.env.tag }}
+      infisical_env: ${{ matrix.env.infisical_env }}
+      namespace: ${{ matrix.env.namespace }}
+
+  build_and_publish_tag_docker:
+    name: Build and Publish tagged docker image
+    needs: test
+
+    if: startsWith(github.ref, 'refs/tags/')
+    uses: ./.github/workflows/build-publish.yml
+    secrets: inherit
+    with:
+      infisical_env: prod
+      tag: $tag
