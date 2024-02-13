@@ -1,0 +1,34 @@
+name: "Build, Publish, Deploy"
+
+on:
+  workflow_call:
+    inputs:
+      condition:
+        type: boolean
+        required: true
+      tag:
+        type: string
+        required: true
+      namespace:
+        type: string
+        required: true
+      infisical_env:
+        required: true
+        type: string
+
+jobs:
+  build_publish:
+    if: ${{ inputs.condition }}
+    uses: ./.github/workflows/build-publish.yml
+    secrets: inherit
+    with:
+      tag: ${{ inputs.tag }}
+      infisical_env: ${{ inputs.infisical_env }}
+
+
+  deploy:
+    needs: build_publish
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    with:
+      namespace: ${{ inputs.namespace }}
