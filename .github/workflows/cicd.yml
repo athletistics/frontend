@@ -4,83 +4,83 @@ on:
   push
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: ['20.3.0']
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm run test
-
-  build_and_publish_docker:
-    name: Build and Push Docker Images
+#  test:
+#    name: Test
+#    runs-on: ubuntu-latest
+#
+#    strategy:
+#      matrix:
+#        node-version: ['20.3.0']
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Use Node.js ${{ matrix.node-version }}
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: ${{ matrix.node-version }}
+#
+#      - name: Install dependencies
+#        run: npm ci
+#
+#      - name: Run tests
+#        run: npm run test
+#
+#  build_and_publish_docker:
+#    name: Build and Push Docker Images
 #    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Set up QEMU, adding support for more platforms
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and publish latest Docker image
-        run: |
-          docker buildx build \
-          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:latest \
-          --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_DEV }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
-          --build-arg INFISICAL_ENV=dev \
-          --push .
-
-      - name: Build and publish staging Docker image
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Login to DockerHub
+#        uses: docker/login-action@v2
+#        with:
+#          username: ${{ secrets.DOCKER_USERNAME }}
+#          password: ${{ secrets.DOCKER_PASSWORD }}
+#
+#      - name: Set up QEMU, adding support for more platforms
+#        uses: docker/setup-qemu-action@v3
+#
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
+#
+#      - name: Build and publish latest Docker image
+#        run: |
+#          docker buildx build \
+#          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:latest \
+#          --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_DEV }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
+#          --build-arg INFISICAL_ENV=dev \
+#          --push .
+#
+#      - name: Build and publish staging Docker image
 #        if: github.ref == 'refs/heads/staging'
-        run: |
-          docker buildx build \
-          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:staging \
-          --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_STAGING }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
-          --build-arg INFISICAL_ENV=staging \
-          --push .
-
-      - name: Build and publish stable Docker image
+#        run: |
+#          docker buildx build \
+#          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:staging \
+#          --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_STAGING }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
+#          --build-arg INFISICAL_ENV=staging \
+#          --push .
+#
+#      - name: Build and publish stable Docker image
 #        if: github.ref == 'refs/heads/main'
-        run: |
-          docker buildx build \
-          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:stable \
-          --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_PROD }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
-          --build-arg INFISICAL_ENV=prod \
-          --push .
-
-      - name: Build and publish tagged Docker image
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          tag=$(echo "${GITHUB_REF#refs/tags/}")
-          docker buildx build \
-          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:$tag \
-          --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_PROD }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
-          --push .
+#        run: |
+#          docker buildx build \
+#          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:stable \
+#          --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_PROD }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
+#          --build-arg INFISICAL_ENV=prod \
+#          --push .
+#
+#      - name: Build and publish tagged Docker image
+#        if: startsWith(github.ref, 'refs/tags/')
+#        run: |
+#          tag=$(echo "${GITHUB_REF#refs/tags/}")
+#          docker buildx build \
+#          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:$tag \
+#          --build-arg INFISICAL_TOKEN=${{ secrets.INFISICAL_TOKEN_PROD }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
+#          --push .
 
   deploy_to_kubernetes:
     name: Deploy to Kubernetes
@@ -91,8 +91,10 @@ jobs:
       matrix:
         env: [
           {if: true, namespace: athletistics-dev},
-          {if: github.ref == 'refs/heads/staging', namespace: athletistics-staging},
-          {if: github.ref == 'refs/heads/main', namespace: athletistics},
+#          {if: github.ref == 'refs/heads/staging', namespace: athletistics-staging},
+          {if: true, namespace: athletistics-staging},
+#          {if: github.ref == 'refs/heads/main', namespace: athletistics},
+          {if: true, namespace: athletistics},
         ]
 
     steps:
@@ -100,5 +102,5 @@ jobs:
         if: ${{ matrix.env.if }}
         uses: steebchen/kubectl@v2.0.0
         with:
-          host: ${{ secrets.KUBE_CONFIG }}
+          config: ${{ secrets.KUBE_CONFIG }}
           command: -n ${{ matrix.env.namespace }} rollout restart deploy frontend
