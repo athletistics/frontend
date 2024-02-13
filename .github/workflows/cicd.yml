@@ -84,7 +84,7 @@ jobs:
 
   deploy_to_kubernetes:
     name: Deploy to Kubernetes
-    needs: build_and_publish_docker
+#    needs: build_and_publish_docker
     runs-on: ubuntu-latest
 
     strategy:
