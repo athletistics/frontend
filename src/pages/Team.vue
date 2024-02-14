@@ -76,8 +76,15 @@ import {useToast} from "primevue/usetoast";
 import {onMounted, reactive, ref} from "vue";
 import {useRoute} from "vue-router";
 
-import DialogTeamAddPart from "@/components/dialogs/club/DialogTeamAddPart.vue";
-import ActivityModal from "@/components/dialogs/nds/DialogActivity.vue";
+import DialogTeamAddPart from "@/components/club/DialogTeamAddPart.vue";
+import ActivityModal from "@/components/nds/DialogActivity.vue";
+import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
+import SimpleList from "@/coreComponents/list/SimpleList.vue";
+import SimpleListEntry from "@/coreComponents/list/SimpleListEntry.vue";
+import SimpleTable from "@/coreComponents/list/SimpleTable.vue";
+import SimpleTableCell from "@/coreComponents/list/SimpleTableCell.vue";
+import SimpleTableRow from "@/coreComponents/list/SimpleTableRow.vue";
+import TitleWithBtnPlus from "@/coreComponents/title/TitleWithBtnPlus.vue";
 import {canManageActivities, canManageTeam} from "@/plugins/AccessControl";
 import {routeParamToString, sortUser} from "@/plugins/Helper";
 import {fromAxiosError} from "@/plugins/ToastWriter";
@@ -86,13 +93,6 @@ import IntDialog from "@/types/IntDialog";
 import {LoadingStates} from "@/types/LoadingStates";
 import {Nds} from "@/types/Nds";
 
-import LoadingBtn from "../components/button/LoadingBtn.vue";
-import SimpleList from "../components/list/SimpleList.vue";
-import SimpleListEntry from "../components/list/SimpleListEntry.vue";
-import SimpleTable from "../components/list/SimpleTable.vue";
-import SimpleTableCell from "../components/list/SimpleTableCell.vue";
-import SimpleTableRow from "../components/list/SimpleTableRow.vue";
-import TitleWithBtnPlus from "../components/title/TitleWithBtnPlus.vue";
 import Const from "../plugins/Constants"
 import LoadingState from "../types/LoadingState";
 import Team from "../types/Team";

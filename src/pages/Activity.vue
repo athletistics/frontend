@@ -59,16 +59,16 @@ import {onMounted, reactive, ref} from 'vue'
 import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
 
-import BtnMenu from "@/components/button/BtnMenu.vue";
-import BtnMenuEntry from "@/components/button/BtnMenuEntry.vue";
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import DialogAttendance from "@/components/dialogs/nds/DialogAttendance.vue";
-import DialogInstance from "@/components/dialogs/nds/DialogInstance.vue";
-import LabeledText from "@/components/LabeledText.vue";
-import SimpleTable from "@/components/list/SimpleTable.vue";
-import SimpleTableCell from "@/components/list/SimpleTableCell.vue";
-import SimpleTableRow from "@/components/list/SimpleTableRow.vue";
-import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import DialogAttendance from "@/components/nds/DialogAttendance.vue";
+import DialogInstance from "@/components/nds/DialogInstance.vue";
+import BtnMenu from "@/coreComponents/button/BtnMenu.vue";
+import BtnMenuEntry from "@/coreComponents/button/BtnMenuEntry.vue";
+import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
+import LabeledText from "@/coreComponents/LabeledText.vue";
+import SimpleTable from "@/coreComponents/list/SimpleTable.vue";
+import SimpleTableCell from "@/coreComponents/list/SimpleTableCell.vue";
+import SimpleTableRow from "@/coreComponents/list/SimpleTableRow.vue";
+import TitleWithBtnPlus from "@/coreComponents/title/TitleWithBtnPlus.vue";
 import {canManageActivityInstances} from "@/plugins/AccessControl";
 import Const from "@/plugins/Constants";
 import {routeParamToString, sortUser} from "@/plugins/Helper";

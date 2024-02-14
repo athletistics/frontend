@@ -45,9 +45,9 @@ import {reactive, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {boolean, object, string} from "yup";
 
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import DialogFooter from "@/components/dialogs/DialogFooter.vue";
-import DialogTitle from "@/components/dialogs/DialogTitle.vue";
+import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
+import DialogFooter from "@/coreComponents/dialogs/DialogFooter.vue";
+import DialogTitle from "@/coreComponents/dialogs/DialogTitle.vue";
 import Const from "@/plugins/Constants";
 import {fromAxiosError} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";

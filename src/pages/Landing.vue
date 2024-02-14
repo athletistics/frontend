@@ -22,7 +22,7 @@ import axios from "axios";
 import {CreateSigninRequestArgs, OidcClient} from "oidc-client-ts";
 import {defineComponent} from "vue";
 
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
 import authConfig from "@/plugins/AuthConfig";
 import Const from '@/plugins/Constants'
 import {useAuthStore} from "@/stores/auth";

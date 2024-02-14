@@ -58,7 +58,7 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {defineComponent} from "vue";
 
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
+import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
 import Const from "@/plugins/Constants";
 import {useAuthStore} from "@/stores/auth";
 import {useToastStore} from "@/stores/toast";

@@ -10,9 +10,9 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {defineComponent} from "vue";
 
-import DialogResult from "@/components/dialogs/DialogResult.vue";
+import DialogResult from "@/components/results/DialogResult.vue";
 import ResultTable from "@/components/results/ResultTable.vue";
-import TitleWithBtnPlus from "@/components/title/TitleWithBtnPlus.vue";
+import TitleWithBtnPlus from "@/coreComponents/title/TitleWithBtnPlus.vue";
 import {canManageResults} from "@/plugins/AccessControl";
 import Const from "@/plugins/Constants";
 import {useAuthStore} from "@/stores/auth";

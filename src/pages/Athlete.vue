@@ -83,7 +83,7 @@
   <DialogCreateExternalId
       ref="dialogExternalId" :internal-id="userId" :existing-ids="externalIds"
       @success="getExternalIds()"/>
-  <ModalResultImport ref="dialogImport" @created="getResults"/>
+  <DialogResultImport ref="dialogImport" @success="getResults"/>
 
   <DialogUserCreate ref="dialogEditAthlete" :user-to-edit="data" @success="getUser"/>
 
@@ -97,20 +97,20 @@ import {computed, onMounted, reactive, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useRoute, useRouter} from "vue-router";
 
-import BtnPlus from "@/components/button/BtnPlus.vue";
-import BtnResultImport from "@/components/button/BtnResultImport.vue";
-import LoadingBtn from "@/components/button/LoadingBtn.vue";
-import ModalResult from "@/components/dialogs/DialogResult.vue";
-import ModalResultImport from "@/components/dialogs/DialogResultImport.vue";
-import LabeledText from "@/components/LabeledText.vue";
+import ModalResult from "@/components/results/DialogResult.vue";
+import DialogResultImport from "@/components/results/DialogResultImport.vue";
 import ResultCard from "@/components/results/ResultCard.vue";
 import ResultEvolution from "@/components/results/ResultEvolution.vue";
 import ResultLimitComparison from "@/components/results/ResultLimitComparison.vue";
 import ResultList from "@/components/results/ResultTable.vue";
-import TitleWithContextBtn from "@/components/title/TitleWithContextBtn.vue";
 import DialogCreateExternalId from "@/components/user/DialogAddExternalId.vue";
 import DialogUserCreate from "@/components/user/DialogUserCreate.vue";
 import UserCreateShare from "@/components/user/UserCreateShare.vue";
+import BtnPlus from "@/coreComponents/button/BtnPlus.vue";
+import BtnResultImport from "@/coreComponents/button/BtnResultImport.vue";
+import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
+import LabeledText from "@/coreComponents/LabeledText.vue";
+import TitleWithContextBtn from "@/coreComponents/title/TitleWithContextBtn.vue";
 import {canManageResults, canManageUsers} from "@/plugins/AccessControl";
 import Const from '@/plugins/Constants'
 import {routeParamToString, routeQueryToString} from "@/plugins/Helper";
