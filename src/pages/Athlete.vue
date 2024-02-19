@@ -168,7 +168,7 @@ const actions = computed((): MenuItem[] => {
       addSep = true
       items.push({label: t('page.user.sendInit'),  command: sendLoginInitEmail})
     }
-    if (data.value.id && !data.value.withLogin) {
+    if (data.value.id && !data.value.withLogin && data.value.primaryMail) {
       addSep = true
       items.push({label: t("page.user.createLogin"), command: createLogin})
     }
@@ -183,7 +183,22 @@ const actions = computed((): MenuItem[] => {
 const dialogEditAthlete = ref<IntDialog>()
 const editAthlete = (): void => void dialogEditAthlete.value?.setVisibility(true)
 const deleteAthlete = (): void => toast.add(notImplemented('delete athlete'))
-const createLogin = (): void => toast.add(notImplemented('create login'))
+const createLogin = (): void => {
+  axios.request({
+    url: `/users/${userId.value}/create-login`,
+    method: 'post',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
+    }
+  }).then(() => {
+    toast.add(successToast('login created'))
+  }).catch((response: AxiosError) => {
+    resultsState.value = LoadingStates.Error
+    toast.add(fromAxiosError(response))
+  })
+}
+
 const sendLoginInitEmail = (): void => toast.add(notImplemented('send init email'))
 
 // ----------------------------

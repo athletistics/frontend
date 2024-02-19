@@ -57,7 +57,7 @@
         <span class="p-float-label p-fluid">
           <InputText
               id="primaryMail" v-model="newUser.primaryMail" v-tooltip="errors.primaryMail"
-              :class="{'p-invalid': errors.primaryMail}" :disabled="isEdit"/>
+              :class="{'p-invalid': errors.primaryMail}" :disabled="isEdit && userToEdit?.withLogin"/>
           <label for="primaryMail">{{ $t('glob.user.primaryMail') }}{{ withLogin ? '*' : '' }}</label>
         </span>
 

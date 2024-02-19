@@ -73,7 +73,7 @@
       "btn": {
         "createTrainingResult": "Enter new training result"
       },
-      "createLogin": "Create login (not implemented)",
+      "createLogin": "Create login",
       "sendInit": "Resend init (not implemented)",
       "addExternalId": "Add external ID",
       "strava": "Strava connection",
