@@ -46,6 +46,7 @@ jobs:
       tag: ${{ matrix.env.tag }}
       infisical_env: ${{ matrix.env.infisical_env }}
       namespace: ${{ matrix.env.namespace }}
+      infisical_token: ${{ matrix.env.infisical_token }}
 
   build_and_publish_tag_docker:
     name: Build and Publish tagged docker image
