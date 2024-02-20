@@ -9,9 +9,6 @@ on:
       infisical_env:
         required: true
         type: string
-      infisical_token:
-        required: true
-        type: string
 
 jobs:
   build_and_publish_docker_dev:
@@ -37,6 +34,7 @@ jobs:
         run: |
           docker buildx build \
           --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:latest \
-          --build-arg INFISICAL_TOKEN=${{ inputs.infisical_token }} --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
+          --build-arg INFISICAL_TOKEN=${{ secrets[format('INFISICAL_TOKEN_{0}', inputs.infisical_env)] }} \
+          --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
           --build-arg INFISICAL_ENV=${{ inputs.infisical_env }} \
           --push .

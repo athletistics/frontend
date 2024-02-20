@@ -15,9 +15,6 @@ on:
       infisical_env:
         required: true
         type: string
-      infisical_token:
-        required: true
-        type: string
 
 jobs:
   build_publish:
@@ -27,7 +24,6 @@ jobs:
     with:
       tag: ${{ inputs.tag }}
       infisical_env: ${{ inputs.infisical_env }}
-      infisical_token: ${{ inputs.infisical_token }}
 
 
   deploy:
