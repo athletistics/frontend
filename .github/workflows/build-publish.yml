@@ -33,7 +33,7 @@ jobs:
       - name: Build and Publish
         run: |
           docker buildx build \
-          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:latest \
+          --platform linux/amd64,linux/arm64 -t $GITHUB_REPOSITORY:${{inputs.tag}} \
           --build-arg INFISICAL_TOKEN=${{ secrets[format('INFISICAL_TOKEN_{0}', inputs.infisical_env)] }} \
           --build-arg INFISICAL_API_URL=${{ secrets.INFISICAL_API_URL }} \
           --build-arg INFISICAL_ENV=${{ inputs.infisical_env }} \
