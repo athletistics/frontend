@@ -57,5 +57,5 @@ jobs:
     secrets: inherit
     with:
       infisical_env: prod
-      infisical_token: ${{ secrets.INFISICAL_TOKEN_PROD }}
+      infisical_token: secrets.INFISICAL_TOKEN_PROD
       tag: $tag
