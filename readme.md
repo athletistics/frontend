@@ -44,7 +44,7 @@ infisical login
 Then, start the dev server.
 
 ```shell
-infisical run -- npm run dev
+infisical run --path="/frontend" -- npm run dev
 ```
 
 ## License
