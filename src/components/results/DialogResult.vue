@@ -107,15 +107,15 @@ const schema = yup.object({
 })
 
 const {
-  handleSubmit, resetForm, errors, useFieldModel, setValues, meta
+  handleSubmit, resetForm, errors, defineField, setValues, meta
 } = useForm<Result.RequestBody>({validationSchema: schema})
 const newResult = reactive({
-  value: useFieldModel('value'),
-  wind: useFieldModel('wind'),
-  rank: useFieldModel('rank'),
-  disciplineId: useFieldModel('disciplineId'),
-  eventId: useFieldModel('eventId'),
-  userId: useFieldModel('userId'),
+  value: defineField('value')[0],
+  wind: defineField('wind')[0],
+  rank: defineField('rank')[0],
+  disciplineId: defineField('disciplineId')[0],
+  eventId: defineField('eventId')[0],
+  userId: defineField('userId')[0],
 })
 
 const createState = reactive<LoadingState>({state: NaN})

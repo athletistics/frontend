@@ -49,7 +49,7 @@ id="isOutdoor" v-model="newEvent.isOutdoor" :class="{'p-invalid': errors.isOutdo
 
     <template #footer>
       <DialogFooter>
-        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createEvent()">
+        <LoadingBtn full outlined visual-type="primary" :loading="createState" :disabled="!meta.valid" @click="createEvent()">
           {{ t('glob.btn.save') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">
@@ -92,7 +92,7 @@ const authStore = useAuthStore()
 const dataStore = useDataStore()
 const toast = useToast()
 
-const {handleSubmit, resetForm, errors, useFieldModel} = useForm({
+const {handleSubmit, resetForm, errors, defineField, meta} = useForm({
   validationSchema: object({
     eventTypeId: number().required(),
     name: string().required(),
@@ -102,12 +102,12 @@ const {handleSubmit, resetForm, errors, useFieldModel} = useForm({
   })
 })
 const newEvent = reactive({
-  eventTypeId: useFieldModel('eventTypeId'),
-  name: useFieldModel('name'),
-  place: useFieldModel('place'),
-  dateObj: useFieldModel('dateObj'),
-  isHomologated: useFieldModel('isHomologated'),
-  isOutdoor: useFieldModel('isOutdoor'),
+  eventTypeId: defineField('eventTypeId')[0],
+  name: defineField('name')[0],
+  place: defineField('place')[0],
+  dateObj: defineField('dateObj')[0],
+  isHomologated: defineField('isHomologated')[0],
+  isOutdoor: defineField('isOutdoor')[0],
   date: "",
 })
 

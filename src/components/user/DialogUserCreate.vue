@@ -108,7 +108,7 @@
           <Dropdown
               id="countryId" v-model="newUser.countryId" :class="{'p-invalid': errors.countryId}"
               :options="dataStore.countries" option-label="name" option-value="id"/>
-          <label for="countryId">{{ $t('glob.user.country') }}</label>
+          <label for="countryId">{{ $t('glob.user.country') }}*</label>
         </span>
       </div>
 
@@ -121,7 +121,7 @@
 
     <template #footer>
       <DialogFooter>
-        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createUser()">
+        <LoadingBtn full outlined visual-type="primary" :loading="createState" :disabled="!meta.valid" @click="createUser()">
           {{ isEdit ? $t('glob.btn.save') : $t('glob.btn.create') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
@@ -172,7 +172,7 @@ const isEdit = computed((): boolean => !!props.userToEdit)
 // API interaction
 // ---------------
 const withLogin = ref(false)
-const {handleSubmit, resetForm, errors, useFieldModel, setValues} = useForm<User>({
+const {handleSubmit, resetForm, errors, defineField, setValues, meta} = useForm<User>({
   validationSchema: computed(() => toTypedSchema(object({
     firstName: string().required(),
     lastName: string().required(),
@@ -201,20 +201,20 @@ const {handleSubmit, resetForm, errors, useFieldModel, setValues} = useForm<User
   })))
 })
 const newUser = reactive({
-  firstName: useFieldModel('firstName'),
-  lastName: useFieldModel('lastName'),
-  birthDateObj: useFieldModel('birthDate'),
-  genderId: useFieldModel('genderId'),
-  languageId: useFieldModel('languageId'),
-  nationalityId: useFieldModel('nationalityId'),
-  oasi: useFieldModel('oasi'),
-  primaryMail: useFieldModel('primaryMail'),
-  primaryPhone: useFieldModel('primaryPhone'),
-  address: useFieldModel('address'),
-  houseNumber: useFieldModel('houseNumber'),
-  postCode: useFieldModel('postCode'),
-  city: useFieldModel('city'),
-  countryId: useFieldModel('countryId'),
+  firstName: defineField('firstName')[0],
+  lastName: defineField('lastName')[0],
+  birthDateObj: defineField('birthDate')[0],
+  genderId: defineField('genderId')[0],
+  languageId: defineField('languageId')[0],
+  nationalityId: defineField('nationalityId')[0],
+  oasi: defineField('oasi')[0],
+  primaryMail: defineField('primaryMail')[0],
+  primaryPhone: defineField('primaryPhone')[0],
+  address: defineField('address')[0],
+  houseNumber: defineField('houseNumber')[0],
+  postCode: defineField('postCode')[0],
+  city: defineField('city')[0],
+  countryId: defineField('countryId')[0],
   birthDate: "",
   clubId: "",
 })

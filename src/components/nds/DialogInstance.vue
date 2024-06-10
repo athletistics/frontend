@@ -89,7 +89,7 @@ const route = useRoute()
 
 const durations = [60, 75, 90]
 
-const {handleSubmit, resetForm, errors, useFieldModel} = useForm<Nds.ActivityInstanceReq>({
+const {handleSubmit, resetForm, errors, defineField} = useForm<Nds.ActivityInstanceReq>({
   validationSchema: object({
     date: date().required(),
     ndsActivityTypeId: number().required(),
@@ -112,11 +112,11 @@ const {handleSubmit, resetForm, errors, useFieldModel} = useForm<Nds.ActivityIns
 })
 
 const newInstance = reactive({
-  duration: useFieldModel('duration'),
-  place: useFieldModel('place'),
-  ndsActivityTypeId: useFieldModel('ndsActivityTypeId'),
-  date: useFieldModel('date'),
-  startTime: useFieldModel('startTime'),
+  duration: defineField('duration')[0],
+  place: defineField('place')[0],
+  ndsActivityTypeId: defineField('ndsActivityTypeId')[0],
+  date: defineField('date')[0],
+  startTime: defineField('startTime')[0],
   ndsActivityId: "",
 })
 

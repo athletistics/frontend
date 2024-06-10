@@ -77,10 +77,10 @@ const filteredUsers = computed(() => {
 // ---------------
 // API interaction
 // ---------------
-const {handleSubmit, resetForm, useFieldModel} = useForm<{usersToAdd: string[]}>()
+const {handleSubmit, resetForm, defineField} = useForm<{usersToAdd: string[]}>()
 
 const usersToAdd = reactive<{ users: Ref<string[]> }>({
-  users: useFieldModel('usersToAdd')
+  users: defineField('usersToAdd')[0]
 })
 const addState = reactive<LoadingState>({state: NaN})
 const addToTeam = handleSubmit(() => {

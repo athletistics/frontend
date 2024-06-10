@@ -73,15 +73,15 @@ const disciplineTypes = [
 // ---------------
 // API interaction
 // ---------------
-const {handleSubmit, resetForm, errors, useFieldModel} = useForm<Discipline>({
+const {handleSubmit, resetForm, errors, defineField} = useForm<Discipline>({
   validationSchema: object({
     customName: string().required().min(3),
     isDescending: boolean().required()
   })
 })
 const newDiscipline = reactive({
-  customName: useFieldModel('customName'),
-  isDescending: useFieldModel('isDescending')
+  customName: defineField('customName')[0],
+  isDescending: defineField('isDescending')[0]
 })
 
 const createState = reactive<LoadingState>({state: NaN})

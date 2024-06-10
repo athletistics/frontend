@@ -55,13 +55,13 @@ const userStore = useMyUserStore()
 // ---------------
 // API interaction
 // ---------------
-const {handleSubmit, resetForm, errors, useFieldModel} = useForm<Team>({
+const {handleSubmit, resetForm, errors, defineField} = useForm<Team>({
   validationSchema: object({
     name: string().required().min(3)
   })
 })
 const newTeam = reactive({
-  name: useFieldModel('name')
+  name: defineField('name')[0]
 })
 
 const createState = reactive<LoadingState>({state: NaN})
