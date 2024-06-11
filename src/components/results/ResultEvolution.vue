@@ -112,6 +112,7 @@ import Category from "@/types/Category";
 import Discipline from "@/types/Discipline";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
+import Paginated from "@/types/Paginated";
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineController, LineElement, PointElement, TimeScale)
 export default defineComponent({
@@ -295,19 +296,19 @@ export default defineComponent({
     addResultSet(userId: string) {
       this.state.state = LoadingStates.Loading
       axios.request({
-        url: `/results?userId=${userId}`,
+        url: `/results?userId=${userId}&page_size=9999`,
         method: 'get',
         baseURL: Const.API_URL,
         headers: {
           'Authorization': 'Bearer ' + this.authStore.token
         }
-      }).then((response: AxiosResponse<Result.Data[], any>) => {
+      }).then((response: AxiosResponse<Paginated<Result.Data>, any>) => {
         this.state.state = LoadingStates.Loaded
 
         // create a dataMap. this is only required on first call
         if (!this.dataMap || !this.dataMap.size) {
           this.dataMap = new Map()
-        } else if (!response.data?.length) {
+        } else if (!response.data?.data.length) {
           // stop here, if the additionally loaded results are empty (i.e. athlete to compare against
           // has no results)
           this.toastStore.addErrorToast(this.$t('comp.evolution.noData'))
@@ -315,9 +316,9 @@ export default defineComponent({
         }
 
         // read the athlete name from the first result entry
-        const name = response.data[0]?.userLastName + " " + response.data[0]?.userFirstName
+        const name = response.data?.data[0].userLastName + " " + response.data?.data[0].userFirstName
 
-        this.dataMap.set(name ?? userId, response.data)
+        this.dataMap.set(name ?? userId, response.data.data)
       }).catch((response: AxiosError) => {
         this.state.state = LoadingStates.Error
         this.toastStore.addToastFromAxiosError(response)

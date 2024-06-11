@@ -77,7 +77,10 @@
     <BtnPlus v-if="canManageResults() || !route.params.id" @click="setModalVisibility(true)"/>
   </div>
 
-  <ResultList :results="results" :show-user="false" :state="resultsState" @updated="getResults"/>
+  <ResultList :results="visibleResults" :show-user="false" :state="resultsState" :rows="rows" @updated="getResults"/>
+  <Paginator
+      :rows="rows" :total-records="resultRecords" :rows-per-page-options="[10, 25, 50]"
+      class="white-rounded mt-4" :pt="customStyle" @page="updatePageState"></Paginator>
 
   <ModalResult ref="dialogResult" :is-personal="isMe" :user="data"></ModalResult>
   <DialogCreateExternalId
@@ -92,6 +95,7 @@
 <script setup lang="ts">
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {MenuItem} from "primevue/menuitem";
+import {PageState} from "primevue/paginator";
 import {useToast} from "primevue/usetoast";
 import {computed, onMounted, reactive, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
@@ -122,6 +126,7 @@ import {ExternalId} from "@/types/ExternalId";
 import IntDialog from "@/types/IntDialog";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
+import Paginated from "@/types/Paginated";
 import User, {USER_STATE_INITIAL,} from "@/types/User";
 
 const route = useRoute()
@@ -138,6 +143,7 @@ const dataState = ref<LoadingStates>(NaN)
 const stravaState = reactive<LoadingState>({state: NaN})
 const bests = ref<Result.Data[]>([])
 const results = ref<Result.Data[]>([])
+const visibleResults = ref<Result.Data[]>([])
 const resultsState = ref<LoadingStates>(NaN)
 const externalIds = ref<ExternalId.Id[]>([])
 
@@ -147,6 +153,31 @@ const userId = computed((): string => {
   if (isMe.value) return userStore.user.id
   return routeParamToString(route.params.id)
 })
+
+// ------------------
+// Results pagination
+// ------------------
+const customStyle = {root: {style: {'background-color': 'transparent'}}}
+const rows = ref<number>(10)
+const resultRecords = ref<number>(25)
+const pageState = ref<PageState>()
+
+const updatePageState = (event: PageState): void => {
+  pageState.value = event
+  rows.value = pageState.value.rows
+  updateResults()
+}
+
+const updateResults = (): void => {
+  const page = pageState.value?.page ?? 0
+
+  visibleResults.value = []
+  for(let i = 0; i < rows.value; i++) {
+    if(rows.value * page + i < resultRecords.value){
+      visibleResults.value.push(results.value[rows.value * page + i])
+    }
+  }
+}
 
 // ---------------
 // Athlete actions
@@ -164,9 +195,9 @@ const actions = computed((): MenuItem[] => {
       items.push({label: t('page.user.addExternalId'), command: () => setExternalIdModalVisibility(true)})
     }
 
-    if (data.value.userState==USER_STATE_INITIAL) {
+    if (data.value.userState == USER_STATE_INITIAL) {
       addSep = true
-      items.push({label: t('page.user.sendInit'),  command: sendLoginInitEmail})
+      items.push({label: t('page.user.sendInit'), command: sendLoginInitEmail})
     }
     if (data.value.id && !data.value.withLogin && data.value.primaryMail) {
       addSep = true
@@ -223,7 +254,7 @@ const setResultImportModalVisibility = (visible: boolean): void => {
 
 const evolutionChart = ref<{ resetData: Function, dataMap: Map<string, Result.Data[]> }>()
 const getResults = (): void => {
-  const url = isMe.value ? "/me/results" : `/results?userId=${userId.value}`
+  const url = isMe.value ? "/me/results" : `/results?userId=${userId.value}&page_size${9999}`
 
   resultsState.value = LoadingStates.Loading
   axios.request({
@@ -233,15 +264,17 @@ const getResults = (): void => {
     headers: {
       'Authorization': 'Bearer ' + authStore.token
     }
-  }).then((response: AxiosResponse<Result.Data[], any>) => {
-    resultsState.value = response.data?.length ? LoadingStates.Loaded : LoadingStates.Empty
-    if (!response.data?.length) return
+  }).then((response: AxiosResponse<Paginated<Result.Data>, any>) => {
+    resultsState.value = response.data?.data.length ? LoadingStates.Loaded : LoadingStates.Empty
+    if (!response.data?.data.length) return
 
-    results.value = response.data
+    results.value = response.data.data
+    resultRecords.value = response.data.count
+    updateResults()
 
     // load data into evolution chart, whith user's name as a label
-    const name = response.data[0]?.userLastName + " " + response.data[0]?.userFirstName
-    evolutionChart.value?.dataMap.set(name, response.data)
+    const name = response.data.data[0]?.userLastName + " " + response.data.data[0]?.userFirstName
+    evolutionChart.value?.dataMap.set(name, response.data.data)
   }).catch((response: AxiosError) => {
     resultsState.value = LoadingStates.Error
     toast.add(fromAxiosError(response))
