@@ -1,5 +1,5 @@
 <template>
-  <nav id="nav" class="relative w-full shadow-xl flex max-md:flex-col md:px-10 text-lg items-center">
+  <nav id="nav" class="relative w-full shadow-xl flex max-md:flex-col md:px-10 text-lg items-center z-50">
     <div class="max-md:w-full flex items-center max-md:px-5">
       <router-link to="/">
         <div id="logo" class="text-3xl font-black mr-5 py-3 text-black">Athletistics</div>
