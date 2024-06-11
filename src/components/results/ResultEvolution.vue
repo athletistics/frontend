@@ -241,7 +241,7 @@ export default defineComponent({
         datasets
       }
     },
-    chartOptions(): ChartOptions {
+    chartOptions(): ChartOptions<"line"> {
       return {
         responsive: true,
         scales: {

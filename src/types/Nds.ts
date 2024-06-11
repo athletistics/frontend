@@ -37,8 +37,10 @@ export namespace Nds {
   }
 
   export interface ActivityInstanceReq {
-    date: Date | string,
-    startTime?: Date | string,
+    dateObj: Date
+    date: string,
+    startTimeObj?: Date
+    startTime?: string,
     duration?: number,
     place?: string,
     ndsActivityId: string,

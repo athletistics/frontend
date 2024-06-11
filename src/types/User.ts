@@ -15,6 +15,7 @@ export default interface User {
   club?: Club,
   oasi?: string,
   birthDate: Date | string,
+  birthDateObj: Date,
   address: string,
   houseNumber: string,
   postCode: string,

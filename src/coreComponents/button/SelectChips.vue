@@ -14,12 +14,12 @@
 <script setup lang="ts">
 import {PropType} from "vue";
 
-const model = defineModel()
+const model = defineModel<any[]>()
 
 defineProps({
   options: {type: Array as PropType<any[]>, required: true},
-  optionLabel: {type: String as PropType<string>, required: false},
-  optionValue: {type: String as PropType<string>, required: false}
+  optionLabel: {type: String as PropType<string>, required: false, default: ""},
+  optionValue: {type: String as PropType<string>, required: false, default: ""}
 })
 </script>
 

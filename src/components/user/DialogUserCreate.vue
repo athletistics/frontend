@@ -176,7 +176,7 @@ const {handleSubmit, resetForm, errors, defineField, setValues, meta} = useForm<
   validationSchema: computed(() => toTypedSchema(object({
     firstName: string().required(),
     lastName: string().required(),
-    birthDate: date().required().max(new Date()),
+    birthDateObj: date().required().max(new Date()),
     genderId: number().required(),
     languageId: number().required(),
     nationalityId: number().required(),
@@ -203,7 +203,7 @@ const {handleSubmit, resetForm, errors, defineField, setValues, meta} = useForm<
 const newUser = reactive({
   firstName: defineField('firstName')[0],
   lastName: defineField('lastName')[0],
-  birthDateObj: defineField('birthDate')[0],
+  birthDateObj: defineField('birthDateObj')[0],
   genderId: defineField('genderId')[0],
   languageId: defineField('languageId')[0],
   nationalityId: defineField('nationalityId')[0],

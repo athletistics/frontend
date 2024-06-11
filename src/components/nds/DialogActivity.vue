@@ -92,7 +92,7 @@ const weekdays = [1, 2, 3, 4, 5, 6, 0]
 // ---------------
 // API interaction
 // ---------------
-const {handleSubmit, resetForm, errors, useFieldModel, meta} = useForm({
+const {handleSubmit, resetForm, errors, defineField, meta} = useForm({
   validationSchema: toTypedSchema(object({
     dates: array().length(2).of(date().required(t('forms.startEndDate'))).required(t('forms.startEndDate')),
     startTimeObj: date().required(),
@@ -102,14 +102,14 @@ const {handleSubmit, resetForm, errors, useFieldModel, meta} = useForm({
   }))
 })
 const newActivity = reactive({
-  dates: useFieldModel('dates'),
+  dates: defineField('dates')[0],
   startDate: "",
   endDate: "",
-  startTimeObj: useFieldModel('startTimeObj'),
+  startTimeObj: defineField('startTimeObj')[0],
   startTime: ref<string>(),
-  duration: useFieldModel('duration'),
-  weekday: useFieldModel('weekday'),
-  place: useFieldModel('place'),
+  duration: defineField('duration')[0],
+  weekday: defineField('weekday')[0],
+  place: defineField('place')[0],
   teamId: "",
 })
 const createState = reactive<LoadingState>({state: NaN})

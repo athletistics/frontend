@@ -4,30 +4,30 @@
 
       <span class="p-float-label p-fluid">
         <Dropdown
-id="ndsActivityTypeId" v-model="newInstance.ndsActivityTypeId"
-                  :class="{'p-invalid': errors.ndsActivityTypeId}"
-                  :options="dataStore.activityTypes" :option-label="t => $t('data.' + t.i18nName)" option-value="id"/>
+            id="ndsActivityTypeId" v-model="newInstance.ndsActivityTypeId"
+            :class="{'p-invalid': errors.ndsActivityTypeId}"
+            :options="dataStore.activityTypes" :option-label="t => $t('data.' + t.i18nName)" option-value="id"/>
         <label for="ndsActivityTypeId">{{ $t('page.activity.type') }}*</label>
       </span>
 
       <span class="p-float-label p-fluid">
         <Calendar
-id="date" v-model="newInstance.date" :class="{'p-invalid': errors.date}"
-                  :show-on-focus="false" show-icon/>
+            id="date" v-model="newInstance.dateObj" :class="{'p-invalid': errors.date}"
+            :show-on-focus="false" show-icon/>
         <label for="date">{{ $t('page.activity.date') }}*</label>
       </span>
 
       <span v-if="newInstance.ndsActivityTypeId === 1" class="p-float-label p-fluid">
         <Calendar
-id="startTime" v-model="newInstance.startTime" :class="{'p-invalid': errors.startTime}"
-                  time-only :show-on-focus="false" show-icon/>
+            id="startTime" v-model="newInstance.startTimeObj" :class="{'p-invalid': errors.startTime}"
+            time-only :show-on-focus="false" show-icon/>
         <label for="startTime">{{ $t('page.activity.startTime') }}*</label>
       </span>
 
       <span v-if="newInstance.ndsActivityTypeId === 1" class="p-float-label p-fluid">
         <Dropdown
-id="duration" v-model="newInstance.duration"
-                  :options="durations" :class="{'p-invalid': errors.duration}"/>
+            id="duration" v-model="newInstance.duration"
+            :options="durations" :class="{'p-invalid': errors.duration}"/>
         <label for="duration">{{ $t('page.activity.duration') }}*</label>
       </span>
 
@@ -47,8 +47,8 @@ id="duration" v-model="newInstance.duration"
     <template #footer>
       <DialogFooter>
         <LoadingBtn
-full outlined visual-type="primary"
-                    :loading="state" @click="createInstance()">
+            full outlined visual-type="primary"
+            :loading="state" @click="createInstance()">
           {{ $t('glob.btn.create') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">{{ $t('glob.btn.cancel') }}</LoadingBtn>
@@ -91,22 +91,22 @@ const durations = [60, 75, 90]
 
 const {handleSubmit, resetForm, errors, defineField} = useForm<Nds.ActivityInstanceReq>({
   validationSchema: object({
-    date: date().required(),
+    dateObj: date().required(),
     ndsActivityTypeId: number().required(),
     startTime: date().when('ndsActivityTypeId', {
       is: 1,
       then: (schema) => schema.required(),
-      otherwise: (schema) =>schema.nullable()
+      otherwise: (schema) => schema.nullable()
     }),
     duration: number().when('ndsActivityTypeId', {
       is: 1,
       then: (schema) => schema.required(),
-      otherwise: (schema) =>schema.nullable()
+      otherwise: (schema) => schema.nullable()
     }),
     place: string().when('ndsActivityTypeId', {
       is: 1,
       then: (schema) => schema.required(),
-      otherwise: (schema) =>schema.nullable()
+      otherwise: (schema) => schema.nullable()
     }),
   })
 })
@@ -115,8 +115,10 @@ const newInstance = reactive({
   duration: defineField('duration')[0],
   place: defineField('place')[0],
   ndsActivityTypeId: defineField('ndsActivityTypeId')[0],
-  date: defineField('date')[0],
-  startTime: defineField('startTime')[0],
+  dateObj: defineField('dateObj')[0],
+  date: string,
+  startTimeObj: defineField('startTimeObj')[0],
+  startTime: string,
   ndsActivityId: "",
 })
 
@@ -128,8 +130,8 @@ const createInstance = handleSubmit(() => {
   // prepare the request and convert date/time to the correct format
   newInstance.ndsActivityId = routeParamToString(route.params.id)
   const instanceReq: Nds.ActivityInstanceReq = JSON.parse(JSON.stringify(newInstance)) as Nds.ActivityInstanceReq
-  instanceReq.date = moment(instanceReq.date).format('YYYY-MM-DD')
-  if (instanceReq.startTime) instanceReq.startTime = moment(instanceReq.startTime).format('hh:mm')
+  instanceReq.date = moment(instanceReq.dateObj).format('YYYY-MM-DD')
+  if (instanceReq.startTime) instanceReq.startTime = moment(instanceReq.startTimeObj).format('hh:mm')
 
   axios.request({
     url: '/nds/activities/' + routeParamToString(route.params.id) + '/instances',
@@ -155,7 +157,7 @@ const createInstance = handleSubmit(() => {
 // dialog visibility management
 // ----------------------------
 const visible = ref(false)
-const setVisibility = (val: boolean) : void => {
+const setVisibility = (val: boolean): void => {
   visible.value = val
 
   resetForm()

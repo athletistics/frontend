@@ -309,6 +309,7 @@ const getUser = (): void => {
     }
   }).then((response: AxiosResponse<User, any>) => {
     data.value = response.data
+    data.value.birthDateObj = new Date(data.value.birthDate)
     dataState.value = LoadingStates.Loaded
   }).catch((response: AxiosError) => {
     toast.add(fromAxiosError(response))
