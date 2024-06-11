@@ -1,3 +1,5 @@
+import Team from "@/types/Team";
+
 import Club from "./Club";
 import Country from "./Country";
 
@@ -20,7 +22,8 @@ export default interface User {
   countryId: number,
   country?: Country,
   nationalityId: number,
-  nationality?: Country
+  nationality?: Country,
+  teams?: Team[],
   withLogin: boolean,
   userState?: string,
 }

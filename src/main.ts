@@ -19,6 +19,7 @@ import InputText from "primevue/inputtext";
 import Listbox from 'primevue/listbox'
 import Menu from 'primevue/menu';
 import Paginator from 'primevue/paginator';
+import SelectButton from 'primevue/selectbutton';
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import Tooltip from 'primevue/tooltip'
@@ -77,6 +78,7 @@ createApp(App)
     .component('Menu', Menu)
     .component('ContextMenu', ContextMenu)
     .component('Paginator', Paginator)
+    .component('SelectButton', SelectButton)
     .directive('Tooltip', Tooltip)
     .use(ToastService)
     .use(PrimeVue)
