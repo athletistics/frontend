@@ -30,7 +30,7 @@ export default defineComponent({
       </tr>
       </thead>
       <tbody>
-      <slot v-if="state===LoadingStates.Loaded"></slot>
+      <slot v-if="state===LoadingStates.Loaded || isNaN(state)"></slot>
 
       <TableStates :state="state" :cols="headers.length" :rows="rows"/>
       </tbody>
