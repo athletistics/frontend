@@ -67,11 +67,11 @@ h4 {
     margin: 0 auto;
 }
 
-nav, footer {
+#nav, footer {
     @apply font-argentum
 }
 
-nav {
+#nav {
     @apply bg-white
 }
 

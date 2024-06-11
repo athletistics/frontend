@@ -10,7 +10,13 @@ export default defineComponent({
   props: {
     headers: {type: Array as PropType<string[]>, required: true},
     i18n: {type: Boolean as PropType<boolean>, required: false, default: false},
-    state: {type: Number as PropType<LoadingStates>, required: false, default: LoadingStates.Loaded}
+    state: {type: Number as PropType<LoadingStates>, required: false, default: LoadingStates.Loaded},
+    rows: {type: Number as PropType<number>, required: false, default: 4}
+  },
+  computed: {
+    LoadingStates() {
+      return LoadingStates
+    }
   }
 })
 </script>
@@ -24,9 +30,9 @@ export default defineComponent({
       </tr>
       </thead>
       <tbody>
-      <slot></slot>
+      <slot v-if="state===LoadingStates.Loaded"></slot>
 
-      <TableStates :state="state" :cols="headers.length"/>
+      <TableStates :state="state" :cols="headers.length" :rows="rows"/>
       </tbody>
     </table>
   </div>

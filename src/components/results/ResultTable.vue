@@ -1,5 +1,5 @@
 <template>
-  <SimpleTable :headers="headers" :i18n="true" :state="state">
+  <SimpleTable :headers="headers" :i18n="true" :state="state" :rows="rows">
     <SimpleTableRow v-for="r in results">
       <SimpleTableCell v-if="showUser">{{ r.userLastName }} {{ r.userFirstName }}</SimpleTableCell>
       <SimpleTableCell v-if="showDisciplines" class="table-cell">{{
@@ -53,7 +53,8 @@ const props = defineProps({
   showDisciplines: {type: Boolean, default: true},
   showUser: {type: Boolean, default: true},
   showEvent: {type: Boolean, default: true},
-  state: {type: Number as PropType<LoadingStates>, default: LoadingStates.Loaded, required: false}
+  state: {type: Number as PropType<LoadingStates>, default: LoadingStates.Loaded, required: false},
+  rows: {type: Number as PropType<number>, required: false, default: 4}
 })
 const emits = defineEmits(['updated'])
 

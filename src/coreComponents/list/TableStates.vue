@@ -12,7 +12,8 @@ export default defineComponent({
   components: {ListError, ListLoading, ListEmpty},
   props: {
     state: {type: Number as PropType<LoadingStates>, required: true},
-    cols: {type: Number as PropType<number>, required: true}
+    cols: {type: Number as PropType<number>, required: true},
+    rows: {type: Number as PropType<number>, required: false, default: 4}
   },
   computed: {
     LoadingStates() {
@@ -25,7 +26,7 @@ export default defineComponent({
 <template>
   <ListEmpty v-if="state===LoadingStates.Empty" :cols="cols"/>
   <ListError v-else-if="state===LoadingStates.Error" :cols="cols"/>
-  <ListLoading v-else-if="state===LoadingStates.Loading" :cols="cols"/>
+  <ListLoading v-else-if="state===LoadingStates.Loading" :cols="cols" :rows="rows"/>
 </template>
 
 <style scoped>

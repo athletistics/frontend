@@ -1,14 +1,19 @@
 <template>
   <TitleWithBtnPlus :btn-visible="canManageResults()" @btn-click="setModalVisibility(true)">{{$t('page.results.title')}}</TitleWithBtnPlus>
 
-  <ResultTable :results="results" :state="resultsState" @updated="loadResults"/>
+  <ResultTable :results="results" :state="resultsState" :rows="rows" @updated="loadResults"/>
+
+  <Paginator
+      :rows="rows" :total-records="records" :rows-per-page-options="[10, 25, 50]"
+      class="white-rounded mt-4" :pt="customStyle" @page="loadResults"></Paginator>
 
   <DialogResult ref="modal" :is-personal="false" @created="loadResults"/>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import axios, {AxiosError, AxiosResponse} from "axios";
-import {defineComponent} from "vue";
+import {PageState} from "primevue/paginator";
+import {onMounted, ref} from "vue";
 
 import DialogResult from "@/components/results/DialogResult.vue";
 import ResultTable from "@/components/results/ResultTable.vue";
@@ -19,48 +24,55 @@ import {useAuthStore} from "@/stores/auth";
 import {useToastStore} from "@/stores/toast";
 import IntDialog from "@/types/IntDialog";
 import {LoadingStates} from "@/types/LoadingStates";
+import Paginated from "@/types/Paginated";
 
-export default defineComponent({
-  name: "Results",
-  components: {TitleWithBtnPlus, ResultTable, DialogResult},
-  setup() {
-    const authStore = useAuthStore()
-    const toastStore = useToastStore()
+// constants
+const customStyle = {root: {style: {'background-color': 'transparent'}}}
 
-    return {authStore, toastStore}
-  },
-  data() {
-    return {
-      results: [] as Result.Data[],
-      resultsState: NaN as LoadingStates
+// page references
+const modal = ref<IntDialog>()
+
+// utilities
+const authStore = useAuthStore()
+const toastStore = useToastStore()
+
+// data
+const rows = ref<number>(10)
+const records = ref<number>(25)
+const results = ref<Result.Data[]>([])
+const resultsState = ref<LoadingStates>(NaN)
+
+const setModalVisibility = (visible: boolean): void => {
+  modal.value?.setVisibility(visible)
+}
+
+const loadResults = (event?: PageState): void => {
+  // prepare pagination parameters
+  let suffix = `?page_index=0&page_size=${rows.value}`
+  if (event) suffix = `?page_index=${event.page}&page_size=${event.rows}`
+  if (event) rows.value = event.rows
+
+  resultsState.value = LoadingStates.Loading
+  axios.request({
+    url: "/results" + suffix,
+    method: 'get',
+    baseURL: Const.API_URL,
+    headers: {
+      'Authorization': 'Bearer ' + authStore.token
     }
-  },
-  mounted() {
-    this.loadResults()
-  },
-  methods: {
-    canManageResults,
-    setModalVisibility(visible: boolean) {
-      (this.$refs.modal as IntDialog).setVisibility(visible)
-    },
-    loadResults() {
-      this.resultsState = LoadingStates.Loading
-      axios.request({
-        url: "/results",
-        method: 'get',
-        baseURL: Const.API_URL,
-        headers: {
-          'Authorization': 'Bearer ' + this.authStore.token
-        }
-      }).then((response: AxiosResponse<Result.Data[], any>) => {
-        this.results = response.data
-        this.resultsState = response.data ? LoadingStates.Loaded : LoadingStates.Empty
-      }).catch((response: AxiosError) => {
-        this.resultsState = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(response)
-      })
-    }
-  }
+  }).then((response: AxiosResponse<Paginated<Result.Data>, any>) => {
+    results.value = response.data.data
+    resultsState.value = response.data.data ? LoadingStates.Loaded : LoadingStates.Empty
+
+    records.value = response.data.count
+  }).catch((response: AxiosError) => {
+    resultsState.value = LoadingStates.Error
+    toastStore.addToastFromAxiosError(response)
+  })
+}
+
+onMounted(() => {
+  loadResults()
 })
 </script>
 
