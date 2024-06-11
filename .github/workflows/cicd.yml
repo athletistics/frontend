@@ -56,4 +56,4 @@ jobs:
     secrets: inherit
     with:
       infisical_env: prod
-      tag: $tag
+      tag: ${{ github.ref_name }}
