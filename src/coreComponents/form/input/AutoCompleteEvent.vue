@@ -13,13 +13,17 @@ const events: Event[] = useDataStore().events
 const props = defineProps({
   modelValue: {type: String, default: ''},
   disabled: {type: Boolean, default: false},
-  inputClass: {type: Object, default() {return {}}},
+  inputClass: {
+    type: Object, default() {
+      return {}
+    }
+  },
   isPersonal: {type: Boolean, default: false}
 })
 defineEmits(['update:modelValue'])
 const {d} = useI18n()
 
-const search = (event: {query: string}) : void => {
+const search = (event: { query: string }): void => {
   if (event.query?.trim()?.length) {
     filteredEvents.value = events.filter(e => {
       return (
@@ -34,7 +38,7 @@ const search = (event: {query: string}) : void => {
     filteredEvents.value = events.filter(e => props.isPersonal ? e.eventTypeId === 4 : true)
   }
 }
-const optionLabel = (selectedEvent: Event) : string => {
+const optionLabel = (selectedEvent: Event): string => {
   return `${selectedEvent.name}, ${selectedEvent.place} (${d(selectedEvent.date)})`
 }
 
@@ -47,12 +51,14 @@ onMounted(() => {
 
 <template>
   <span class="p-float-label p-fluid">
+    <!--        TODO: find better way of limiting panel width-->
     <AutoComplete
-v-model="value" input-id="user" :suggestions="filteredEvents" :class="inputClass"
-                  dropdown force-selection :option-label="optionLabel" :disabled="disabled"
+        v-model="value" input-id="user" :suggestions="filteredEvents" :class="inputClass"
+        dropdown force-selection :option-label="optionLabel" :disabled="disabled"
+        :pt="{panel: {style: {'max-width': '90%'}}}"
 
-                  @complete="search"
-                  @update:modelValue="(newVal: Event) => $emit('update:modelValue', newVal?.id)">
+        @complete="search"
+        @update:modelValue="(newVal: Event) => $emit('update:modelValue', newVal?.id)">
       <template #empty>
         <div class="p-autocomplete-item">Nothing to see</div>
       </template>

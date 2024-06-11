@@ -13,12 +13,16 @@ const disciplines: Discipline[] = useDataStore().disciplines
 const props = defineProps({
   modelValue: {type: String, default: ''},
   disabled: {type: Boolean, default: false},
-  inputClass: {type: Object, default() {return {}}}
+  inputClass: {
+    type: Object, default() {
+      return {}
+    }
+  }
 })
 defineEmits(['update:modelValue'])
 const {t} = useI18n()
 
-const search = (event: {query: string}): void => {
+const search = (event: { query: string }): void => {
   if (event.query?.trim()?.length) {
     filteredDisciplines.value = disciplines.filter(d => {
       return t('data.' + d.i18nName)?.toLowerCase()?.startsWith(event.query.toLowerCase()) ||
@@ -28,7 +32,7 @@ const search = (event: {query: string}): void => {
     filteredDisciplines.value = disciplines.filter(() => true)
   }
 }
-const optionLabel = (selectedUser: Discipline) : any => {
+const optionLabel = (selectedUser: Discipline): any => {
   return selectedUser.customName ?? t('data.' + selectedUser.i18nName)
 }
 
@@ -42,11 +46,12 @@ onMounted(() => {
 <template>
   <span class="p-float-label p-fluid">
     <AutoComplete
-v-model="value" input-id="user" :suggestions="filteredDisciplines" :class="inputClass"
-                  dropdown force-selection :option-label="optionLabel" :disabled="disabled"
+        v-model="value" input-id="user" :suggestions="filteredDisciplines" :class="inputClass"
+        dropdown force-selection :option-label="optionLabel" :disabled="disabled"
+        :pt="{panel: {style: {'max-width': '90%'}}}"
 
-                  @complete="search"
-                  @update:modelValue="(newVal: Discipline) => $emit('update:modelValue', newVal?.id)">
+        @complete="search"
+        @update:modelValue="(newVal: Discipline) => $emit('update:modelValue', newVal?.id)">
       <template #empty>
         <div class="p-autocomplete-item">Nothing to see</div>
       </template>

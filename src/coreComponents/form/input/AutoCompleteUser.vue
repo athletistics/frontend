@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted,Ref, ref} from "vue";
+import {onMounted, Ref, ref} from "vue";
 
 import {useDataStore} from "@/stores/data";
 import User from "@/types/User";
@@ -13,11 +13,15 @@ const users: User[] = useDataStore().users
 const props = defineProps({
   modelValue: {type: String, default: ''},
   disabled: {type: Boolean, default: false},
-  inputClass: {type: Object, default() {return {}}}
+  inputClass: {
+    type: Object, default() {
+      return {}
+    }
+  }
 })
 defineEmits(['update:modelValue'])
 
-const search = (event: {query: string}) : void => {
+const search = (event: { query: string }): void => {
   if (event.query?.trim()?.length) {
     filteredUsers.value = users.filter(u => {
       return u.firstName.toLowerCase().startsWith(event.query.toLowerCase()) ||
@@ -27,7 +31,7 @@ const search = (event: {query: string}) : void => {
     filteredUsers.value = users.filter(() => true)
   }
 }
-const optionLabel = (selectedUser: User) : any => {
+const optionLabel = (selectedUser: User): any => {
   return `${selectedUser.lastName} ${selectedUser.firstName}`
 }
 
@@ -41,11 +45,12 @@ onMounted(() => {
 <template>
   <span class="p-float-label p-fluid">
     <AutoComplete
-v-model="value" input-id="user" :suggestions="filteredUsers" :class="inputClass"
-                  dropdown force-selection :option-label="optionLabel" :disabled="disabled"
+        v-model="value" input-id="user" :suggestions="filteredUsers" :class="inputClass"
+        dropdown force-selection :option-label="optionLabel" :disabled="disabled"
+        :pt="{panel: {style: {'max-width': '90%'}}}"
 
-                  @complete="search"
-                  @update:modelValue="(newVal: User) => $emit('update:modelValue', newVal?.id)">
+        @complete="search"
+        @update:modelValue="(newVal: User) => $emit('update:modelValue', newVal?.id)">
       <template #empty>
         <div class="p-autocomplete-item">Nothing to see</div>
       </template>
