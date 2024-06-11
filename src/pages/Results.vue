@@ -1,5 +1,7 @@
 <template>
-  <TitleWithBtnPlus :btn-visible="canManageResults()" @btn-click="setModalVisibility(true)">{{$t('page.results.title')}}</TitleWithBtnPlus>
+  <TitleWithBtnPlus :btn-visible="canManageResults()" @btn-click="setModalVisibility(true)">
+    {{ $t('page.results.title') }}
+  </TitleWithBtnPlus>
 
   <ResultTable :results="results" :state="resultsState" :rows="rows" @updated="loadResults"/>
 
@@ -27,7 +29,14 @@ import {LoadingStates} from "@/types/LoadingStates";
 import Paginated from "@/types/Paginated";
 
 // constants
-const customStyle = {root: {style: {'background-color': 'transparent'}}}
+const customStyle = {
+  root: {style: {'background-color': 'transparent'}},
+  firstPageButton: {class: ['min-w-8', 'h-8']},
+  previousPageButton: {class: ['min-w-8', 'h-8']},
+  nextPageButton: {class: ['min-w-8', 'h-8']},
+  lastPageButton: {class: ['min-w-8', 'h-8']},
+  pageButton: {class: ['min-w-8', 'h-8']}
+}
 
 // page references
 const modal = ref<IntDialog>()

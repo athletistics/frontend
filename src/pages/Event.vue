@@ -57,7 +57,14 @@ const {t} = useI18n()
 const route = useRoute()
 
 // pagination
-const customStyle = {root: {style: {'background-color': 'transparent'}}}
+const customStyle = {
+  root: {style: {'background-color': 'transparent'}},
+  firstPageButton: {class: ['min-w-8', 'h-8']},
+  previousPageButton: {class: ['min-w-8', 'h-8']},
+  nextPageButton: {class: ['min-w-8', 'h-8']},
+  lastPageButton: {class: ['min-w-8', 'h-8']},
+  pageButton: {class: ['min-w-8', 'h-8']}
+}
 const rows = ref<number>(10)
 const records = ref<number>(25)
 
