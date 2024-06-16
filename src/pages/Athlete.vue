@@ -261,7 +261,7 @@ const setResultImportModalVisibility = (visible: boolean): void => {
 
 const evolutionChart = ref<{ resetData: Function, dataMap: Map<string, Result.Data[]> }>()
 const getResults = (): void => {
-  const url = isMe.value ? "/me/results" : `/results?userId=${userId.value}&page_size${9999}`
+  const url = isMe.value ? "/me/results" : `/results?userId=${userId.value}&page_size=99999`
 
   resultsState.value = LoadingStates.Loading
   axios.request({
