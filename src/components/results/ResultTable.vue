@@ -7,14 +7,15 @@
         }}
       </SimpleTableCell>
       <SimpleTableCell>{{ getFormattedValue(r) }}</SimpleTableCell>
-      <SimpleTableCell v-if="showEvent">{{ r.eventName }} - {{
-          r.eventOutdoor ? $t('glob.event.outdoor') : $t('glob.event.indoor')
-        }}
+      <SimpleTableCell v-if="showEvent">
+        <span v-if="r.isPersonalTrainingResult">{{$t('glob.result.personalTraining')}}</span>
+        <span v-else>{{ r.eventName }} - {{r.eventOutdoor ? $t('glob.event.outdoor') : $t('glob.event.indoor')}}</span>
       </SimpleTableCell>
       <SimpleTableCell v-if="showEvent">{{ $d(r.date) }}</SimpleTableCell>
       <SimpleTableCell v-if="showEvent">{{ r.eventPlace }}</SimpleTableCell>
-      <SimpleTableCell v-if="canManageResults()" class="!py-0">
+      <SimpleTableCell v-if="canManageResults() || (r.isPersonalTrainingResult && isMe)" class="!py-0">
         <Button
+            style="height: 2rem; width: 2rem;" class="p-0"
             type="button" icon="pi pi-ellipsis-v" text rounded severity="secondary" size="small"
             @click="(event) => toggle(event, r)"/>
       </SimpleTableCell>
@@ -27,12 +28,14 @@
 
 <script setup lang="ts">
 import axios, {AxiosError} from "axios";
+import moment from "moment";
 import Button from "primevue/button";
 import Menu from "primevue/menu";
 import {MenuItem} from "primevue/menuitem";
 import {useToast} from "primevue/usetoast";
 import {computed, PropType, reactive, ref} from 'vue'
 import {useI18n} from "vue-i18n";
+import {useRoute} from "vue-router";
 
 import DialogResult from "@/components/results/DialogResult.vue";
 import SimpleTable from "@/coreComponents/list/SimpleTable.vue";
@@ -61,7 +64,10 @@ const emits = defineEmits(['updated'])
 const dataStore = useDataStore()
 const authStore = useAuthStore()
 const toast = useToast()
+const route = useRoute()
 const {te} = useI18n()
+const isMe = computed(() => !route.params.id)
+
 
 const headers = computed((): string[] => {
   const h = [] as string[]
@@ -84,9 +90,10 @@ const getFormattedValue = computed((): Function => {
 const deleteState = reactive<LoadingState>({state: NaN})
 const deleteResult = (): void => {
   if(!selectedResult.value || !selectedResult.value.id) return
+  const pathAddon = selectedResult.value.isPersonalTrainingResult ? "training/" : ""
 
   axios.request({
-    url: `/results/${selectedResult.value.id}`,
+    url: `/results/${pathAddon}${selectedResult.value.id}`,
     method: 'delete',
     baseURL: Const.API_URL,
     headers: {'Authorization': 'Bearer ' + authStore.token}
@@ -128,7 +135,9 @@ const toggle = (event: Event, r: Result.Data): void => {
     wind: r.wind ? parseFloat(r.wind) : undefined,
     disciplineId: r.disciplineId,
     userId: r.userId,
-    eventId: r.eventId
+    eventId: r.eventId,
+    date: moment(r.date).format('YYYY-MM-DD'),
+    isPersonalTrainingResult: r.isPersonalTrainingResult
   }
   menu.value?.toggle(event)
 }

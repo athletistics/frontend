@@ -8,6 +8,9 @@ declare namespace Result {
     userId?: string,
     eventId: string,
     categoryId?: number
+    date: string,
+    dateObj?: Date,
+    isPersonalTrainingResult: boolean,
   }
 
   interface Data {
@@ -26,7 +29,8 @@ declare namespace Result {
     date: Date,
     value: string, // value is stored as decimal, API sends a string
     wind?: string, // wind is stored as decimal, API sends a string
-    rank?: string
+    rank?: string,
+    isPersonalTrainingResult: boolean
   }
 
   interface Import {

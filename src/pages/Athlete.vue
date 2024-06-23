@@ -82,7 +82,7 @@
       :rows="rows" :total-records="resultRecords" :rows-per-page-options="[10, 25, 50]"
       class="white-rounded mt-4" :pt="customStyle" @page="updatePageState"></Paginator>
 
-  <ModalResult ref="dialogResult" :is-personal="isMe" :user="data"></ModalResult>
+  <ModalResult ref="dialogResult" :is-personal="isMe" :user="data" @created="getResults"></ModalResult>
   <DialogCreateExternalId
       ref="dialogExternalId" :internal-id="userId" :existing-ids="externalIds"
       @success="getExternalIds()"/>

@@ -209,7 +209,9 @@
       "value": "Value",
       "wind": "Wind",
       "rank": "Rank",
-      "limit": "National limits"
+      "limit": "National limits",
+      "date": "Date",
+      "personalTraining": "Personal training"
     },
     "discipline": {
       "name": "Discipline"
