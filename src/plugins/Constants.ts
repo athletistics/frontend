@@ -1,3 +1,5 @@
+const APP_VERSION: string = '1.1.8 (alpha)'
+
 const API_URL: string = import.meta.env.VITE_CORE_API_URL as string
 const TOTP_API_URL: string = import.meta.env.VITE_TOTP_API_URL as string
 const STRAVA_API_URL: string = import.meta.env.VITE_STRAVA_API_URL as string
@@ -28,6 +30,7 @@ const ROLE_ATHLETE: string = "athlete"
 const ROLE_HEAD_COACH: string = "head_coach"
 
 export default {
+  APP_VERSION,
   API_URL,
   TOTP_API_URL,
   STRAVA_API_URL,

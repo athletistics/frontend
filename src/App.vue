@@ -8,7 +8,7 @@
       <div class="w-100 p-7 border-t-2 text-center">
         <p>© 2023 - Nicolas Baeriswyl</p>
         <p>Made with ☕️ by <a href="https://baeriswyl.dev" target="_blank">baeriswyl.dev</a></p>
-        <p class="uppercase text-sm mt-4 !text-gray-300 font-bold">Version 1.1.7 (alpha)</p>
+        <p class="uppercase text-sm mt-4 !text-gray-300 font-bold">Version {{ Constants.APP_VERSION }}</p>
         <img class="max-w-full mx-auto" style="width: 200px" src="/src/assets/strava/api_logo_cptblWith_strava_horiz_light.svg"/>
       </div>
     </footer>
@@ -23,6 +23,7 @@ import {defineComponent} from "vue";
 
 import NavBar from './coreComponents/NavBar.vue'
 import Toasts from "./coreComponents/Toasts.vue";
+import Constants from "./plugins/Constants";
 import {useAuthStore} from "./stores/auth";
 import {useDataStore} from "./stores/data";
 import {useMyUserStore} from "./stores/user";
@@ -37,6 +38,9 @@ export default defineComponent({
     return {authStore, userStore, dataStore}
   },
   computed: {
+    Constants() {
+      return Constants
+    },
     ...mapStores(useMyUserStore, useAuthStore)
   },
   mounted() {

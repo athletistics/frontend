@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Stage 1: Build the Vite Vue.js app
-FROM node:20.3.0 as builder
+FROM node:20.15.0 as builder
 
 ARG INFISICAL_TOKEN
 ARG INFISICAL_API_URL
