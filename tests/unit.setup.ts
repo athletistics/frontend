@@ -1,7 +1,7 @@
 import {config} from "@vue/test-utils";
 
-import enUS from './src/locales/en-US.json'
-import deCH from './src/locales/de-CH.json'
+import enUS from '../src/locales/en-US.json'
+import deCH from '../src/locales/de-CH.json'
 import {createI18n} from "vue-i18n";
 
 type MessageSchema = typeof enUS
