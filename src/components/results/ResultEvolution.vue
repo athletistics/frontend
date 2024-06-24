@@ -50,7 +50,7 @@
       </div>
     </form>
 
-    <Line :data="chartData" :options="chartOptions"/>
+    <PerformancePlot :data="chartData" :options="chartOptions"/>
   </div>
 
   <Dialog v-model:visible="dialogVisible">
@@ -96,15 +96,15 @@ import {
   Tooltip,
 } from 'chart.js'
 import {defineComponent, PropType} from 'vue'
-import {Line} from 'vue-chartjs'
 
 import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
 import DialogFooter from "@/coreComponents/dialogs/DialogFooter.vue";
 import DialogTitle from "@/coreComponents/dialogs/DialogTitle.vue";
 import {canManageResults} from "@/plugins/AccessControl";
-import {CHART_COLORS, namedColor, transparentize} from "@/plugins/ChartUtils";
+import {namedColor, transparentize} from "@/plugins/ChartUtils";
 import Const from "@/plugins/Constants";
 import {formatResult} from "@/plugins/Helper";
+import {PerformanceData, PerformancePlot} from '@/plugins/PerformanceController'
 import {useAuthStore} from "@/stores/auth";
 import {useDataStore} from "@/stores/data";
 import {useToastStore} from "@/stores/toast";
@@ -117,7 +117,7 @@ import Paginated from "@/types/Paginated";
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineController, LineElement, PointElement, TimeScale)
 export default defineComponent({
   name: "ResultEvolution",
-  components: {DialogFooter, DialogTitle, LoadingBtn, Line},
+  components: {DialogFooter, DialogTitle, LoadingBtn, PerformancePlot},
   props: {
     defaultUser: {type: Object as PropType<string | undefined>, default: undefined}
   },
@@ -174,6 +174,8 @@ export default defineComponent({
       return r
     },
     chartData() {
+      const timeToYearDivisor = (1000 * 60 * 60 * 24 * 365)
+
       // return an empty dataset and hide the chart if no data is available
       if (!this.dataMap.size) {
         this.visible = false
@@ -184,38 +186,59 @@ export default defineComponent({
       let minX = 0
       let maxX = 0
       const datasets = []
+      const isDescending = !!this.dataStore.getDisciplineById(this.discipline)?.isDescending
 
       // create a dataset entry for each available result set
       this.dataMap.forEach((d, name) => {
-        const xyData = [] as any[]
+        const xyData = [] as PerformanceData[]
+        const birthDate: Date = new Date(d[0].userBirthDate)
 
         // select the entries of the selected discipline
         d.forEach(d => {
           if (d.disciplineId == this.discipline) {
             // record min and max date
-            if (minX === 0 || minX > new Date(d.date).getTime()) minX = new Date(d.date).getTime()
-            if (maxX === 0 || maxX < new Date(d.date).getTime()) maxX = new Date(d.date).getTime()
+            const age = (new Date(d.date).getTime() - birthDate.getTime()) / timeToYearDivisor
+            if (minX === 0 || minX > age) minX = age
+            if (maxX === 0 || maxX < age) maxX = age
 
             xyData.push({
-              x: new Date(d.date).getTime(),
-              y: d.value,
-              isTraining: d.isTraining
+              x: age,
+              y: parseFloat(d.value),
+              date: new Date(d.date),
+              isTraining: d.isTraining || d.isPersonalTrainingResult,
+              hasLine: false
             })
           }
         })
 
-        xyData.sort((a: { x: number }, b: { x: number }) => a.x - b.x)
+        // prepare data for performance plot, deciding which points should be connected by a line.
+        if(xyData.length) {
+          xyData.sort((a: { x: number }, b: { x: number }) => a.x - b.x)
+          let lastBest = xyData[0].y
+          xyData.forEach(d => {
+            if (d.isTraining) return
+            if (isDescending && lastBest < d.y) {
+              lastBest = d.y
+              d.hasLine = true
+            } else if (!isDescending && lastBest > d.y) {
+              lastBest = d.y
+              d.hasLine = true
+            }
+          })
+        }
 
+        // training results are more transparent than regular results
         datasets.push({
           label: name,
           fill: false,
+          showLine: false,
           pointRadius: 4,
           pointBackgroundColor: xyData.map((d: {
             isTraining: boolean
-          }) => d.isTraining ? transparentize(CHART_COLORS.grey, 0.5) : transparentize(namedColor(datasets.length), 0.5)),
+          }) => transparentize(namedColor(datasets.length), d.isTraining ? .9 : 0.5)),
           pointBorderColor: xyData.map((d: {
             isTraining: boolean
-          }) => d.isTraining ? CHART_COLORS.grey : namedColor(datasets.length)),
+          }) => d.isTraining ? transparentize(namedColor(datasets.length), .5) : namedColor(datasets.length)),
           backgroundColor: transparentize(namedColor(datasets.length), 0.5),
           borderColor: namedColor(datasets.length),
           data: xyData
@@ -246,9 +269,10 @@ export default defineComponent({
         responsive: true,
         scales: {
           x: {
-            type: 'time',
-            time: {
-              unit: 'day'
+            type: 'linear',
+            title: {
+              display: true,
+              text: this.$t('glob.age')
             }
           },
           y: {
@@ -267,7 +291,7 @@ export default defineComponent({
           tooltip: {
             callbacks: {
               title: (context) => {
-                return this.$d(new Date(context[0].parsed.x))
+                return `${this.$d(context[0].dataset?.data[context[0]?.dataIndex]?.date as Date)} (${this.$t("glob.age")}: ${context[0].parsed.x.toFixed(2)})`
               },
               label: (context) => {
                 return context.dataset.label + ": " + formatResult(context.parsed.y.toString(), this.dataStore.getDisciplineById(this.discipline))

@@ -244,6 +244,7 @@
       "externalIdType": "ID Type"
     },
     "date": "Date",
+    "age": "Age",
     "gender": {
       "M": "Men",
       "W": "Women"

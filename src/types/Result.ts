@@ -18,6 +18,7 @@ declare namespace Result {
     userId: string,
     userFirstName: string,
     userLastName: string,
+    userBirthDate: string,
     categoryName: string,
     disciplineName: string,
     disciplineId: string,
