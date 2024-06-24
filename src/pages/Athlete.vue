@@ -273,11 +273,11 @@ const getResults = (): void => {
     }
   }).then((response: AxiosResponse<Paginated<Result.Data>, any>) => {
     resultsState.value = response.data?.data.length ? LoadingStates.Loaded : LoadingStates.Empty
-    if (!response.data?.data.length) return
 
     results.value = response.data.data
     resultRecords.value = response.data.count
     updateResults()
+    if (!response.data?.data.length) return
 
     // load data into evolution chart, whith user's name as a label
     const name = response.data.data[0]?.userLastName + " " + response.data.data[0]?.userFirstName
