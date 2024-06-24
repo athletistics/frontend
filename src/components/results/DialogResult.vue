@@ -182,7 +182,7 @@ const createResult = handleSubmit(() => {
 const visible = ref(false)
 const setVisibility = (val: boolean): void => {
   visible.value = val
-  resetForm()
+  resetForm({values: {isPersonalTrainingResult: isPersonalResult.value}})
 
   if (props.result) setValues(props.result)
   else {
