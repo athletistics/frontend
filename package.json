@@ -6,7 +6,7 @@
   "scripts": {
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "dev": "vite",
+    "dev": "infisical run --path=/frontend -- vite",
     "check": "vue-tsc --noEmit",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
