@@ -214,7 +214,17 @@
       "personalTraining": "Personal training"
     },
     "discipline": {
-      "name": "Discipline"
+      "name": "Discipline",
+      "deleteCaution": {
+        "title": "Caution!!",
+        "discipline": "{0}",
+        "content": "You are about to delete the discipline \"@.fontBlack:{'glob.discipline.deleteCaution.discipline'}\". A series of results are registered for said discipline. @.fontBold:{'glob.discipline.deleteCaution.contentConsequence'}",
+        "contentConsequence": "Deleting the discipline will also delete the results.",
+        "contentConfirm": "Please type the discipline name below to confirm.",
+        "reject": "Cancel",
+        "accept": "Proceed, delete results",
+        "error": "The value does not match the discipline name."
+      }
     },
     "user": {
       "name": "Name",

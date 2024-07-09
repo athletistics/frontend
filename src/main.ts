@@ -9,6 +9,7 @@ import AutoComplete from "primevue/autocomplete"
 import Calendar from 'primevue/calendar';
 import Checkbox from "primevue/checkbox";
 import PrimeVue from 'primevue/config'
+import ConfirmationService from 'primevue/confirmationservice';
 import ContextMenu from 'primevue/contextmenu';
 import Dialog from "primevue/dialog";
 import Dropdown from 'primevue/dropdown';
@@ -39,6 +40,11 @@ const i18n = createI18n<MessageSchema, 'en-US' | 'de-CH'>({
   messages: {
     'en-US': enUS,
     'de-CH': deCH
+  },
+  modifiers:{
+    fontMedium: (str) => `<span class="font-medium">${str as string}</span>`,
+    fontBold: (str) => `<span class="font-bold">${str as string}</span>`,
+    fontBlack: (str) => `<span class="font-black">${str as string}</span>`,
   }
 })
 
@@ -81,6 +87,7 @@ createApp(App)
     .component('SelectButton', SelectButton)
     .directive('Tooltip', Tooltip)
     .use(ToastService)
+    .use(ConfirmationService)
     .use(PrimeVue)
     .use(pinia)
     .use(i18n)

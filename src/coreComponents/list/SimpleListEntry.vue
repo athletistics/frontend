@@ -13,7 +13,7 @@ export default defineComponent({
   <li v-if="to && enabled" data-testid="sle-link">
     <router-link :to="to" class="block hover:bg-main p-4 main-transition"><slot></slot></router-link>
   </li>
-  <li v-else class="p-4" data-testid="sle-default">
+  <li v-else class="px-4 py-2" data-testid="sle-default">
     <slot></slot>
   </li>
 </template>

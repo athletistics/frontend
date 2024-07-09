@@ -98,7 +98,7 @@ const createDiscipline = handleSubmit(() => {
   }).then(() => {
     createState.state = LoadingStates.Loaded
     setVisibility(false)
-    toast.add({summary: 'Success'})
+    toast.add({summary: 'Success', life: 2000, severity: "success"})
     emits('success')
   }).catch((error: AxiosError) => {
     createState.state = LoadingStates.Error
