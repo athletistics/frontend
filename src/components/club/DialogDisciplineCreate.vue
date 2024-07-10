@@ -20,13 +20,13 @@
 
     <template #header>
       <DialogTitle>
-        {{ t('page.club.title.createDiscipline') }}
+        {{ (disciplineId ? t('page.club.title.updateDiscipline') : t('page.club.title.createDiscipline')) }}
       </DialogTitle>
     </template>
 
     <template #footer>
       <DialogFooter>
-        <LoadingBtn full outlined visual-type="primary" :loading="createState" @click="createDiscipline()">
+        <LoadingBtn full outlined visual-type="primary" :loading="saveState" @click="saveDiscipline()">
           {{ t('glob.btn.save') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">
@@ -73,6 +73,7 @@ const disciplineTypes = [
 // ---------------
 // API interaction
 // ---------------
+const disciplineId = ref<string>()
 const {handleSubmit, resetForm, errors, defineField} = useForm<Discipline>({
   validationSchema: object({
     customName: string().required().min(3),
@@ -84,24 +85,26 @@ const newDiscipline = reactive({
   isDescending: defineField('isDescending')[0]
 })
 
-const createState = reactive<LoadingState>({state: NaN})
-const createDiscipline = handleSubmit(() => {
-  createState.state = LoadingStates.Loading
+const saveState = reactive<LoadingState>({state: NaN})
+const saveDiscipline = handleSubmit(() => {
+  const isUpdate = !!disciplineId.value
+
+  saveState.state = LoadingStates.Loading
   axios.request({
-    url: "/disciplines",
-    method: 'post',
+    url: "/disciplines" + (isUpdate ? "/" + disciplineId.value : ""),
+    method: isUpdate ? 'put' : 'post',
     baseURL: Const.API_URL,
     headers: {
       'Authorization': 'Bearer ' + authStore.token
     },
     data: newDiscipline
   }).then(() => {
-    createState.state = LoadingStates.Loaded
+    saveState.state = LoadingStates.Loaded
     setVisibility(false)
     toast.add({summary: 'Success', life: 2000, severity: "success"})
     emits('success')
   }).catch((error: AxiosError) => {
-    createState.state = LoadingStates.Error
+    saveState.state = LoadingStates.Error
     toast.add(fromAxiosError(error))
   })
 })
@@ -111,13 +114,28 @@ const createDiscipline = handleSubmit(() => {
 // ----------------------------
 const visible = ref(false)
 const setVisibility = (val: boolean): void => {
-  visible.value = val
+  setVisibilityWithDiscipline(val, undefined)
+}
 
-  resetForm()
+const setVisibilityWithDiscipline = (val: boolean, discipline: Discipline | undefined): void => {
+  visible.value = val
+  disciplineId.value = undefined
+
+  if (!discipline) resetForm({values: {customName: undefined, isDescending: undefined}})
+  else {
+    disciplineId.value = discipline.id
+    resetForm({
+      values: {
+        customName: discipline.customName,
+        isDescending: discipline.isDescending
+      }
+    })
+  }
 }
 
 defineExpose({
-  setVisibility
+  setVisibility,
+  setVisibilityWithDiscipline
 })
 </script>
 

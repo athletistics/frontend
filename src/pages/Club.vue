@@ -18,7 +18,7 @@
 
   <TitleWithBtnPlus
       :btn-visible="canManageDiscipline()"
-      @btn-click="($refs.createDiscipline as any).setVisibility(true)">{{
+      @btn-click="($refs.disciplineDialog as any).setVisibility(true)">{{
       $t('page.club.title.disciplines')
     }}
   </TitleWithBtnPlus>
@@ -29,7 +29,7 @@
         <span class="flex-grow content-center">{{ d.customName }}</span>
         <div v-if="userStore.hasRole(Const.ROLE_COACH)" class="flex items-center">
           <ButtonIcon
-              severity="secondary" icon="pi pi-pencil" :loading="loadingStatesModify.get(d.id)"
+              severity="secondary" icon="pi pi-pencil"
               @click="modifyDiscipline(d.id)"/>
           <ButtonIcon
               severity="danger" icon="pi pi-trash" :loading="loadingStatesDelete.get(d.id)"
@@ -41,7 +41,7 @@
 
   <DialogTeamCreate ref="createTeam" @success="loadTeams"/>
 
-  <DialogDisciplineCreate ref="createDiscipline" @success="loadDisciplines"/>
+  <DialogDisciplineCreate ref="disciplineDialog" @success="loadDisciplines"/>
 
   <ConfirmDialog>
     <template #message>
@@ -94,10 +94,15 @@ const selectedDiscipline = ref<Discipline>()
 const disciplineConfirmation = ref<string>()
 
 const loadingStatesDelete = ref<Map<string, boolean>>(new Map())
-const loadingStatesModify = ref<Map<string, boolean>>(new Map())
+
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+const disciplineDialog = ref<InstanceType<typeof DialogDisciplineCreate> | null>(null)
 
 const modifyDiscipline = (id: string): void => {
-  loadingStatesModify.value.set(id, true)
+  const discipline = dataStore.getDisciplineById(id)
+
+  // eslint-disable-next-line
+  disciplineDialog.value?.setVisibilityWithDiscipline(true, discipline)
 }
 
 const deleteDiscipline = (id: string, force: boolean): void => {

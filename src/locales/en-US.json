@@ -37,7 +37,8 @@
         "teams": "Teams",
         "createTeam": "Create team",
         "disciplines": "Custom disciplines",
-        "createDiscipline": "Create custom discipline"
+        "createDiscipline": "Create custom discipline",
+        "updateDiscipline": "Update custom discipline"
       },
       "teamName": "Team name",
       "disciplineName": "Discipline name",
