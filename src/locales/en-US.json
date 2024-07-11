@@ -210,7 +210,7 @@
       "type": "Event type",
       "homologation": "Homologation",
       "homologated": "Is homologated",
-      "notHmologated": "Not homologated"
+      "notHomologated": "Not homologated"
     },
     "result": {
       "name": "Result",

@@ -26,7 +26,7 @@
       class="white-rounded mt-4" :pt="customStyle" @page="loadResults"></Paginator>
 
   <ModalResult ref="modal" :is-personal="false" :event="event" @created="loadResults"/>
-  <DialogEventCreate ref="dialogEvent"/>
+  <DialogEventCreate ref="dialogEvent" @success="dataStore.updateEvents()"/>
   <ConfirmDialog>
     <template #message="slot">
       <p v-html="slot.message.message"></p>
@@ -62,6 +62,7 @@ import Paginated from "@/types/Paginated";
 
 // DOM references
 const modal = ref<IntDialog>()
+const dialogEvent = ref<InstanceType<typeof DialogEventCreate>>()
 
 // stores
 const authStore = useAuthStore()
@@ -95,7 +96,8 @@ const requestDeleteConfirm = (): void => {
 }
 
 const updateEvent = (): void => {
-
+  // eslint-disable-next-line
+  dialogEvent.value?.setVisibilityWithEvent(true, event.value)
 }
 
 const deleteEvent = (): void => {
@@ -151,6 +153,7 @@ const eventState = computed(() => {
 })
 
 const event = computed(() => {
+  void dataStore.events // required to trigger a recompute when events change
   return dataStore.getEventById(route.params.id.toString())
 })
 

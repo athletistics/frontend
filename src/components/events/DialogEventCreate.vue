@@ -13,24 +13,24 @@
 
       <span class="p-float-label p-fluid">
         <Calendar
-id="dateObj" v-model="newEvent.dateObj" :class="{'p-invalid': errors.dateObj}"
-                  :show-on-focus="false" show-icon/>
+            id="dateObj" v-model="newEvent.dateObj" :class="{'p-invalid': errors.dateObj}"
+            :show-on-focus="false" show-icon/>
         <label for="dateObj">{{ t('glob.event.date') }}*</label>
       </span>
 
 
       <span class="p-float-label p-fluid">
         <Dropdown
-id="eventTypeId" v-model="newEvent.eventTypeId" :class="{'p-invalid': errors.eventTypeId}"
-                  :options="dataStore.eventTypes" option-value="id" :option-label="(data) => t('data.' + data.i18nName)"
+            id="eventTypeId" v-model="newEvent.eventTypeId" :class="{'p-invalid': errors.eventTypeId}"
+            :options="dataStore.eventTypes" option-value="id" :option-label="(data) => t('data.' + data.i18nName)"
         />
         <label for="eventTypeId">{{ t('glob.event.type') }}*</label>
       </span>
 
       <span class="p-float-label p-fluid">
         <Dropdown
-id="isOutdoor" v-model="newEvent.isOutdoor" :class="{'p-invalid': errors.isOutdoor}"
-                  :options="seasons" option-value="val" option-label="label"
+            id="isOutdoor" v-model="newEvent.isOutdoor" :class="{'p-invalid': errors.isOutdoor}"
+            :options="seasons" option-value="val" option-label="label"
         />
         <label for="isOutdoor">{{ t('glob.event.season') }}*</label>
       </span>
@@ -49,7 +49,9 @@ id="isOutdoor" v-model="newEvent.isOutdoor" :class="{'p-invalid': errors.isOutdo
 
     <template #footer>
       <DialogFooter>
-        <LoadingBtn full outlined visual-type="primary" :loading="createState" :disabled="!meta.valid" @click="createEvent()">
+        <LoadingBtn
+full outlined visual-type="primary" :loading="createState" :disabled="!meta.valid"
+                    @click="createEvent()">
           {{ t('glob.btn.save') }}
         </LoadingBtn>
         <LoadingBtn full outlined @click="setVisibility(false)">
@@ -77,6 +79,7 @@ import Const from "@/plugins/Constants";
 import {fromAxiosError} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
 import {useDataStore} from "@/stores/data";
+import Event from "@/types/Event"
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
 
@@ -111,14 +114,16 @@ const newEvent = reactive({
   date: "",
 })
 
+const eventId = ref<string>()
 const createState = reactive<LoadingState>({state: NaN})
 const createEvent = handleSubmit(() => {
+  const isEdit = !!eventId.value
   createState.state = LoadingStates.Loading
   newEvent.date = moment(newEvent.dateObj as Date).format('YYYY-MM-DD')
 
   axios.request({
-    url: "/events",
-    method: 'post',
+    url: "/events" + (isEdit ? `/${eventId.value}` : ""),
+    method: isEdit ? 'put' : 'post',
     baseURL: Const.API_URL,
     headers: {
       'Authorization': 'Bearer ' + authStore.token
@@ -127,7 +132,7 @@ const createEvent = handleSubmit(() => {
   }).then(() => {
     createState.state = LoadingStates.Loaded
     setVisibility(false)
-    toast.add({summary: "Success", life: 5000})
+    toast.add({summary: "Success", severity: "success", life: 5000})
     emits('success')
   }).catch((error: AxiosError) => {
     createState.state = LoadingStates.Error
@@ -139,14 +144,39 @@ const createEvent = handleSubmit(() => {
 // dialog visibility management
 // ----------------------------
 const visible = ref(false)
-const setVisibility = (val: boolean) : void => {
-  visible.value = val
+const setVisibility = (val: boolean): void => {
+  setVisibilityWithEvent(val, undefined)
+}
 
-  resetForm()
+const setVisibilityWithEvent = (val: boolean, event: Event | undefined): void => {
+  visible.value = val
+  eventId.value = undefined
+
+  if (!event) {
+    resetForm({
+      values: {
+        eventTypeId: undefined, name: undefined,
+        place: undefined,
+        dateObj: undefined,
+        isOutdoor: undefined,
+      }
+    })
+  } else {
+    eventId.value = event.id
+    resetForm({
+      values: {
+        eventTypeId: event.eventTypeId, name: event.name,
+        place: event.place,
+        dateObj: new Date(event.date),
+        isOutdoor: event.isOutdoor,
+      }
+    })
+  }
 }
 
 defineExpose({
-  setVisibility
+  setVisibility,
+  setVisibilityWithEvent
 })
 </script>
 
