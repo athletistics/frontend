@@ -56,12 +56,13 @@
 
 <script lang="ts">
 import axios, {AxiosError, AxiosResponse} from "axios";
+import {useToast} from "primevue/usetoast";
 import {defineComponent} from "vue";
 
 import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
 import Const from "@/plugins/Constants";
+import {fromAxiosError} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
-import {useToastStore} from "@/stores/toast";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
 
@@ -70,8 +71,8 @@ export default defineComponent({
   components: {LoadingBtn},
   setup() {
     const authStore = useAuthStore()
-    const toastStore = useToastStore()
-    return {authStore, toastStore}
+    const toast = useToast()
+    return {authStore, toast}
   },
   data() {
     return {
@@ -129,7 +130,7 @@ export default defineComponent({
       }).catch((error: AxiosError) => {
         this.state.state = LoadingStates.Error
         this.code = ""
-        this.toastStore.addToastFromAxiosError(error)
+        this.toast.add(fromAxiosError(error))
       })
     },
     verify() {
@@ -151,7 +152,7 @@ export default defineComponent({
       }).catch((error: AxiosError) => {
         this.state.state = LoadingStates.Error
         this.code = ""
-        this.toastStore.addToastFromAxiosError(error)
+        this.toast.add(fromAxiosError(error))
       })
     }
   }

@@ -14,7 +14,6 @@
     </footer>
   </div>
   <Toast position="bottom-right"/>
-  <Toasts/> <!-- TODO: Legacy toast service, filed for removal -->
 </template>
 
 <script lang="ts">
@@ -22,14 +21,13 @@ import {mapStores} from "pinia";
 import {defineComponent} from "vue";
 
 import NavBar from './coreComponents/NavBar.vue'
-import Toasts from "./coreComponents/Toasts.vue";
 import Constants from "./plugins/Constants";
 import {useAuthStore} from "./stores/auth";
 import {useDataStore} from "./stores/data";
 import {useMyUserStore} from "./stores/user";
 
 export default defineComponent({
-  components: {Toasts, NavBar},
+  components: {NavBar},
   setup() {
     const authStore = useAuthStore()
     const userStore = useMyUserStore()

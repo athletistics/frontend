@@ -95,6 +95,7 @@ import {
   Title,
   Tooltip,
 } from 'chart.js'
+import {useToast} from "primevue/usetoast";
 import {defineComponent, PropType} from 'vue'
 
 import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
@@ -105,9 +106,9 @@ import {namedColor, transparentize} from "@/plugins/ChartUtils";
 import Const from "@/plugins/Constants";
 import {formatResult} from "@/plugins/Helper";
 import {PerformanceData, PerformancePlot} from '@/plugins/PerformanceController'
+import {fromAxiosError, fromErrorMessage} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
 import {useDataStore} from "@/stores/data";
-import {useToastStore} from "@/stores/toast";
 import Category from "@/types/Category";
 import Discipline from "@/types/Discipline";
 import LoadingState from "@/types/LoadingState";
@@ -124,9 +125,9 @@ export default defineComponent({
   setup() {
     const authStore = useAuthStore()
     const dataStore = useDataStore()
-    const toastStore = useToastStore()
+    const toast = useToast()
 
-    return {authStore, dataStore, toastStore}
+    return {authStore, dataStore, toast}
   },
   data() {
     return {
@@ -335,7 +336,7 @@ export default defineComponent({
         } else if (!response.data?.data.length) {
           // stop here, if the additionally loaded results are empty (i.e. athlete to compare against
           // has no results)
-          this.toastStore.addErrorToast(this.$t('comp.evolution.noData'))
+          this.toast.add(fromErrorMessage(this.$t('comp.evolution.noData')))
           return
         }
 
@@ -345,7 +346,7 @@ export default defineComponent({
         this.dataMap.set(name ?? userId, response.data.data)
       }).catch((response: AxiosError) => {
         this.state.state = LoadingStates.Error
-        this.toastStore.addToastFromAxiosError(response)
+        this.toast.add(fromAxiosError(response))
       })
     },
     resetData() {

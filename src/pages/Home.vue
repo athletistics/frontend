@@ -21,6 +21,7 @@
 <script setup lang="ts">
 
 import axios, {AxiosError, AxiosResponse} from "axios";
+import {useToast} from "primevue/usetoast";
 import {computed, onMounted, ref} from "vue";
 
 import SelectChips from "@/coreComponents/button/SelectChips.vue";
@@ -29,15 +30,15 @@ import SimpleTableCell from "@/coreComponents/list/SimpleTableCell.vue";
 import SimpleTableRow from "@/coreComponents/list/SimpleTableRow.vue";
 import Const from "@/plugins/Constants";
 import {sortUser} from "@/plugins/Helper";
+import {fromAxiosError} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
-import {useToastStore} from "@/stores/toast";
 import {useMyUserStore} from "@/stores/user";
 import {LoadingStates} from "@/types/LoadingStates";
 import Team from "@/types/Team";
 import User from "@/types/User";
 
 const authStore = useAuthStore()
-const toastStore = useToastStore()
+const toast = useToast()
 const userStore = useMyUserStore()
 
 const athletes = ref<User[]>([])
@@ -93,7 +94,7 @@ onMounted(() => {
     state.value = response.data ? LoadingStates.Loaded : LoadingStates.Empty
     console.log('loaded')
   }).catch((error: AxiosError) => {
-    toastStore.addToastFromAxiosError(error)
+    toast.add(fromAxiosError(error))
     state.value = LoadingStates.Error
   })
 })

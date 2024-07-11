@@ -28,6 +28,7 @@
 
 import axios, {AxiosError} from "axios";
 import Dialog from "primevue/dialog";
+import {useToast} from "primevue/usetoast";
 import {useForm} from "vee-validate";
 import {reactive, ref} from "vue";
 import {object, string} from 'yup';
@@ -36,8 +37,8 @@ import LoadingBtn from "@/coreComponents/button/LoadingBtn.vue";
 import DialogFooter from "@/coreComponents/dialogs/DialogFooter.vue";
 import DialogTitle from "@/coreComponents/dialogs/DialogTitle.vue";
 import Const from "@/plugins/Constants";
+import {fromAxiosError} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
-import {useToastStore} from "@/stores/toast";
 import {useMyUserStore} from "@/stores/user";
 import LoadingState from "@/types/LoadingState";
 import {LoadingStates} from "@/types/LoadingStates";
@@ -49,8 +50,8 @@ const emits = defineEmits(['success'])
 // import stores
 // --------------
 const authStore = useAuthStore()
-const toastStore = useToastStore()
 const userStore = useMyUserStore()
+const toast = useToast()
 
 // ---------------
 // API interaction
@@ -81,7 +82,7 @@ const createTeam = handleSubmit(() => {
     setVisibility(false)
   }).catch((error: AxiosError) => {
     createState.state = LoadingStates.Error
-    toastStore.addToastFromAxiosError(error)
+    toast.add(fromAxiosError(error))
   })
 })
 

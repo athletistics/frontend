@@ -68,7 +68,6 @@ import {CHART_COLOR_TRANSPARENT, CHART_COLORS, transparentize} from "@/plugins/C
 import {formatResult} from "@/plugins/Helper";
 import {useAuthStore} from "@/stores/auth";
 import {useDataStore} from "@/stores/data";
-import {useToastStore} from "@/stores/toast";
 import Category from "@/types/Category";
 import LoadingState from "@/types/LoadingState";
 
@@ -82,13 +81,12 @@ export default defineComponent({
   setup() {
     const authStore = useAuthStore()
     const dataStore = useDataStore()
-    const toastStore = useToastStore()
 
     const MinPercent = 95
     const MaxPercent = 102
     const FullPercent = 100
 
-    return {authStore, dataStore, toastStore, MinPercent, MaxPercent, FullPercent}
+    return {authStore, dataStore, MinPercent, MaxPercent, FullPercent}
   },
   data() {
     return {

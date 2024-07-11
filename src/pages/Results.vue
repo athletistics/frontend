@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {PageState} from "primevue/paginator";
+import {useToast} from "primevue/usetoast";
 import {onMounted, ref} from "vue";
 
 import DialogResult from "@/components/results/DialogResult.vue";
@@ -22,8 +23,8 @@ import ResultTable from "@/components/results/ResultTable.vue";
 import TitleWithBtnPlus from "@/coreComponents/title/TitleWithBtnPlus.vue";
 import {canManageResults} from "@/plugins/AccessControl";
 import Const from "@/plugins/Constants";
+import {fromAxiosError} from "@/plugins/ToastWriter";
 import {useAuthStore} from "@/stores/auth";
-import {useToastStore} from "@/stores/toast";
 import IntDialog from "@/types/IntDialog";
 import {LoadingStates} from "@/types/LoadingStates";
 import Paginated from "@/types/Paginated";
@@ -43,7 +44,7 @@ const modal = ref<IntDialog>()
 
 // utilities
 const authStore = useAuthStore()
-const toastStore = useToastStore()
+const toast = useToast()
 
 // data
 const rows = ref<number>(10)
@@ -76,7 +77,7 @@ const loadResults = (event?: PageState): void => {
     records.value = response.data.count
   }).catch((response: AxiosError) => {
     resultsState.value = LoadingStates.Error
-    toastStore.addToastFromAxiosError(response)
+    toast.add(fromAxiosError(response))
   })
 }
 
