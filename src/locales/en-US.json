@@ -100,7 +100,14 @@
     "event": {
       "title": "Events",
       "createTitle": "Create event",
-      "createBtn": "Create event"
+      "createBtn": "Create event",
+      "requestConfirm": {
+        "header": "Caution!!",
+        "message": "You are about to delete an event with results. @.fontBold:{'page.event.requestConfirm.message2'}",
+        "message2": " The results will also be deleted!",
+        "accept": "Delete event and {0} results",
+        "reject": "Cancel"
+      }
     },
     "results": {
       "title": "Results",

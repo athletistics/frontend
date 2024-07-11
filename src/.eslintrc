@@ -30,6 +30,7 @@
     ],
     "no-unreachable": "off",
     "valid-v-for": "off",
+    "vue/no-v-html": "off",
     "vue/valid-v-for": "off",
     "vue/require-v-for-key": "off",
     "vue/no-v-model-argument": "off",
