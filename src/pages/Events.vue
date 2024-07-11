@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import {reactive} from "vue";
+import {onMounted, reactive} from "vue";
 import {useRouter} from "vue-router";
 
 import DialogEventCreate from "@/components/events/DialogEventCreate.vue";
@@ -43,6 +43,10 @@ const toEvent = (id: string) : void => {
 const eventCreated = () : void=> {
   dataStore.updateEvents(state)
 }
+
+onMounted(() => {
+  dataStore.updateEvents()
+})
 
 </script>
 

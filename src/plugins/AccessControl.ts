@@ -1,5 +1,6 @@
 import {useAuthStore} from "@/stores/auth";
 import {useMyUserStore} from "@/stores/user";
+import Event from "@/types/Event"
 
 const coach = "coach"
 const headCoach = "head_coach"
@@ -29,6 +30,11 @@ export function canManageDiscipline(): boolean {
 
 export function canManageEvents(): boolean {
   return isCoach() && is2FaOk()
+}
+
+export function canManageEvent(event: Event): boolean {
+  const userStore = useMyUserStore()
+  return canManageEvents() && userStore.user.clubId === event.clubId
 }
 
 export function canManageResults(): boolean {

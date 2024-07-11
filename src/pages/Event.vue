@@ -1,6 +1,6 @@
 <template>
   <TitleWithContextBtn
-      :btn-visible="canManageEvents()"
+      :btn-visible="!!event && canManageEvent(event)"
       @edit="updateEvent" @delete="requestDeleteConfirm">{{ event?.name }}
   </TitleWithContextBtn>
 
@@ -50,7 +50,7 @@ import ResultTable from "@/components/results/ResultTable.vue";
 import LabeledText from "@/coreComponents/LabeledText.vue";
 import TitleWithBtnPlus from "@/coreComponents/title/TitleWithBtnPlus.vue";
 import TitleWithContextBtn from "@/coreComponents/title/TitleWithContextBtn.vue";
-import {canManageEvents, canManageResults} from "@/plugins/AccessControl";
+import {canManageEvent, canManageResults} from "@/plugins/AccessControl";
 import Const from "@/plugins/Constants";
 import {routeParamToString} from "@/plugins/Helper";
 import {fromAxiosError} from "@/plugins/ToastWriter";
